@@ -1,9 +1,10 @@
 /* ═══════════════════════════════════════════════════════════════════════
    FF PIPELINE — Dashboard JavaScript
-   - Loads local data.json demo data
    - Lets visitors load public Sleeper NFL league data by username
+   - Requests live standings, scores, roster assignments, and matchup data
+     through the Render API
    - Does not collect, store, or transmit Sleeper credentials
-   ════════════════════════════════════════════════════════════════════════ */
+   ═══════════════════════════════════════════════════════════════════════ */
 
 "use strict";
 
@@ -14,6 +15,9 @@ let trendChart = null;
 
 const SLEEPER_API_BASE = "https://api.sleeper.app/v1";
 
+const DASHBOARD_API_BASE =
+  "https://fantasy-football-analyzer-api.onrender.com";
+
 const sleeperState = {
   username: "",
   user: null,
@@ -22,7 +26,6 @@ const sleeperState = {
   selectedLeague: null,
   users: [],
   rosters: [],
-  matchups: [],
   myRosterId: null
 };
 
@@ -107,9 +110,41 @@ function formatNumber(value, digits = 1) {
   return asNumber(value, 0).toFixed(digits);
 }
 
-function getWeekFromLeague(league) {
-  const week = asNumber(league?.settings?.leg, 0);
-  return week > 0 ? week : 1;
+function normalizeRecord(record) {
+  return {
+    wins: asNumber(record?.wins),
+    losses: asNumber(record?.losses),
+    ties: asNumber(record?.ties),
+    pointsFor: asNumber(record?.points_for ?? record?.pointsFor),
+    pointsAgainst: asNumber(
+      record?.points_against ?? record?.pointsAgainst
+    )
+  };
+}
+
+function getRosterRecord(roster) {
+  const settings = roster?.settings || {};
+
+  return {
+    wins: asNumber(settings.wins),
+    losses: asNumber(settings.losses),
+    ties: asNumber(settings.ties),
+    pointsFor:
+      asNumber(settings.fpts) +
+      asNumber(settings.fpts_decimal) / 100,
+    pointsAgainst:
+      asNumber(settings.fpts_against) +
+      asNumber(settings.fpts_against_decimal) / 100
+  };
+}
+
+function recordLabel(record) {
+  const normalized = normalizeRecord(record);
+  const base = `${normalized.wins}-${normalized.losses}`;
+
+  return normalized.ties > 0
+    ? `${base}-${normalized.ties}`
+    : base;
 }
 
 function getManagerDisplayName(user) {
@@ -125,67 +160,29 @@ function getManagerDisplayName(user) {
   );
 }
 
-function getRosterRecord(roster) {
-  const settings = roster?.settings || {};
-
-  return {
-    wins: asNumber(settings.wins),
-    losses: asNumber(settings.losses),
-    ties: asNumber(settings.ties),
-    pointsFor: asNumber(settings.fpts) + asNumber(settings.fpts_decimal) / 100,
-    pointsAgainst:
-      asNumber(settings.fpts_against) +
-      asNumber(settings.fpts_against_decimal) / 100
-  };
-}
-
-function recordLabel(record) {
-  const base = `${record.wins}-${record.losses}`;
-  return record.ties > 0 ? `${base}-${record.ties}` : base;
-}
-
-function scoreForMatchup(matchup) {
-  return asNumber(matchup?.points, 0);
-}
-
-function normalizePositions(positions) {
-  if (!Array.isArray(positions) || positions.length === 0) {
-    return "FLEX";
-  }
-
-  if (positions.includes("QB")) {
-    return "QB";
-  }
-
-  if (positions.includes("RB")) {
-    return "RB";
-  }
-
-  if (positions.includes("WR")) {
-    return "WR";
-  }
-
-  if (positions.includes("TE")) {
-    return "TE";
-  }
-
-  if (positions.includes("K")) {
-    return "K";
-  }
-
-  if (positions.includes("DEF")) {
-    return "DEF";
-  }
-
-  return positions[0] || "FLEX";
-}
-
 function playerNameFromId(playerId) {
   if (!playerId) {
     return "Unknown player";
   }
 
   return `Player ${playerId}`;
+}
+
+function buildPlaceholderPlayer(playerId, isStarter) {
+  return {
+    id: String(playerId),
+    name: playerNameFromId(playerId),
+    team: "NFL",
+    position: "FLEX",
+    projected_points: 0,
+    season_points: 0,
+    recent_avg: 0,
+    trend: "stable",
+    trend_label: "Roster assignment",
+    injury_status: "",
+    bye_week: "",
+    is_starter: Boolean(isStarter)
+  };
 }
 
 /* ── Sleeper fetch helpers ───────────────────────────────────────────── */
@@ -199,6 +196,36 @@ async function sleeperFetchJson(path, fallbackMessage) {
 
   return response.json();
 }
+
+async function dashboardApiFetch(path, fallbackMessage) {
+  let response;
+
+  try {
+    response = await fetch(`${DASHBOARD_API_BASE}${path}`);
+  } catch {
+    throw new Error(
+      "The live analytics service is unavailable. Please try again in a moment."
+    );
+  }
+
+  let data;
+
+  try {
+    data = await response.json();
+  } catch {
+    throw new Error(
+      "The live analytics service returned an invalid response."
+    );
+  }
+
+  if (!response.ok) {
+    throw new Error(data?.error || fallbackMessage);
+  }
+
+  return data;
+}
+
+/* ── Connection page helpers ─────────────────────────────────────────── */
 
 function setSleeperStatus(message, isError = false) {
   const status = getElement("sleeper-connect-status");
@@ -301,7 +328,13 @@ function initializeSleeperConnection() {
   const leagueSelect = getElement("sleeper-league-select");
   const loadLeagueButton = getElement("sleeper-load-league");
 
-  if (!form || !usernameInput || !seasonInput || !leagueSelect || !loadLeagueButton) {
+  if (
+    !form ||
+    !usernameInput ||
+    !seasonInput ||
+    !leagueSelect ||
+    !loadLeagueButton
+  ) {
     return;
   }
 
@@ -358,7 +391,7 @@ function initializeSleeperConnection() {
 
       for (const league of leagues) {
         const leagueName = league.name || `League ${league.league_id}`;
-        const rosterCount = asNumber(league.total_rosters, 0);
+        const rosterCount = asNumber(league.total_rosters);
 
         leagueSelect.append(
           new Option(
@@ -370,7 +403,11 @@ function initializeSleeperConnection() {
         );
       }
 
-      getElement("sleeper-league-picker").hidden = false;
+      const leaguePicker = getElement("sleeper-league-picker");
+
+      if (leaguePicker) {
+        leaguePicker.hidden = false;
+      }
 
       setSleeperStatus(
         `Found ${leagues.length} league${leagues.length === 1 ? "" : "s"}. Choose the league you want to analyze.`
@@ -397,6 +434,7 @@ function initializeSleeperConnection() {
 
     loadLeagueButton.disabled = true;
     loadLeagueButton.textContent = "Loading league…";
+
     removeTeamPicker();
 
     try {
@@ -504,23 +542,26 @@ function showTeamPicker() {
     const rosterId = Number(select.value);
 
     if (!Number.isFinite(rosterId) || rosterId <= 0) {
-      setSleeperStatus("Choose your team before opening the dashboard.", true);
+      setSleeperStatus(
+        "Choose your team before opening the dashboard.",
+        true
+      );
       return;
     }
 
     button.disabled = true;
-    button.textContent = "Preparing dashboard…";
+    button.textContent = "Loading live data…";
 
     try {
       sleeperState.myRosterId = rosterId;
 
       setSleeperStatus(
-        "Loading current matchup data and preparing your dashboard…"
+        "Loading live league standings, roster assignments, and matchup data…"
       );
 
       await loadLiveSleeperDashboard();
     } catch (error) {
-      console.error("Sleeper dashboard preparation failed:", error);
+      console.error("Live dashboard loading failed:", error);
 
       setSleeperStatus(
         error.message || "Unable to prepare the dashboard for that league.",
@@ -540,46 +581,29 @@ function showTeamPicker() {
   );
 }
 
-/* ── Convert Sleeper live data to this dashboard's shape ─────────────── */
+/* ── Render API integration ──────────────────────────────────────────── */
 
 async function loadLiveSleeperDashboard() {
   const league = sleeperState.selectedLeague;
-  const rosters = sleeperState.rosters;
-  const users = sleeperState.users;
-  const myRosterId = sleeperState.myRosterId;
+  const rosterId = sleeperState.myRosterId;
 
-  if (!league || !Array.isArray(rosters) || !Array.isArray(users) || !myRosterId) {
-    throw new Error("League data is incomplete. Please select the league again.");
-  }
-
-  const week = getWeekFromLeague(league);
-  const season = String(league.season || sleeperState.season || "");
-
-  let currentWeekMatchups = [];
-
-  try {
-    const matchups = await sleeperFetchJson(
-      `/league/${encodeURIComponent(league.league_id)}/matchups/${encodeURIComponent(week)}`,
-      "Unable to load current matchup data."
+  if (!league?.league_id || !rosterId) {
+    throw new Error(
+      "Choose a Sleeper league and team before opening the dashboard."
     );
-
-    currentWeekMatchups = Array.isArray(matchups) ? matchups : [];
-  } catch (error) {
-    console.warn("Current matchup data unavailable:", error);
-    currentWeekMatchups = [];
   }
 
-  sleeperState.matchups = currentWeekMatchups;
-
-  dashboardData = createLiveDashboardData({
-    league,
-    users,
-    rosters,
-    matchups: currentWeekMatchups,
-    myRosterId,
-    season,
-    week
+  const query = new URLSearchParams({
+    league_id: String(league.league_id),
+    roster_id: String(rosterId)
   });
+
+  const apiData = await dashboardApiFetch(
+    `/api/dashboard?${query.toString()}`,
+    "Unable to load live league analytics."
+  );
+
+  dashboardData = convertApiDashboardToPageData(apiData);
 
   renderDashboard();
   showDashboardPage();
@@ -596,251 +620,147 @@ async function loadLiveSleeperDashboard() {
   }, 100);
 }
 
-function createLiveDashboardData({
-  league,
-  users,
-  rosters,
-  matchups,
-  myRosterId,
-  season,
-  week
-}) {
-  const userById = new Map(
-    users.map(user => [String(user.user_id), user])
+function convertApiDashboardToPageData(apiData) {
+  const apiLeague = apiData?.league || {};
+  const apiTeam = apiData?.my_team || {};
+  const apiMatchup = apiData?.matchup || {};
+  const apiSummary = apiData?.summary || {};
+
+  const apiStandings = Array.isArray(apiData?.standings)
+    ? apiData.standings
+    : [];
+
+  const record = normalizeRecord(apiTeam.record);
+
+  const starterIds = Array.isArray(apiTeam.starter_ids)
+    ? apiTeam.starter_ids
+    : [];
+
+  const benchIds = Array.isArray(apiTeam.bench_player_ids)
+    ? apiTeam.bench_player_ids
+    : [];
+
+  const starters = starterIds.map(playerId =>
+    buildPlaceholderPlayer(playerId, true)
   );
 
-  const matchupByRosterId = new Map(
-    matchups.map(matchup => [Number(matchup.roster_id), matchup])
+  const bench = benchIds.map(playerId =>
+    buildPlaceholderPlayer(playerId, false)
   );
 
-  const playerData = league?.metadata?.players || {};
+  const opponent = apiMatchup.opponent || null;
+  const scoreDifference = asNumber(apiMatchup.score_difference);
+  const scoreShare = Math.max(
+    0,
+    Math.min(100, asNumber(apiMatchup.score_share_percent, 50))
+  );
 
-  const getLivePlayer = (playerId, isStarter) => {
-    const player = playerData[playerId] || {};
+  const matchupAnalysis = apiMatchup.available && opponent
+    ? {
+        available: true,
+        opponent_name: opponent.manager || "Opponent",
+        opponent_record: normalizeRecord(opponent.record),
+        my_projected: formatNumber(apiMatchup.my_score),
+        opp_projected: formatNumber(apiMatchup.opponent_score),
+        win_probability: scoreShare,
+        point_spread: scoreDifference,
+        position_comparison: []
+      }
+    : {
+        available: false,
+        message:
+          "Current matchup information is unavailable for this league week."
+      };
 
-    return {
-      id: playerId,
-      name:
-        player.full_name ||
-        player.name ||
-        playerNameFromId(playerId),
-      team: player.team || "NFL",
-      position: normalizePositions(player.fantasy_positions),
-      projected_points: 0,
-      season_points: 0,
-      recent_avg: 0,
-      trend: "stable",
-      trend_label: "Live data pending",
-      injury_status: player.injury_status || "",
-      bye_week: "",
-      is_starter: Boolean(isStarter)
-    };
-  };
+  const currentWeekScore = asNumber(apiTeam.current_week_score);
 
-  const buildTeam = roster => {
-    const manager = userById.get(String(roster.owner_id));
-    const record = getRosterRecord(roster);
-    const matchup = matchupByRosterId.get(Number(roster.roster_id));
+  const standings = apiStandings.map(team => ({
+    roster_id: asNumber(team.roster_id),
+    manager: team.manager || "Unknown manager",
+    record: team.record || "--",
+    win_pct: asNumber(team.win_pct),
+    points_for: asNumber(team.points_for),
+    points_against: asNumber(team.points_against),
+    projected_total: asNumber(team.current_week_score)
+  }));
 
-    const starterIds = Array.isArray(matchup?.starters)
-      ? matchup.starters.filter(Boolean)
-      : [];
+  return {
+    meta: {
+      season: apiData?.meta?.season || "",
+      week: apiData?.meta?.week || "",
+      generated_at: apiData?.meta?.generated_at
+        ? new Date(asNumber(apiData.meta.generated_at) * 1000).toISOString()
+        : new Date().toISOString(),
+      pipeline_version: "live-sleeper-api"
+    },
 
-    const playerIds = Array.isArray(roster.players)
-      ? roster.players.filter(Boolean)
-      : [];
+    league: {
+      league_id: apiLeague.league_id || "",
+      name: apiLeague.name || "Sleeper League",
+      total_rosters: asNumber(
+        apiLeague.total_rosters,
+        standings.length
+      ),
+      roster_positions: apiLeague.roster_positions || []
+    },
 
-    const benchIds = playerIds.filter(
-      playerId => !starterIds.includes(playerId)
-    );
-
-    const starters = starterIds.map(playerId =>
-      getLivePlayer(playerId, true)
-    );
-
-    const bench = benchIds.map(playerId =>
-      getLivePlayer(playerId, false)
-    );
-
-    return {
-      roster_id: Number(roster.roster_id),
+    my_team: {
+      roster_id: asNumber(apiTeam.roster_id),
       manager: {
-        display_name: getManagerDisplayName(manager)
+        display_name: apiTeam.manager || "Your team"
       },
       record,
       starters,
       bench,
-      projected_total: scoreForMatchup(matchup),
-      scored_total: scoreForMatchup(matchup)
-    };
-  };
-
-  const allTeams = rosters.map(buildTeam);
-
-  const myTeam = allTeams.find(
-    team => team.roster_id === Number(myRosterId)
-  ) || null;
-
-  const standings = [...allTeams]
-    .sort((left, right) => {
-      if (right.record.wins !== left.record.wins) {
-        return right.record.wins - left.record.wins;
-      }
-
-      if (right.record.ties !== left.record.ties) {
-        return right.record.ties - left.record.ties;
-      }
-
-      return right.record.pointsFor - left.record.pointsFor;
-    })
-    .map(team => {
-      const gamesPlayed =
-        team.record.wins + team.record.losses + team.record.ties;
-
-      return {
-        roster_id: team.roster_id,
-        manager: team.manager.display_name,
-        record: recordLabel(team.record),
-        win_pct: gamesPlayed > 0
-          ? (team.record.wins + team.record.ties * 0.5) / gamesPlayed
-          : 0,
-        points_for: team.record.pointsFor,
-        points_against: team.record.pointsAgainst,
-        projected_total: team.scored_total
-      };
-    });
-
-  const matchupAnalysis = buildLiveMatchupAnalysis({
-    myTeam,
-    teams: allTeams,
-    matchups
-  });
-
-  const rosterPlayers = myTeam
-    ? [...myTeam.starters, ...myTeam.bench]
-    : [];
-
-  const insights = [
-    {
-      type: "info",
-      icon: "target",
-      title: league.name || "Sleeper league connected",
-      message:
-        "Live public league identity, standings, and roster assignments are loaded from Sleeper."
+      projected_total: currentWeekScore,
+      scored_total: currentWeekScore
     },
-    {
-      type: "info",
-      icon: "alert-circle",
-      title: "Analytics availability",
-      message:
-        "Projected points, waiver recommendations, player trends, and automated optimal-lineup analysis require your pipeline’s player-stat and projection inputs."
-    }
-  ];
 
-  return {
-    meta: {
-      season,
-      week,
-      generated_at: new Date().toISOString(),
-      pipeline_version: "live-sleeper"
-    },
-    league: {
-      league_id: league.league_id,
-      name: league.name || "Sleeper League",
-      total_rosters: league.total_rosters || rosters.length,
-      scoring_settings: league.scoring_settings || {},
-      roster_positions: league.roster_positions || []
-    },
-    my_team: myTeam,
     standings,
+
     analysis: {
-      insights,
+      insights: [
+        {
+          type: "info",
+          icon: "target",
+          title: apiLeague.name || "Sleeper league connected",
+          message:
+            `Live league data loaded. Your current league rank is ${
+              apiSummary.league_rank
+                ? `#${apiSummary.league_rank}`
+                : "not available"
+            }.`
+        },
+        {
+          type: "info",
+          icon: "alert-circle",
+          title: "Live data status",
+          message:
+            apiSummary.analytics_status ||
+            "Live standings, roster assignments, and matchup scores are loaded."
+        }
+      ],
+
       matchup_analysis: matchupAnalysis,
+
       waiver_edge: [],
+
       optimal_lineup: {
         available: false,
         message:
-          "Optimal lineup recommendations require projection data from the analytics pipeline.",
-        current_total: myTeam ? myTeam.scored_total : 0,
-        projected_total: myTeam ? myTeam.scored_total : 0,
+          "Optimal lineup recommendations require weekly player projection data.",
+        current_total: currentWeekScore,
+        projected_total: currentWeekScore,
         improvement: 0,
         suggested_lineup: [],
         changes: []
       },
+
       player_trends: {
-        players: rosterPlayers,
+        players: [...starters, ...bench],
         trending_adds: []
       }
     }
-  };
-}
-
-function buildLiveMatchupAnalysis({ myTeam, teams, matchups }) {
-  if (!myTeam || !Array.isArray(matchups) || matchups.length === 0) {
-    return {
-      available: false,
-      message:
-        "Current matchup scores are not available for this league week."
-    };
-  }
-
-  const myMatchup = matchups.find(
-    matchup => Number(matchup.roster_id) === Number(myTeam.roster_id)
-  );
-
-  if (!myMatchup || !myMatchup.matchup_id) {
-    return {
-      available: false,
-      message:
-        "Your team does not have a scheduled head-to-head matchup for the current week."
-    };
-  }
-
-  const opponentMatchup = matchups.find(
-    matchup =>
-      Number(matchup.matchup_id) === Number(myMatchup.matchup_id) &&
-      Number(matchup.roster_id) !== Number(myTeam.roster_id)
-  );
-
-  if (!opponentMatchup) {
-    return {
-      available: false,
-      message:
-        "Opponent matchup data is not currently available."
-    };
-  }
-
-  const opponent = teams.find(
-    team => Number(team.roster_id) === Number(opponentMatchup.roster_id)
-  );
-
-  if (!opponent) {
-    return {
-      available: false,
-      message:
-        "Opponent roster data is not currently available."
-    };
-  }
-
-  const myScore = scoreForMatchup(myMatchup);
-  const opponentScore = scoreForMatchup(opponentMatchup);
-  const totalScore = myScore + opponentScore;
-
-  const simpleWinProbability = totalScore > 0
-    ? Math.round((myScore / totalScore) * 100)
-    : 50;
-
-  const spread = myScore - opponentScore;
-
-  return {
-    available: true,
-    opponent_name: opponent.manager.display_name,
-    opponent_record: opponent.record,
-    my_projected: myScore.toFixed(1),
-    opp_projected: opponentScore.toFixed(1),
-    win_probability: simpleWinProbability,
-    point_spread: spread,
-    position_comparison: []
   };
 }
 
@@ -850,10 +770,6 @@ async function loadDashboardData() {
   const connectPage = getElement("connect");
   const loading = getElement("loading");
 
-  /*
-    The user-facing landing state is the Sleeper connection page.
-    We still load data.json in the background as a working demo/fallback.
-  */
   if (connectPage) {
     connectPage.style.display = "block";
   }
@@ -869,13 +785,7 @@ async function loadDashboardData() {
       throw new Error("Failed to load data");
     }
 
-    const localData = await response.json();
-
-    /*
-      Keep the local data ready in memory. It is intentionally not rendered
-      until a live Sleeper league is selected, so visitors see their own data.
-    */
-    window.ffPipelineDemoData = localData;
+    window.ffPipelineDemoData = await response.json();
   } catch (error) {
     console.warn("Demo data was not loaded:", error);
   }
@@ -908,7 +818,8 @@ function renderDashboard() {
   const navWeek = getElement("navWeek");
 
   if (navWeek) {
-    navWeek.textContent = `Week ${meta.week || "--"} · ${meta.season || "--"}`;
+    navWeek.textContent =
+      `Week ${meta.week || "--"} · ${meta.season || "--"}`;
   }
 
   const footerMeta = getElement("footerMeta");
@@ -918,8 +829,8 @@ function renderDashboard() {
       ? new Date(meta.generated_at).toLocaleString()
       : "Unknown";
 
-    const sourceText = meta.pipeline_version === "live-sleeper"
-      ? "Live public Sleeper league data"
+    const sourceText = meta.pipeline_version === "live-sleeper-api"
+      ? "Live league data via Render API"
       : `Pipeline v${meta.pipeline_version || "--"}`;
 
     footerMeta.textContent =
@@ -944,8 +855,7 @@ function renderDashboard() {
     data.analysis?.player_trends || {
       players: [],
       trending_adds: []
-    },
-    myTeam
+    }
   );
   renderStandings(data.standings || [], myTeam);
 
@@ -1020,7 +930,6 @@ function renderKPIs(data) {
 
   const myTeam = data.my_team;
   const analysis = data.analysis || {};
-  const optimal = analysis.optimal_lineup || {};
   const matchup = analysis.matchup_analysis || {};
   const waiverEdge = analysis.waiver_edge || [];
   const standings = data.standings || [];
@@ -1083,18 +992,18 @@ function renderKPIs(data) {
   });
 
   if (myTeam) {
-    const record = myTeam.record;
+    const record = normalizeRecord(myTeam.record);
+
     const games =
-      asNumber(record.wins) +
-      asNumber(record.losses) +
-      asNumber(record.ties);
+      record.wins +
+      record.losses +
+      record.ties;
 
     const winRate = games > 0
       ? (
-          (
-            asNumber(record.wins) +
-            asNumber(record.ties) * 0.5
-          ) / games * 100
+          (record.wins + record.ties * 0.5) /
+          games *
+          100
         ).toFixed(0)
       : "0";
 
@@ -1169,10 +1078,6 @@ function renderRoster(myTeam) {
       `
       : "";
 
-    const scoreDisplay = isStarter
-      ? "Starter"
-      : "Bench";
-
     return `
       <div
         class="player-card ${isStarter ? "starter" : ""} ${
@@ -1199,7 +1104,11 @@ function renderRoster(myTeam) {
         </div>
 
         <div class="player-proj-label">
-          ${scoreDisplay} ${player.projected_points > 0 ? "Proj" : "Assignment"}
+          ${isStarter ? "Starter" : "Bench"} ${
+            player.projected_points > 0
+              ? "Proj"
+              : "Assignment"
+          }
         </div>
 
         ${injuryTag}
@@ -1253,97 +1162,14 @@ function renderMatchup(matchup) {
     ? recordLabel(matchup.opponent_record)
     : "--";
 
-  const winProbability = Math.max(
+  const scoreShare = Math.max(
     0,
     Math.min(100, asNumber(matchup.win_probability, 50))
   );
 
-  const winColor = winProbability >= 50
+  const scoreColor = scoreShare >= 50
     ? "var(--color-success)"
     : "var(--color-warning)";
-
-  const comparison = Array.isArray(matchup.position_comparison)
-    ? matchup.position_comparison
-    : [];
-
-  const comparisonHtml = comparison.length > 0
-    ? `
-      <div style="margin-top: var(--space-6);">
-        <table class="position-comparison-table">
-          <thead>
-            <tr>
-              <th>Position</th>
-              <th>${escapeHtml(myName)}</th>
-              <th>${escapeHtml(opponentName)}</th>
-              <th>Edge</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            ${comparison.map(position => {
-              const myPlayers = (position.my_players || [])
-                .map(player =>
-                  `${escapeHtml(player.name)} (${formatNumber(player.projected)})`
-                )
-                .join(", ");
-
-              const opponentPlayers = (position.opp_players || [])
-                .map(player =>
-                  `${escapeHtml(player.name)} (${formatNumber(player.projected)})`
-                )
-                .join(", ");
-
-              const edgeClass = position.advantage === "mine"
-                ? "edge-positive"
-                : position.advantage === "opponent"
-                  ? "edge-negative"
-                  : "edge-neutral";
-
-              const difference = asNumber(position.difference);
-              const edgeText = difference > 0
-                ? `+${formatNumber(difference)}`
-                : formatNumber(difference);
-
-              return `
-                <tr>
-                  <td>
-                    <span class="player-badge badge-${escapeHtml(position.position)}">
-                      ${escapeHtml(position.position)}
-                    </span>
-                  </td>
-
-                  <td>${myPlayers || "--"}</td>
-                  <td>${opponentPlayers || "--"}</td>
-
-                  <td class="${edgeClass}">
-                    ${edgeText}
-                    <span
-                      style="
-                        font-weight:400;
-                        color:var(--color-text-faint);
-                      "
-                    >
-                      (${escapeHtml(position.edge_label || "Even")})
-                    </span>
-                  </td>
-                </tr>
-              `;
-            }).join("")}
-          </tbody>
-        </table>
-      </div>
-    `
-    : `
-      <p
-        style="
-          margin-top:var(--space-5);
-          color:var(--color-text-muted);
-          font-size:var(--text-sm);
-        "
-      >
-        Position-level projection analysis requires player projections from the analytics pipeline.
-      </p>
-    `;
 
   container.innerHTML = `
     <div class="matchup-overview">
@@ -1369,20 +1195,28 @@ function renderMatchup(matchup) {
     <div class="win-prob-bar">
       <div class="win-prob-label">
         <span>Current score share</span>
-        <span style="color: ${winColor}">
-          ${winProbability}%
+        <span style="color: ${scoreColor}">
+          ${scoreShare}%
         </span>
       </div>
 
       <div class="win-prob-track">
         <div
           class="win-prob-fill"
-          style="width: ${winProbability}%; background: ${winColor};"
+          style="width: ${scoreShare}%; background: ${scoreColor};"
         ></div>
       </div>
     </div>
 
-    ${comparisonHtml}
+    <p
+      style="
+        margin-top:var(--space-5);
+        color:var(--color-text-muted);
+        font-size:var(--text-sm);
+      "
+    >
+      Position-level projection analysis will appear after weekly player projections are connected to the analytics pipeline.
+    </p>
   `;
 }
 
@@ -1411,7 +1245,7 @@ function renderWaiver(recommendations) {
         </svg>
 
         <p>
-          Waiver recommendations require the pipeline's player projections and waiver availability inputs.
+          Waiver recommendations will appear after weekly player projections and league waiver availability are connected to the analytics pipeline.
         </p>
       </div>
     `;
@@ -1524,12 +1358,21 @@ function renderOptimalLineup(optimal) {
   }
 
   const myTeam = dashboardData?.my_team;
-
   const currentStarters = myTeam?.starters || [];
   const suggestedLineup = optimal.suggested_lineup || [];
   const improvement = asNumber(optimal.improvement);
 
-  const positions = ["QB", "RB", "RB", "WR", "WR", "TE", "FLEX", "K", "DEF"];
+  const positions = [
+    "QB",
+    "RB",
+    "RB",
+    "WR",
+    "WR",
+    "TE",
+    "FLEX",
+    "K",
+    "DEF"
+  ];
 
   container.innerHTML = `
     <div class="lineup-improvement">
@@ -1618,59 +1461,12 @@ function renderOptimalLineup(optimal) {
         `).join("")}
       </div>
     </div>
-
-    ${
-      optimal.changes?.length > 0
-        ? `
-          <div style="margin-top: var(--space-4);">
-            <h3
-              style="
-                font-size:var(--text-sm);
-                font-weight:600;
-                color:var(--color-text-muted);
-                text-transform:uppercase;
-                letter-spacing:0.05em;
-                margin-bottom:var(--space-3);
-              "
-            >
-              Suggested Changes
-            </h3>
-
-            ${optimal.changes.map(change => `
-              <div class="lineup-change">
-                <strong>${escapeHtml(change.player)}</strong>
-                (${escapeHtml(change.position)}) &rarr; Start
-                (replaces ${escapeHtml(change.replaces)})
-                <br>
-                <span
-                  style="
-                    color:var(--color-text-muted);
-                    font-size:var(--text-xs);
-                  "
-                >
-                  ${escapeHtml(change.reason)}
-                </span>
-              </div>
-            `).join("")}
-          </div>
-        `
-        : `
-          <p
-            style="
-              color:var(--color-text-muted);
-              font-size:var(--text-sm);
-            "
-          >
-            Your current lineup is already optimal.
-          </p>
-        `
-    }
   `;
 }
 
 /* ── Player Trends ──────────────────────────────────────────────────── */
 
-function renderTrends(trends, myTeam) {
+function renderTrends(trends) {
   const chartContainer = getElement("trendChartContainer");
   const trendingContainer = getElement("trendingActivity");
   const tableContainer = getElement("trendsTable");
@@ -1682,7 +1478,7 @@ function renderTrends(trends, myTeam) {
     renderTrendChart(players);
   } else if (chartContainer) {
     chartContainer.innerHTML =
-      '<div class="no-data">No trend data available.</div>';
+      '<div class="no-data">No roster assignments available.</div>';
   }
 
   if (trendingContainer) {
@@ -1716,7 +1512,7 @@ function renderTrends(trends, myTeam) {
     } else {
       trendingContainer.innerHTML = `
         <div class="no-data">
-          Player-trend and add/drop activity require pipeline inputs.
+          Player trend and add/drop activity will appear after the analytics pipeline is enriched with player data.
         </div>
       `;
     }
@@ -1728,7 +1524,7 @@ function renderTrends(trends, myTeam) {
 
   if (players.length === 0) {
     tableContainer.innerHTML =
-      '<div class="no-data">No player trend data available.</div>';
+      '<div class="no-data">No roster data available.</div>';
     return;
   }
 
@@ -1747,81 +1543,47 @@ function renderTrends(trends, myTeam) {
       </thead>
 
       <tbody>
-        ${players.map(player => {
-          const trendClass = player.trend === "hot"
-            ? "trend-hot"
-            : player.trend === "cold"
-              ? "trend-cold"
-              : "trend-stable";
+        ${players.map(player => `
+          <tr>
+            <td>
+              <strong>${escapeHtml(player.name)}</strong>
+              ${
+                player.is_starter
+                  ? `
+                    <span
+                      style="
+                        color:var(--color-primary);
+                        font-size:var(--text-xs);
+                      "
+                    >
+                      START
+                    </span>
+                  `
+                  : ""
+              }
+            </td>
 
-          const trendIcon = player.trend === "hot"
-            ? "↑"
-            : player.trend === "cold"
-              ? "↓"
-              : "→";
+            <td>
+              <span
+                class="player-badge badge-${escapeHtml(player.position)}"
+              >
+                ${escapeHtml(player.position)}
+              </span>
+            </td>
 
-          return `
-            <tr>
-              <td>
-                <strong>${escapeHtml(player.name)}</strong>
-                ${
-                  player.is_starter
-                    ? `
-                      <span
-                        style="
-                          color:var(--color-primary);
-                          font-size:var(--text-xs);
-                        "
-                      >
-                        START
-                      </span>
-                    `
-                    : ""
-                }
-              </td>
+            <td>${escapeHtml(player.team)}</td>
 
-              <td>
-                <span
-                  class="player-badge badge-${escapeHtml(player.position)}"
-                >
-                  ${escapeHtml(player.position)}
-                </span>
-              </td>
+            <td class="tabular">--</td>
+            <td class="tabular">--</td>
+            <td class="tabular">--</td>
 
-              <td>${escapeHtml(player.team)}</td>
-
-              <td class="tabular">
-                ${
-                  player.projected_points > 0
-                    ? formatNumber(player.projected_points)
-                    : "--"
-                }
-              </td>
-
-              <td class="tabular">
-                ${
-                  player.season_points > 0
-                    ? formatNumber(player.season_points)
-                    : "--"
-                }
-              </td>
-
-              <td class="tabular">
-                ${
-                  player.recent_avg > 0
-                    ? formatNumber(player.recent_avg)
-                    : "--"
-                }
-              </td>
-
-              <td>
-                <span class="trend-badge ${trendClass}">
-                  ${trendIcon} ${escapeHtml(player.trend_label || "Live")}
-                </span>
-              </td>
-            </tr>
-          `;
-        }).join("")}
+            <td>
+              <span class="trend-badge trend-stable">
+                → ${escapeHtml(player.trend_label || "Live")}
+              </span>
+            </td>
+          </tr>
+        `).join("")}
       </tbody>
     </table>
   `;
@@ -1834,139 +1596,20 @@ function renderTrendChart(players) {
     return;
   }
 
-  const context = canvas.getContext("2d");
+  const chartContainer = getElement("trendChartContainer");
 
-  if (!context) {
-    return;
+  if (chartContainer) {
+    chartContainer.innerHTML = `
+      <div class="no-data">
+        Player projection and trend charts will appear after player statistics and projection data are connected.
+      </div>
+    `;
   }
 
   if (trendChart) {
     trendChart.destroy();
+    trendChart = null;
   }
-
-  const week = asNumber(dashboardData?.meta?.week, 1);
-
-  const topPlayers = players
-    .filter(player => player.is_starter)
-    .slice(0, 8)
-    .map(player => ({
-      name: player.name,
-      projected: asNumber(player.projected_points),
-      season: asNumber(player.season_points) / Math.max(week, 1),
-      recent: asNumber(player.recent_avg)
-    }));
-
-  if (topPlayers.length === 0) {
-    const chartContainer = getElement("trendChartContainer");
-
-    if (chartContainer) {
-      chartContainer.innerHTML = `
-        <div class="no-data">
-          Player projection and trend history require pipeline inputs.
-        </div>
-      `;
-    }
-
-    return;
-  }
-
-  const css = getComputedStyle(document.documentElement);
-
-  const textColor = css.getPropertyValue("--color-text-muted").trim();
-  const gridColor = css.getPropertyValue("--color-divider").trim();
-  const primaryColor = css.getPropertyValue("--color-primary").trim();
-  const goldColor = css.getPropertyValue("--color-gold").trim();
-  const blueColor = css.getPropertyValue("--color-info").trim();
-
-  Chart.defaults.font.family = "Satoshi, Inter, sans-serif";
-  Chart.defaults.color = textColor;
-
-  trendChart = new Chart(context, {
-    type: "bar",
-    data: {
-      labels: topPlayers.map(player => player.name),
-      datasets: [
-        {
-          label: "Projected",
-          data: topPlayers.map(player => player.projected),
-          backgroundColor: primaryColor + "cc",
-          borderColor: primaryColor,
-          borderWidth: 1,
-          borderRadius: 4
-        },
-        {
-          label: "Season Avg",
-          data: topPlayers.map(player => player.season),
-          backgroundColor: blueColor + "cc",
-          borderColor: blueColor,
-          borderWidth: 1,
-          borderRadius: 4
-        },
-        {
-          label: "Recent Avg",
-          data: topPlayers.map(player => player.recent),
-          backgroundColor: goldColor + "cc",
-          borderColor: goldColor,
-          borderWidth: 1,
-          borderRadius: 4
-        }
-      ]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          position: "bottom",
-          labels: {
-            font: {
-              size: 12
-            },
-            padding: 16
-          }
-        },
-        tooltip: {
-          backgroundColor: css.getPropertyValue("--color-surface-2").trim(),
-          titleColor: css.getPropertyValue("--color-text").trim(),
-          bodyColor: textColor,
-          borderColor: gridColor,
-          borderWidth: 1,
-          padding: 12,
-          cornerRadius: 8
-        }
-      },
-      scales: {
-        x: {
-          grid: {
-            display: false
-          },
-          ticks: {
-            font: {
-              size: 11
-            },
-            maxRotation: 45,
-            minRotation: 30
-          }
-        },
-        y: {
-          grid: {
-            color: gridColor,
-            drawBorder: false
-          },
-          ticks: {
-            font: {
-              size: 11
-            }
-          },
-          beginAtZero: true
-        }
-      },
-      animation: {
-        duration: 600,
-        easing: "easeOutQuart"
-      }
-    }
-  });
 }
 
 /* ── Standings Table ────────────────────────────────────────────────── */
