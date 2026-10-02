@@ -1,0 +1,4434 @@
+{
+  "meta": {
+    "fetched_at": "2026-10-02T19:42:23.217018+00:00",
+    "season": "2026",
+    "week": 5,
+    "season_type": "regular",
+    "league_id": "demo-league-2026",
+    "league_name": "Demo Fantasy League",
+    "api_calls": 0
+  },
+  "league": {
+    "name": "Demo Fantasy League",
+    "season": "2026",
+    "week": 5,
+    "scoring_type": "ppr",
+    "roster_positions": [
+      "QB",
+      "RB",
+      "RB",
+      "WR",
+      "WR",
+      "TE",
+      "FLEX",
+      "K",
+      "DEF",
+      "BN",
+      "BN",
+      "BN",
+      "BN",
+      "BN",
+      "BN"
+    ],
+    "total_rosters": 12,
+    "scoring_settings": {
+      "pass_td": 4,
+      "pass_yd": 0.04,
+      "pass_int": -2,
+      "rush_td": 6,
+      "rush_yd": 0.1,
+      "rec": 0.5,
+      "rec_td": 6,
+      "rec_yd": 0.1
+    }
+  },
+  "rosters": [
+    {
+      "roster_id": 1,
+      "owner_id": "1",
+      "wins": 3,
+      "losses": 2,
+      "ties": 0,
+      "fpts": 457.48,
+      "fpts_decimal": 510.89,
+      "players": [
+        "1000",
+        "1001",
+        "1002",
+        "1003",
+        "1004",
+        "1005",
+        "1006",
+        "1007",
+        "1008",
+        "1009",
+        "1010",
+        "1011",
+        "1012",
+        "1013"
+      ],
+      "starters": [
+        "1000",
+        "1001",
+        "1002",
+        "1003",
+        "1004",
+        "1005",
+        "1006",
+        "1007",
+        "1008"
+      ]
+    },
+    {
+      "roster_id": 2,
+      "owner_id": "2",
+      "wins": 4,
+      "losses": 1,
+      "ties": 0,
+      "fpts": 413.23,
+      "fpts_decimal": 450.07,
+      "players": [
+        "1014",
+        "1015",
+        "1016",
+        "1017",
+        "1018",
+        "1019",
+        "1020",
+        "1021",
+        "1022",
+        "1023",
+        "1024",
+        "1025",
+        "1026",
+        "1027"
+      ],
+      "starters": [
+        "1014",
+        "1015",
+        "1016",
+        "1017",
+        "1018",
+        "1019",
+        "1020",
+        "1021",
+        "1022"
+      ]
+    },
+    {
+      "roster_id": 3,
+      "owner_id": "3",
+      "wins": 3,
+      "losses": 2,
+      "ties": 0,
+      "fpts": 584.65,
+      "fpts_decimal": 440.28,
+      "players": [
+        "1028",
+        "1029",
+        "1030",
+        "1031",
+        "1032",
+        "1033",
+        "1034",
+        "1035",
+        "1036",
+        "1037",
+        "1038",
+        "1039",
+        "1040",
+        "1041"
+      ],
+      "starters": [
+        "1028",
+        "1029",
+        "1030",
+        "1031",
+        "1032",
+        "1033",
+        "1034",
+        "1035",
+        "1036"
+      ]
+    },
+    {
+      "roster_id": 4,
+      "owner_id": "4",
+      "wins": 3,
+      "losses": 2,
+      "ties": 0,
+      "fpts": 481.88,
+      "fpts_decimal": 495.69,
+      "players": [
+        "1042",
+        "1043",
+        "1044",
+        "1045",
+        "1046",
+        "1047",
+        "1048",
+        "1049",
+        "1050",
+        "1051",
+        "1052",
+        "1053",
+        "1054",
+        "1055"
+      ],
+      "starters": [
+        "1042",
+        "1043",
+        "1044",
+        "1045",
+        "1046",
+        "1047",
+        "1048",
+        "1049",
+        "1050"
+      ]
+    },
+    {
+      "roster_id": 5,
+      "owner_id": "5",
+      "wins": 3,
+      "losses": 2,
+      "ties": 0,
+      "fpts": 506.45,
+      "fpts_decimal": 427.51,
+      "players": [
+        "1056",
+        "1057",
+        "1058",
+        "1059",
+        "1060",
+        "1061",
+        "1062",
+        "1063",
+        "1064",
+        "1065",
+        "1066",
+        "1067",
+        "1068",
+        "1069"
+      ],
+      "starters": [
+        "1056",
+        "1057",
+        "1058",
+        "1059",
+        "1060",
+        "1061",
+        "1062",
+        "1063",
+        "1064"
+      ]
+    },
+    {
+      "roster_id": 6,
+      "owner_id": "6",
+      "wins": 5,
+      "losses": 0,
+      "ties": 0,
+      "fpts": 421.35,
+      "fpts_decimal": 420.03,
+      "players": [
+        "1070",
+        "1071",
+        "1072",
+        "1073",
+        "1074",
+        "1075",
+        "1076",
+        "1077",
+        "1078",
+        "1079",
+        "1080",
+        "1081",
+        "1082",
+        "1083"
+      ],
+      "starters": [
+        "1070",
+        "1071",
+        "1072",
+        "1073",
+        "1074",
+        "1075",
+        "1076",
+        "1077",
+        "1078"
+      ]
+    },
+    {
+      "roster_id": 7,
+      "owner_id": "7",
+      "wins": 3,
+      "losses": 2,
+      "ties": 0,
+      "fpts": 676.56,
+      "fpts_decimal": 502.47,
+      "players": [
+        "1084",
+        "1085",
+        "1086",
+        "1087",
+        "1088",
+        "1089",
+        "1090",
+        "1091",
+        "1092",
+        "1093",
+        "1094",
+        "1095",
+        "1096",
+        "1097"
+      ],
+      "starters": [
+        "1084",
+        "1085",
+        "1086",
+        "1087",
+        "1088",
+        "1089",
+        "1090",
+        "1091",
+        "1092"
+      ]
+    },
+    {
+      "roster_id": 8,
+      "owner_id": "8",
+      "wins": 5,
+      "losses": 0,
+      "ties": 0,
+      "fpts": 607.09,
+      "fpts_decimal": 487.05,
+      "players": [
+        "1098",
+        "1099",
+        "1100",
+        "1101",
+        "1102",
+        "1103",
+        "1104",
+        "1105",
+        "1106",
+        "1107",
+        "1108",
+        "1109",
+        "1110",
+        "1111"
+      ],
+      "starters": [
+        "1098",
+        "1099",
+        "1100",
+        "1101",
+        "1102",
+        "1103",
+        "1104",
+        "1105",
+        "1106"
+      ]
+    },
+    {
+      "roster_id": 9,
+      "owner_id": "9",
+      "wins": 4,
+      "losses": 1,
+      "ties": 0,
+      "fpts": 409.81,
+      "fpts_decimal": 461.16,
+      "players": [
+        "1112",
+        "1113",
+        "1114",
+        "1115",
+        "1116",
+        "1117",
+        "1118",
+        "1119",
+        "1120",
+        "1121",
+        "1122",
+        "1123",
+        "1124",
+        "1125"
+      ],
+      "starters": [
+        "1112",
+        "1113",
+        "1114",
+        "1115",
+        "1116",
+        "1117",
+        "1118",
+        "1119",
+        "1120"
+      ]
+    },
+    {
+      "roster_id": 10,
+      "owner_id": "10",
+      "wins": 2,
+      "losses": 3,
+      "ties": 0,
+      "fpts": 529.56,
+      "fpts_decimal": 573.38,
+      "players": [
+        "1126",
+        "1127",
+        "1128",
+        "1129",
+        "1130",
+        "1131",
+        "1132",
+        "1133",
+        "1134",
+        "1135",
+        "1136",
+        "1137",
+        "1138",
+        "1139"
+      ],
+      "starters": [
+        "1126",
+        "1127",
+        "1128",
+        "1129",
+        "1130",
+        "1131",
+        "1132",
+        "1133",
+        "1134"
+      ]
+    },
+    {
+      "roster_id": 11,
+      "owner_id": "11",
+      "wins": 5,
+      "losses": 0,
+      "ties": 0,
+      "fpts": 612.85,
+      "fpts_decimal": 475.31,
+      "players": [
+        "1140",
+        "1141",
+        "1142",
+        "1143",
+        "1144",
+        "1145",
+        "1146",
+        "1147",
+        "1148",
+        "1149",
+        "1150",
+        "1151",
+        "1152",
+        "1153"
+      ],
+      "starters": [
+        "1140",
+        "1141",
+        "1142",
+        "1143",
+        "1144",
+        "1145",
+        "1146",
+        "1147",
+        "1148"
+      ]
+    },
+    {
+      "roster_id": 12,
+      "owner_id": "12",
+      "wins": 3,
+      "losses": 2,
+      "ties": 0,
+      "fpts": 578.51,
+      "fpts_decimal": 631.4,
+      "players": [
+        "1154",
+        "1155",
+        "1156",
+        "1157",
+        "1158",
+        "1159",
+        "1160",
+        "1161",
+        "1162",
+        "1163",
+        "1164",
+        "1165",
+        "1166",
+        "1167"
+      ],
+      "starters": [
+        "1154",
+        "1155",
+        "1156",
+        "1157",
+        "1158",
+        "1159",
+        "1160",
+        "1161",
+        "1162"
+      ]
+    }
+  ],
+  "users": [
+    {
+      "user_id": "1",
+      "display_name": "Gridiron Goblins",
+      "avatar": null
+    },
+    {
+      "user_id": "2",
+      "display_name": "End Zone Enforcers",
+      "avatar": null
+    },
+    {
+      "user_id": "3",
+      "display_name": "Touchdown Titans",
+      "avatar": null
+    },
+    {
+      "user_id": "4",
+      "display_name": "Red Zone Raiders",
+      "avatar": null
+    },
+    {
+      "user_id": "5",
+      "display_name": "Hail Mary Heroes",
+      "avatar": null
+    },
+    {
+      "user_id": "6",
+      "display_name": "Blitz Brigade",
+      "avatar": null
+    },
+    {
+      "user_id": "7",
+      "display_name": "Pocket Passers",
+      "avatar": null
+    },
+    {
+      "user_id": "8",
+      "display_name": "Field Goal Phantoms",
+      "avatar": null
+    },
+    {
+      "user_id": "9",
+      "display_name": "Sack Attack",
+      "avatar": null
+    },
+    {
+      "user_id": "10",
+      "display_name": "Dynasty Dragons",
+      "avatar": null
+    },
+    {
+      "user_id": "11",
+      "display_name": "Comeback Kids",
+      "avatar": null
+    },
+    {
+      "user_id": "12",
+      "display_name": "Warriors of Winter",
+      "avatar": null
+    }
+  ],
+  "matchups": [
+    {
+      "matchup_id": 1,
+      "roster_id": 1,
+      "starters": [
+        "1000",
+        "1001",
+        "1002",
+        "1003",
+        "1004",
+        "1005",
+        "1006",
+        "1007",
+        "1008"
+      ],
+      "points": 112.12
+    },
+    {
+      "matchup_id": 1,
+      "roster_id": 2,
+      "starters": [
+        "1014",
+        "1015",
+        "1016",
+        "1017",
+        "1018",
+        "1019",
+        "1020",
+        "1021",
+        "1022"
+      ],
+      "points": 102.5
+    },
+    {
+      "matchup_id": 2,
+      "roster_id": 3,
+      "starters": [
+        "1028",
+        "1029",
+        "1030",
+        "1031",
+        "1032",
+        "1033",
+        "1034",
+        "1035",
+        "1036"
+      ],
+      "points": 114.01
+    },
+    {
+      "matchup_id": 2,
+      "roster_id": 4,
+      "starters": [
+        "1042",
+        "1043",
+        "1044",
+        "1045",
+        "1046",
+        "1047",
+        "1048",
+        "1049",
+        "1050"
+      ],
+      "points": 97.23
+    },
+    {
+      "matchup_id": 3,
+      "roster_id": 5,
+      "starters": [
+        "1056",
+        "1057",
+        "1058",
+        "1059",
+        "1060",
+        "1061",
+        "1062",
+        "1063",
+        "1064"
+      ],
+      "points": 123.9
+    },
+    {
+      "matchup_id": 3,
+      "roster_id": 6,
+      "starters": [
+        "1070",
+        "1071",
+        "1072",
+        "1073",
+        "1074",
+        "1075",
+        "1076",
+        "1077",
+        "1078"
+      ],
+      "points": 119.01
+    },
+    {
+      "matchup_id": 4,
+      "roster_id": 7,
+      "starters": [
+        "1084",
+        "1085",
+        "1086",
+        "1087",
+        "1088",
+        "1089",
+        "1090",
+        "1091",
+        "1092"
+      ],
+      "points": 111.99
+    },
+    {
+      "matchup_id": 4,
+      "roster_id": 8,
+      "starters": [
+        "1098",
+        "1099",
+        "1100",
+        "1101",
+        "1102",
+        "1103",
+        "1104",
+        "1105",
+        "1106"
+      ],
+      "points": 89.1
+    },
+    {
+      "matchup_id": 5,
+      "roster_id": 9,
+      "starters": [
+        "1112",
+        "1113",
+        "1114",
+        "1115",
+        "1116",
+        "1117",
+        "1118",
+        "1119",
+        "1120"
+      ],
+      "points": 128.31
+    },
+    {
+      "matchup_id": 5,
+      "roster_id": 10,
+      "starters": [
+        "1126",
+        "1127",
+        "1128",
+        "1129",
+        "1130",
+        "1131",
+        "1132",
+        "1133",
+        "1134"
+      ],
+      "points": 101.63
+    },
+    {
+      "matchup_id": 6,
+      "roster_id": 11,
+      "starters": [
+        "1140",
+        "1141",
+        "1142",
+        "1143",
+        "1144",
+        "1145",
+        "1146",
+        "1147",
+        "1148"
+      ],
+      "points": 125.54
+    },
+    {
+      "matchup_id": 6,
+      "roster_id": 12,
+      "starters": [
+        "1154",
+        "1155",
+        "1156",
+        "1157",
+        "1158",
+        "1159",
+        "1160",
+        "1161",
+        "1162"
+      ],
+      "points": 82.77
+    }
+  ],
+  "players": {
+    "1000": {
+      "player_id": "1000",
+      "full_name": "Baker Mayfield",
+      "first_name": "Baker",
+      "last_name": "Mayfield",
+      "position": "QB",
+      "team": "TB",
+      "age": 28,
+      "years_exp": 7,
+      "injury_status": "Active",
+      "projected_pts": 26.06,
+      "stats": {
+        "pts_ppr": 112.21
+      },
+      "recent_points": [
+        19.04,
+        24.25,
+        23.41
+      ]
+    },
+    "1001": {
+      "player_id": "1001",
+      "full_name": "D'Andre Swift",
+      "first_name": "D'Andre",
+      "last_name": "Swift",
+      "position": "RB",
+      "team": "CHI",
+      "age": 33,
+      "years_exp": 2,
+      "injury_status": null,
+      "projected_pts": 21.93,
+      "stats": {
+        "pts_ppr": 110.93
+      },
+      "recent_points": [
+        26.9,
+        25.79,
+        17.3
+      ]
+    },
+    "1002": {
+      "player_id": "1002",
+      "full_name": "Jahmyr Gibbs",
+      "first_name": "Jahmyr",
+      "last_name": "Gibbs",
+      "position": "RB",
+      "team": "DET",
+      "age": 24,
+      "years_exp": 8,
+      "injury_status": null,
+      "projected_pts": 20.04,
+      "stats": {
+        "pts_ppr": 110.26
+      },
+      "recent_points": [
+        24.74,
+        20.45,
+        19.99
+      ]
+    },
+    "1003": {
+      "player_id": "1003",
+      "full_name": "Brandon Aiyuk",
+      "first_name": "Brandon",
+      "last_name": "Aiyuk",
+      "position": "WR",
+      "team": "SF",
+      "age": 23,
+      "years_exp": 11,
+      "injury_status": null,
+      "projected_pts": 19.26,
+      "stats": {
+        "pts_ppr": 110.78
+      },
+      "recent_points": [
+        19.79,
+        22.16,
+        18.94
+      ]
+    },
+    "1004": {
+      "player_id": "1004",
+      "full_name": "Stefon Diggs",
+      "first_name": "Stefon",
+      "last_name": "Diggs",
+      "position": "WR",
+      "team": "HOU",
+      "age": 34,
+      "years_exp": 9,
+      "injury_status": null,
+      "projected_pts": 17.47,
+      "stats": {
+        "pts_ppr": 87.62
+      },
+      "recent_points": [
+        14.51,
+        16.26,
+        14.14
+      ]
+    },
+    "1005": {
+      "player_id": "1005",
+      "full_name": "Hunter Henry",
+      "first_name": "Hunter",
+      "last_name": "Henry",
+      "position": "TE",
+      "team": "NE",
+      "age": 34,
+      "years_exp": 5,
+      "injury_status": null,
+      "projected_pts": 9.59,
+      "stats": {
+        "pts_ppr": 47.73
+      },
+      "recent_points": [
+        5.66,
+        8.18,
+        14.4
+      ]
+    },
+    "1006": {
+      "player_id": "1006",
+      "full_name": "Tony Pollard",
+      "first_name": "Tony",
+      "last_name": "Pollard",
+      "position": "RB",
+      "team": "TEN",
+      "age": 23,
+      "years_exp": 9,
+      "injury_status": null,
+      "projected_pts": 5.58,
+      "stats": {
+        "pts_ppr": 32.12
+      },
+      "recent_points": [
+        10.89,
+        2.28,
+        6.28
+      ]
+    },
+    "1007": {
+      "player_id": "1007",
+      "full_name": "Younghoe Koo",
+      "first_name": "Younghoe",
+      "last_name": "Koo",
+      "position": "K",
+      "team": "ATL",
+      "age": 28,
+      "years_exp": 4,
+      "injury_status": "Questionable",
+      "projected_pts": 5.9,
+      "stats": {
+        "pts_ppr": 29.21
+      },
+      "recent_points": [
+        6.34,
+        3.49,
+        9.57
+      ]
+    },
+    "1008": {
+      "player_id": "1008",
+      "full_name": "Saints",
+      "first_name": "Saints",
+      "last_name": "",
+      "position": "DEF",
+      "team": "NO",
+      "age": 27,
+      "years_exp": 8,
+      "injury_status": "Questionable",
+      "projected_pts": 9.8,
+      "stats": {
+        "pts_ppr": 52.72
+      },
+      "recent_points": [
+        12.67,
+        9.53,
+        12.26
+      ]
+    },
+    "1009": {
+      "player_id": "1009",
+      "full_name": "Kyler Murray",
+      "position": "QB",
+      "team": "ARI",
+      "age": 31,
+      "years_exp": 4,
+      "injury_status": null,
+      "projected_pts": 12.192,
+      "stats": {
+        "pts_ppr": 54.81
+      },
+      "recent_points": [
+        6.6,
+        6.17,
+        11.5
+      ]
+    },
+    "1010": {
+      "player_id": "1010",
+      "full_name": "Tyjae Spears",
+      "position": "RB",
+      "team": "TEN",
+      "age": 23,
+      "years_exp": 9,
+      "injury_status": null,
+      "projected_pts": 3.726,
+      "stats": {
+        "pts_ppr": 19.61
+      },
+      "recent_points": [
+        1.21,
+        7.98,
+        7.52
+      ]
+    },
+    "1011": {
+      "player_id": "1011",
+      "full_name": "Jaylen Waddle",
+      "position": "WR",
+      "team": "MIA",
+      "age": 31,
+      "years_exp": 8,
+      "injury_status": null,
+      "projected_pts": 5.0760000000000005,
+      "stats": {
+        "pts_ppr": 25.23
+      },
+      "recent_points": [
+        5.44,
+        7.28,
+        8.87
+      ]
+    },
+    "1012": {
+      "player_id": "1012",
+      "full_name": "David Njoku",
+      "position": "TE",
+      "team": "CLE",
+      "age": 28,
+      "years_exp": 7,
+      "injury_status": null,
+      "projected_pts": 6.978000000000001,
+      "stats": {
+        "pts_ppr": 39.18
+      },
+      "recent_points": [
+        4.74,
+        3.81,
+        7.15
+      ]
+    },
+    "1013": {
+      "player_id": "1013",
+      "full_name": "Khalil Shakir",
+      "position": "WR",
+      "team": "BUF",
+      "age": 33,
+      "years_exp": 6,
+      "injury_status": null,
+      "projected_pts": 10.692,
+      "stats": {
+        "pts_ppr": 43.93
+      },
+      "recent_points": [
+        10.32,
+        10.25,
+        4.39
+      ]
+    },
+    "1014": {
+      "player_id": "1014",
+      "full_name": "Kyler Murray",
+      "first_name": "Kyler",
+      "last_name": "Murray",
+      "position": "QB",
+      "team": "ARI",
+      "age": 34,
+      "years_exp": 9,
+      "injury_status": null,
+      "projected_pts": 15.96,
+      "stats": {
+        "pts_ppr": 69.7
+      },
+      "recent_points": [
+        13.57,
+        17.68,
+        9.69
+      ]
+    },
+    "1015": {
+      "player_id": "1015",
+      "full_name": "Tyjae Spears",
+      "first_name": "Tyjae",
+      "last_name": "Spears",
+      "position": "RB",
+      "team": "TEN",
+      "age": 25,
+      "years_exp": 3,
+      "injury_status": null,
+      "projected_pts": 5.86,
+      "stats": {
+        "pts_ppr": 35.15
+      },
+      "recent_points": [
+        10.39,
+        11.72,
+        11.29
+      ]
+    },
+    "1016": {
+      "player_id": "1016",
+      "full_name": "Bijan Robinson",
+      "first_name": "Bijan",
+      "last_name": "Robinson",
+      "position": "RB",
+      "team": "ATL",
+      "age": 28,
+      "years_exp": 5,
+      "injury_status": null,
+      "projected_pts": 13.26,
+      "stats": {
+        "pts_ppr": 58.71
+      },
+      "recent_points": [
+        10.75,
+        7.33,
+        10.53
+      ]
+    },
+    "1017": {
+      "player_id": "1017",
+      "full_name": "Jaylen Waddle",
+      "first_name": "Jaylen",
+      "last_name": "Waddle",
+      "position": "WR",
+      "team": "MIA",
+      "age": 29,
+      "years_exp": 3,
+      "injury_status": null,
+      "projected_pts": 8.56,
+      "stats": {
+        "pts_ppr": 46.17
+      },
+      "recent_points": [
+        11.54,
+        12.07,
+        10.85
+      ]
+    },
+    "1018": {
+      "player_id": "1018",
+      "full_name": "Deebo Samuel",
+      "first_name": "Deebo",
+      "last_name": "Samuel",
+      "position": "WR",
+      "team": "SF",
+      "age": 22,
+      "years_exp": 1,
+      "injury_status": "Active",
+      "projected_pts": 8.75,
+      "stats": {
+        "pts_ppr": 51.95
+      },
+      "recent_points": [
+        11.18,
+        10.81,
+        12.87
+      ]
+    },
+    "1019": {
+      "player_id": "1019",
+      "full_name": "David Njoku",
+      "first_name": "David",
+      "last_name": "Njoku",
+      "position": "TE",
+      "team": "CLE",
+      "age": 24,
+      "years_exp": 2,
+      "injury_status": "Active",
+      "projected_pts": 8.24,
+      "stats": {
+        "pts_ppr": 48.11
+      },
+      "recent_points": [
+        9.93,
+        5.19,
+        9.7
+      ]
+    },
+    "1020": {
+      "player_id": "1020",
+      "full_name": "Zack Moss",
+      "first_name": "Zack",
+      "last_name": "Moss",
+      "position": "RB",
+      "team": "DEN",
+      "age": 31,
+      "years_exp": 10,
+      "injury_status": null,
+      "projected_pts": 5.68,
+      "stats": {
+        "pts_ppr": 32.51
+      },
+      "recent_points": [
+        5.54,
+        10.92,
+        7.2
+      ]
+    },
+    "1021": {
+      "player_id": "1021",
+      "full_name": "Harrison Butker",
+      "first_name": "Harrison",
+      "last_name": "Butker",
+      "position": "K",
+      "team": "KC",
+      "age": 25,
+      "years_exp": 11,
+      "injury_status": null,
+      "projected_pts": 9.34,
+      "stats": {
+        "pts_ppr": 45.19
+      },
+      "recent_points": [
+        9.87,
+        9.27,
+        13.39
+      ]
+    },
+    "1022": {
+      "player_id": "1022",
+      "full_name": "Browns",
+      "first_name": "Browns",
+      "last_name": "",
+      "position": "DEF",
+      "team": "CLE",
+      "age": 34,
+      "years_exp": 2,
+      "injury_status": null,
+      "projected_pts": 5.83,
+      "stats": {
+        "pts_ppr": 26.42
+      },
+      "recent_points": [
+        1.59,
+        6.74,
+        4.86
+      ]
+    },
+    "1023": {
+      "player_id": "1023",
+      "full_name": "Jalen Hurts",
+      "position": "QB",
+      "team": "PHI",
+      "age": 26,
+      "years_exp": 3,
+      "injury_status": null,
+      "projected_pts": 12.252,
+      "stats": {
+        "pts_ppr": 73.47
+      },
+      "recent_points": [
+        19.65,
+        10.43,
+        11.83
+      ]
+    },
+    "1024": {
+      "player_id": "1024",
+      "full_name": "Antonio Gibson",
+      "position": "RB",
+      "team": "NE",
+      "age": 33,
+      "years_exp": 5,
+      "injury_status": "Questionable",
+      "projected_pts": 11.982,
+      "stats": {
+        "pts_ppr": 69.0
+      },
+      "recent_points": [
+        12.5,
+        10.38,
+        17.14
+      ]
+    },
+    "1025": {
+      "player_id": "1025",
+      "full_name": "Khalil Shakir",
+      "position": "WR",
+      "team": "BUF",
+      "age": 32,
+      "years_exp": 2,
+      "injury_status": null,
+      "projected_pts": 11.844,
+      "stats": {
+        "pts_ppr": 66.49
+      },
+      "recent_points": [
+        13.59,
+        14.98,
+        13.84
+      ]
+    },
+    "1026": {
+      "player_id": "1026",
+      "full_name": "Sam LaPorta",
+      "position": "TE",
+      "team": "DET",
+      "age": 25,
+      "years_exp": 12,
+      "injury_status": null,
+      "projected_pts": 3.546,
+      "stats": {
+        "pts_ppr": 20.49
+      },
+      "recent_points": [
+        6.52,
+        0.65,
+        1.92
+      ]
+    },
+    "1027": {
+      "player_id": "1027",
+      "full_name": "Christian Kirk",
+      "position": "WR",
+      "team": "JAX",
+      "age": 22,
+      "years_exp": 2,
+      "injury_status": null,
+      "projected_pts": 4.356,
+      "stats": {
+        "pts_ppr": 22.95
+      },
+      "recent_points": [
+        2.23,
+        4.48,
+        8.64
+      ]
+    },
+    "1028": {
+      "player_id": "1028",
+      "full_name": "Jalen Hurts",
+      "first_name": "Jalen",
+      "last_name": "Hurts",
+      "position": "QB",
+      "team": "PHI",
+      "age": 30,
+      "years_exp": 1,
+      "injury_status": null,
+      "projected_pts": 15.83,
+      "stats": {
+        "pts_ppr": 94.34
+      },
+      "recent_points": [
+        15.48,
+        18.29,
+        20.92
+      ]
+    },
+    "1029": {
+      "player_id": "1029",
+      "full_name": "Antonio Gibson",
+      "first_name": "Antonio",
+      "last_name": "Gibson",
+      "position": "RB",
+      "team": "NE",
+      "age": 31,
+      "years_exp": 9,
+      "injury_status": null,
+      "projected_pts": 6.28,
+      "stats": {
+        "pts_ppr": 36.21
+      },
+      "recent_points": [
+        11.28,
+        7.7,
+        10.59
+      ]
+    },
+    "1030": {
+      "player_id": "1030",
+      "full_name": "Saquon Barkley",
+      "first_name": "Saquon",
+      "last_name": "Barkley",
+      "position": "RB",
+      "team": "PHI",
+      "age": 22,
+      "years_exp": 6,
+      "injury_status": null,
+      "projected_pts": 12.31,
+      "stats": {
+        "pts_ppr": 50.27
+      },
+      "recent_points": [
+        8.7,
+        14.38,
+        14.78
+      ]
+    },
+    "1031": {
+      "player_id": "1031",
+      "full_name": "Khalil Shakir",
+      "first_name": "Khalil",
+      "last_name": "Shakir",
+      "position": "WR",
+      "team": "BUF",
+      "age": 31,
+      "years_exp": 12,
+      "injury_status": null,
+      "projected_pts": 14.91,
+      "stats": {
+        "pts_ppr": 79.53
+      },
+      "recent_points": [
+        14.44,
+        16.5,
+        19.65
+      ]
+    },
+    "1032": {
+      "player_id": "1032",
+      "full_name": "Cooper Kupp",
+      "first_name": "Cooper",
+      "last_name": "Kupp",
+      "position": "WR",
+      "team": "LAR",
+      "age": 28,
+      "years_exp": 1,
+      "injury_status": null,
+      "projected_pts": 18.81,
+      "stats": {
+        "pts_ppr": 84.15
+      },
+      "recent_points": [
+        13.46,
+        19.83,
+        13.6
+      ]
+    },
+    "1033": {
+      "player_id": "1033",
+      "full_name": "Sam LaPorta",
+      "first_name": "Sam",
+      "last_name": "LaPorta",
+      "position": "TE",
+      "team": "DET",
+      "age": 34,
+      "years_exp": 4,
+      "injury_status": null,
+      "projected_pts": 11.1,
+      "stats": {
+        "pts_ppr": 51.77
+      },
+      "recent_points": [
+        14.66,
+        13.38,
+        13.99
+      ]
+    },
+    "1034": {
+      "player_id": "1034",
+      "full_name": "Alvin Kamara",
+      "first_name": "Alvin",
+      "last_name": "Kamara",
+      "position": "RB",
+      "team": "NO",
+      "age": 25,
+      "years_exp": 8,
+      "injury_status": null,
+      "projected_pts": 6.59,
+      "stats": {
+        "pts_ppr": 35.6
+      },
+      "recent_points": [
+        5.95,
+        2.51,
+        6.83
+      ]
+    },
+    "1035": {
+      "player_id": "1035",
+      "full_name": "Tyler Bass",
+      "first_name": "Tyler",
+      "last_name": "Bass",
+      "position": "K",
+      "team": "BUF",
+      "age": 27,
+      "years_exp": 5,
+      "injury_status": null,
+      "projected_pts": 7.14,
+      "stats": {
+        "pts_ppr": 39.92
+      },
+      "recent_points": [
+        5.26,
+        3.22,
+        4.92
+      ]
+    },
+    "1036": {
+      "player_id": "1036",
+      "full_name": "49ers",
+      "first_name": "49ers",
+      "last_name": "",
+      "position": "DEF",
+      "team": "SF",
+      "age": 30,
+      "years_exp": 6,
+      "injury_status": null,
+      "projected_pts": 11.7,
+      "stats": {
+        "pts_ppr": 53.33
+      },
+      "recent_points": [
+        12.08,
+        9.66,
+        15.48
+      ]
+    },
+    "1037": {
+      "player_id": "1037",
+      "full_name": "Brock Purdy",
+      "position": "QB",
+      "team": "SF",
+      "age": 23,
+      "years_exp": 10,
+      "injury_status": null,
+      "projected_pts": 9.366,
+      "stats": {
+        "pts_ppr": 55.64
+      },
+      "recent_points": [
+        7.91,
+        15.75,
+        8.78
+      ]
+    },
+    "1038": {
+      "player_id": "1038",
+      "full_name": "Rachaad White",
+      "position": "RB",
+      "team": "TB",
+      "age": 31,
+      "years_exp": 4,
+      "injury_status": null,
+      "projected_pts": 6.5280000000000005,
+      "stats": {
+        "pts_ppr": 36.38
+      },
+      "recent_points": [
+        6.64,
+        12.12,
+        3.43
+      ]
+    },
+    "1039": {
+      "player_id": "1039",
+      "full_name": "Christian Kirk",
+      "position": "WR",
+      "team": "JAX",
+      "age": 33,
+      "years_exp": 12,
+      "injury_status": null,
+      "projected_pts": 2.826,
+      "stats": {
+        "pts_ppr": 13.77
+      },
+      "recent_points": [
+        2.95,
+        5.82,
+        4.62
+      ]
+    },
+    "1040": {
+      "player_id": "1040",
+      "full_name": "Dalton Kincaid",
+      "position": "TE",
+      "team": "BUF",
+      "age": 23,
+      "years_exp": 12,
+      "injury_status": null,
+      "projected_pts": 4.2059999999999995,
+      "stats": {
+        "pts_ppr": 17.41
+      },
+      "recent_points": [
+        5.12,
+        1.78,
+        1.62
+      ]
+    },
+    "1041": {
+      "player_id": "1041",
+      "full_name": "CeeDee Lamb",
+      "position": "WR",
+      "team": "DAL",
+      "age": 25,
+      "years_exp": 7,
+      "injury_status": null,
+      "projected_pts": 7.265999999999999,
+      "stats": {
+        "pts_ppr": 38.76
+      },
+      "recent_points": [
+        6.01,
+        9.72,
+        8.3
+      ]
+    },
+    "1042": {
+      "player_id": "1042",
+      "full_name": "Brock Purdy",
+      "first_name": "Brock",
+      "last_name": "Purdy",
+      "position": "QB",
+      "team": "SF",
+      "age": 32,
+      "years_exp": 6,
+      "injury_status": null,
+      "projected_pts": 21.67,
+      "stats": {
+        "pts_ppr": 86.7
+      },
+      "recent_points": [
+        15.21,
+        16.64,
+        18.14
+      ]
+    },
+    "1043": {
+      "player_id": "1043",
+      "full_name": "Rachaad White",
+      "first_name": "Rachaad",
+      "last_name": "White",
+      "position": "RB",
+      "team": "TB",
+      "age": 33,
+      "years_exp": 3,
+      "injury_status": null,
+      "projected_pts": 12.51,
+      "stats": {
+        "pts_ppr": 66.94
+      },
+      "recent_points": [
+        13.5,
+        16.33,
+        17.99
+      ]
+    },
+    "1044": {
+      "player_id": "1044",
+      "full_name": "James Cook",
+      "first_name": "James",
+      "last_name": "Cook",
+      "position": "RB",
+      "team": "BUF",
+      "age": 34,
+      "years_exp": 4,
+      "injury_status": null,
+      "projected_pts": 6.44,
+      "stats": {
+        "pts_ppr": 32.4
+      },
+      "recent_points": [
+        7.81,
+        4.83,
+        9.66
+      ]
+    },
+    "1045": {
+      "player_id": "1045",
+      "full_name": "Christian Kirk",
+      "first_name": "Christian",
+      "last_name": "Kirk",
+      "position": "WR",
+      "team": "JAX",
+      "age": 31,
+      "years_exp": 2,
+      "injury_status": null,
+      "projected_pts": 8.97,
+      "stats": {
+        "pts_ppr": 50.35
+      },
+      "recent_points": [
+        6.54,
+        5.53,
+        14.91
+      ]
+    },
+    "1046": {
+      "player_id": "1046",
+      "full_name": "Chris Olave",
+      "first_name": "Chris",
+      "last_name": "Olave",
+      "position": "WR",
+      "team": "NO",
+      "age": 25,
+      "years_exp": 3,
+      "injury_status": null,
+      "projected_pts": 10.63,
+      "stats": {
+        "pts_ppr": 55.91
+      },
+      "recent_points": [
+        8.13,
+        13.15,
+        11.13
+      ]
+    },
+    "1047": {
+      "player_id": "1047",
+      "full_name": "Dalton Kincaid",
+      "first_name": "Dalton",
+      "last_name": "Kincaid",
+      "position": "TE",
+      "team": "BUF",
+      "age": 25,
+      "years_exp": 3,
+      "injury_status": null,
+      "projected_pts": 10.56,
+      "stats": {
+        "pts_ppr": 61.09
+      },
+      "recent_points": [
+        15.82,
+        16.07,
+        15.0
+      ]
+    },
+    "1048": {
+      "player_id": "1048",
+      "full_name": "Brian Robinson Jr.",
+      "first_name": "Brian",
+      "last_name": "Jr.",
+      "position": "RB",
+      "team": "WAS",
+      "age": 34,
+      "years_exp": 8,
+      "injury_status": null,
+      "projected_pts": 10.18,
+      "stats": {
+        "pts_ppr": 41.74
+      },
+      "recent_points": [
+        5.84,
+        11.83,
+        7.91
+      ]
+    },
+    "1049": {
+      "player_id": "1049",
+      "full_name": "Brandon Aubrey",
+      "first_name": "Brandon",
+      "last_name": "Aubrey",
+      "position": "K",
+      "team": "DAL",
+      "age": 33,
+      "years_exp": 9,
+      "injury_status": null,
+      "projected_pts": 8.72,
+      "stats": {
+        "pts_ppr": 44.63
+      },
+      "recent_points": [
+        7.1,
+        11.48,
+        8.35
+      ]
+    },
+    "1050": {
+      "player_id": "1050",
+      "full_name": "Cowboys",
+      "first_name": "Cowboys",
+      "last_name": "",
+      "position": "DEF",
+      "team": "DAL",
+      "age": 26,
+      "years_exp": 4,
+      "injury_status": null,
+      "projected_pts": 10.48,
+      "stats": {
+        "pts_ppr": 53.4
+      },
+      "recent_points": [
+        14.65,
+        13.12,
+        10.43
+      ]
+    },
+    "1051": {
+      "player_id": "1051",
+      "full_name": "Dak Prescott",
+      "position": "QB",
+      "team": "DAL",
+      "age": 33,
+      "years_exp": 5,
+      "injury_status": null,
+      "projected_pts": 10.728,
+      "stats": {
+        "pts_ppr": 59.6
+      },
+      "recent_points": [
+        11.77,
+        9.31,
+        11.32
+      ]
+    },
+    "1052": {
+      "player_id": "1052",
+      "full_name": "Najee Harris",
+      "position": "RB",
+      "team": "PIT",
+      "age": 33,
+      "years_exp": 3,
+      "injury_status": null,
+      "projected_pts": 5.771999999999999,
+      "stats": {
+        "pts_ppr": 26.78
+      },
+      "recent_points": [
+        5.76,
+        1.74,
+        2.67
+      ]
+    },
+    "1053": {
+      "player_id": "1053",
+      "full_name": "CeeDee Lamb",
+      "position": "WR",
+      "team": "DAL",
+      "age": 28,
+      "years_exp": 7,
+      "injury_status": "Questionable",
+      "projected_pts": 3.0180000000000002,
+      "stats": {
+        "pts_ppr": 14.53
+      },
+      "recent_points": [
+        3.33,
+        2.06,
+        0
+      ]
+    },
+    "1054": {
+      "player_id": "1054",
+      "full_name": "Trey McBride",
+      "position": "TE",
+      "team": "ARI",
+      "age": 27,
+      "years_exp": 5,
+      "injury_status": null,
+      "projected_pts": 8.046,
+      "stats": {
+        "pts_ppr": 32.5
+      },
+      "recent_points": [
+        10.31,
+        7.26,
+        6.27
+      ]
+    },
+    "1055": {
+      "player_id": "1055",
+      "full_name": "Nico Collins",
+      "position": "WR",
+      "team": "HOU",
+      "age": 31,
+      "years_exp": 4,
+      "injury_status": null,
+      "projected_pts": 10.596,
+      "stats": {
+        "pts_ppr": 62.59
+      },
+      "recent_points": [
+        11.71,
+        14.99,
+        12.98
+      ]
+    },
+    "1056": {
+      "player_id": "1056",
+      "full_name": "Dak Prescott",
+      "first_name": "Dak",
+      "last_name": "Prescott",
+      "position": "QB",
+      "team": "DAL",
+      "age": 24,
+      "years_exp": 10,
+      "injury_status": "Questionable",
+      "projected_pts": 19.44,
+      "stats": {
+        "pts_ppr": 103.77
+      },
+      "recent_points": [
+        23.74,
+        23.0,
+        24.16
+      ]
+    },
+    "1057": {
+      "player_id": "1057",
+      "full_name": "Najee Harris",
+      "first_name": "Najee",
+      "last_name": "Harris",
+      "position": "RB",
+      "team": "PIT",
+      "age": 24,
+      "years_exp": 8,
+      "injury_status": null,
+      "projected_pts": 5.46,
+      "stats": {
+        "pts_ppr": 26.14
+      },
+      "recent_points": [
+        5.87,
+        0.5,
+        6.66
+      ]
+    },
+    "1058": {
+      "player_id": "1058",
+      "full_name": "Zamir White",
+      "first_name": "Zamir",
+      "last_name": "White",
+      "position": "RB",
+      "team": "LV",
+      "age": 28,
+      "years_exp": 5,
+      "injury_status": null,
+      "projected_pts": 5.85,
+      "stats": {
+        "pts_ppr": 27.84
+      },
+      "recent_points": [
+        2.68,
+        3.84,
+        8.18
+      ]
+    },
+    "1059": {
+      "player_id": "1059",
+      "full_name": "CeeDee Lamb",
+      "first_name": "CeeDee",
+      "last_name": "Lamb",
+      "position": "WR",
+      "team": "DAL",
+      "age": 27,
+      "years_exp": 4,
+      "injury_status": null,
+      "projected_pts": 8.04,
+      "stats": {
+        "pts_ppr": 33.48
+      },
+      "recent_points": [
+        1.89,
+        7.09,
+        11.7
+      ]
+    },
+    "1060": {
+      "player_id": "1060",
+      "full_name": "Ja'Marr Chase",
+      "first_name": "Ja'Marr",
+      "last_name": "Chase",
+      "position": "WR",
+      "team": "CIN",
+      "age": 22,
+      "years_exp": 10,
+      "injury_status": null,
+      "projected_pts": 5.1,
+      "stats": {
+        "pts_ppr": 30.16
+      },
+      "recent_points": [
+        1.43,
+        1.34,
+        3.5
+      ]
+    },
+    "1061": {
+      "player_id": "1061",
+      "full_name": "Trey McBride",
+      "first_name": "Trey",
+      "last_name": "McBride",
+      "position": "TE",
+      "team": "ARI",
+      "age": 26,
+      "years_exp": 6,
+      "injury_status": null,
+      "projected_pts": 5.62,
+      "stats": {
+        "pts_ppr": 27.8
+      },
+      "recent_points": [
+        1.7,
+        10.04,
+        5.21
+      ]
+    },
+    "1062": {
+      "player_id": "1062",
+      "full_name": "Jonathan Taylor",
+      "first_name": "Jonathan",
+      "last_name": "Taylor",
+      "position": "RB",
+      "team": "IND",
+      "age": 26,
+      "years_exp": 2,
+      "injury_status": "Active",
+      "projected_pts": 11.06,
+      "stats": {
+        "pts_ppr": 65.56
+      },
+      "recent_points": [
+        15.3,
+        15.89,
+        9.75
+      ]
+    },
+    "1063": {
+      "player_id": "1063",
+      "full_name": "Ka'imi Fairbairn",
+      "first_name": "Ka'imi",
+      "last_name": "Fairbairn",
+      "position": "K",
+      "team": "HOU",
+      "age": 33,
+      "years_exp": 4,
+      "injury_status": null,
+      "projected_pts": 5.18,
+      "stats": {
+        "pts_ppr": 23.95
+      },
+      "recent_points": [
+        6.56,
+        9.37,
+        3.76
+      ]
+    },
+    "1064": {
+      "player_id": "1064",
+      "full_name": "Bengals",
+      "first_name": "Bengals",
+      "last_name": "",
+      "position": "DEF",
+      "team": "CIN",
+      "age": 32,
+      "years_exp": 10,
+      "injury_status": null,
+      "projected_pts": 8.33,
+      "stats": {
+        "pts_ppr": 47.16
+      },
+      "recent_points": [
+        6.86,
+        11.4,
+        7.45
+      ]
+    },
+    "1065": {
+      "player_id": "1065",
+      "full_name": "Jayden Daniels",
+      "position": "QB",
+      "team": "WAS",
+      "age": 23,
+      "years_exp": 9,
+      "injury_status": null,
+      "projected_pts": 15.089999999999998,
+      "stats": {
+        "pts_ppr": 77.44
+      },
+      "recent_points": [
+        10.9,
+        15.82,
+        17.1
+      ]
+    },
+    "1066": {
+      "player_id": "1066",
+      "full_name": "Travis Etienne",
+      "position": "RB",
+      "team": "JAX",
+      "age": 29,
+      "years_exp": 12,
+      "injury_status": null,
+      "projected_pts": 3.1319999999999997,
+      "stats": {
+        "pts_ppr": 15.16
+      },
+      "recent_points": [
+        2.93,
+        2.37,
+        1.65
+      ]
+    },
+    "1067": {
+      "player_id": "1067",
+      "full_name": "Nico Collins",
+      "position": "WR",
+      "team": "HOU",
+      "age": 30,
+      "years_exp": 8,
+      "injury_status": null,
+      "projected_pts": 6.582,
+      "stats": {
+        "pts_ppr": 35.99
+      },
+      "recent_points": [
+        11.85,
+        4.9,
+        10.28
+      ]
+    },
+    "1068": {
+      "player_id": "1068",
+      "full_name": "Cole Kmet",
+      "position": "TE",
+      "team": "CHI",
+      "age": 23,
+      "years_exp": 5,
+      "injury_status": null,
+      "projected_pts": 4.6739999999999995,
+      "stats": {
+        "pts_ppr": 25.53
+      },
+      "recent_points": [
+        2.79,
+        8.62,
+        8.41
+      ]
+    },
+    "1069": {
+      "player_id": "1069",
+      "full_name": "Mike Evans",
+      "position": "WR",
+      "team": "TB",
+      "age": 27,
+      "years_exp": 3,
+      "injury_status": null,
+      "projected_pts": 4.74,
+      "stats": {
+        "pts_ppr": 23.37
+      },
+      "recent_points": [
+        5.78,
+        3.46,
+        0
+      ]
+    },
+    "1070": {
+      "player_id": "1070",
+      "full_name": "Jayden Daniels",
+      "first_name": "Jayden",
+      "last_name": "Daniels",
+      "position": "QB",
+      "team": "WAS",
+      "age": 25,
+      "years_exp": 2,
+      "injury_status": null,
+      "projected_pts": 17.92,
+      "stats": {
+        "pts_ppr": 93.05
+      },
+      "recent_points": [
+        22.41,
+        19.17,
+        18.78
+      ]
+    },
+    "1071": {
+      "player_id": "1071",
+      "full_name": "Travis Etienne",
+      "first_name": "Travis",
+      "last_name": "Etienne",
+      "position": "RB",
+      "team": "JAX",
+      "age": 29,
+      "years_exp": 8,
+      "injury_status": null,
+      "projected_pts": 17.24,
+      "stats": {
+        "pts_ppr": 85.81
+      },
+      "recent_points": [
+        19.74,
+        19.07,
+        18.62
+      ]
+    },
+    "1072": {
+      "player_id": "1072",
+      "full_name": "De'Von Achane",
+      "first_name": "De'Von",
+      "last_name": "Achane",
+      "position": "RB",
+      "team": "MIA",
+      "age": 29,
+      "years_exp": 9,
+      "injury_status": "Questionable",
+      "projected_pts": 6.58,
+      "stats": {
+        "pts_ppr": 29.24
+      },
+      "recent_points": [
+        7.77,
+        3.91,
+        6.66
+      ]
+    },
+    "1073": {
+      "player_id": "1073",
+      "full_name": "Nico Collins",
+      "first_name": "Nico",
+      "last_name": "Collins",
+      "position": "WR",
+      "team": "HOU",
+      "age": 26,
+      "years_exp": 5,
+      "injury_status": null,
+      "projected_pts": 9.5,
+      "stats": {
+        "pts_ppr": 56.94
+      },
+      "recent_points": [
+        11.89,
+        9.91,
+        10.93
+      ]
+    },
+    "1074": {
+      "player_id": "1074",
+      "full_name": "Xavier Worthy",
+      "first_name": "Xavier",
+      "last_name": "Worthy",
+      "position": "WR",
+      "team": "KC",
+      "age": 24,
+      "years_exp": 4,
+      "injury_status": null,
+      "projected_pts": 5.93,
+      "stats": {
+        "pts_ppr": 26.0
+      },
+      "recent_points": [
+        1.4,
+        5.56,
+        7.82
+      ]
+    },
+    "1075": {
+      "player_id": "1075",
+      "full_name": "Cole Kmet",
+      "first_name": "Cole",
+      "last_name": "Kmet",
+      "position": "TE",
+      "team": "CHI",
+      "age": 23,
+      "years_exp": 4,
+      "injury_status": null,
+      "projected_pts": 11.12,
+      "stats": {
+        "pts_ppr": 50.63
+      },
+      "recent_points": [
+        11.02,
+        12.73,
+        11.09
+      ]
+    },
+    "1076": {
+      "player_id": "1076",
+      "full_name": "Rhamondre Stevenson",
+      "first_name": "Rhamondre",
+      "last_name": "Stevenson",
+      "position": "RB",
+      "team": "NE",
+      "age": 22,
+      "years_exp": 9,
+      "injury_status": null,
+      "projected_pts": 7.27,
+      "stats": {
+        "pts_ppr": 31.69
+      },
+      "recent_points": [
+        1.48,
+        6.68,
+        4.08
+      ]
+    },
+    "1077": {
+      "player_id": "1077",
+      "full_name": "Younghoe Koo",
+      "first_name": "Younghoe",
+      "last_name": "Koo",
+      "position": "K",
+      "team": "ATL",
+      "age": 31,
+      "years_exp": 5,
+      "injury_status": null,
+      "projected_pts": 9.88,
+      "stats": {
+        "pts_ppr": 42.02
+      },
+      "recent_points": [
+        12.09,
+        8.31,
+        12.13
+      ]
+    },
+    "1078": {
+      "player_id": "1078",
+      "full_name": "Lions",
+      "first_name": "Lions",
+      "last_name": "",
+      "position": "DEF",
+      "team": "DET",
+      "age": 23,
+      "years_exp": 2,
+      "injury_status": null,
+      "projected_pts": 7.31,
+      "stats": {
+        "pts_ppr": 34.22
+      },
+      "recent_points": [
+        11.5,
+        4.37,
+        10.46
+      ]
+    },
+    "1079": {
+      "player_id": "1079",
+      "full_name": "Derek Carr",
+      "position": "QB",
+      "team": "NO",
+      "age": 26,
+      "years_exp": 2,
+      "injury_status": null,
+      "projected_pts": 12.527999999999999,
+      "stats": {
+        "pts_ppr": 64.57
+      },
+      "recent_points": [
+        14.78,
+        9.43,
+        16.03
+      ]
+    },
+    "1080": {
+      "player_id": "1080",
+      "full_name": "Kenneth Walker III",
+      "position": "RB",
+      "team": "SEA",
+      "age": 30,
+      "years_exp": 7,
+      "injury_status": null,
+      "projected_pts": 4.2059999999999995,
+      "stats": {
+        "pts_ppr": 23.25
+      },
+      "recent_points": [
+        5.71,
+        7.56,
+        1.91
+      ]
+    },
+    "1081": {
+      "player_id": "1081",
+      "full_name": "Mike Evans",
+      "position": "WR",
+      "team": "TB",
+      "age": 22,
+      "years_exp": 10,
+      "injury_status": null,
+      "projected_pts": 11.123999999999999,
+      "stats": {
+        "pts_ppr": 51.11
+      },
+      "recent_points": [
+        11.11,
+        9.51,
+        10.91
+      ]
+    },
+    "1082": {
+      "player_id": "1082",
+      "full_name": "George Kittle",
+      "position": "TE",
+      "team": "SF",
+      "age": 24,
+      "years_exp": 9,
+      "injury_status": null,
+      "projected_pts": 8.052,
+      "stats": {
+        "pts_ppr": 35.55
+      },
+      "recent_points": [
+        4.22,
+        8.71,
+        3.68
+      ]
+    },
+    "1083": {
+      "player_id": "1083",
+      "full_name": "DJ Moore",
+      "position": "WR",
+      "team": "CHI",
+      "age": 26,
+      "years_exp": 12,
+      "injury_status": null,
+      "projected_pts": 3.9,
+      "stats": {
+        "pts_ppr": 18.79
+      },
+      "recent_points": [
+        5.65,
+        3.46,
+        0
+      ]
+    },
+    "1084": {
+      "player_id": "1084",
+      "full_name": "Derek Carr",
+      "first_name": "Derek",
+      "last_name": "Carr",
+      "position": "QB",
+      "team": "NO",
+      "age": 23,
+      "years_exp": 9,
+      "injury_status": null,
+      "projected_pts": 17.7,
+      "stats": {
+        "pts_ppr": 98.81
+      },
+      "recent_points": [
+        20.66,
+        22.8,
+        16.74
+      ]
+    },
+    "1085": {
+      "player_id": "1085",
+      "full_name": "Kenneth Walker III",
+      "first_name": "Kenneth",
+      "last_name": "III",
+      "position": "RB",
+      "team": "SEA",
+      "age": 26,
+      "years_exp": 10,
+      "injury_status": null,
+      "projected_pts": 16.01,
+      "stats": {
+        "pts_ppr": 93.13
+      },
+      "recent_points": [
+        21.89,
+        14.34,
+        15.29
+      ]
+    },
+    "1086": {
+      "player_id": "1086",
+      "full_name": "Christian McCaffrey",
+      "first_name": "Christian",
+      "last_name": "McCaffrey",
+      "position": "RB",
+      "team": "SF",
+      "age": 28,
+      "years_exp": 5,
+      "injury_status": "Questionable",
+      "projected_pts": 19.01,
+      "stats": {
+        "pts_ppr": 111.06
+      },
+      "recent_points": [
+        21.6,
+        21.9,
+        20.25
+      ]
+    },
+    "1087": {
+      "player_id": "1087",
+      "full_name": "Mike Evans",
+      "first_name": "Mike",
+      "last_name": "Evans",
+      "position": "WR",
+      "team": "TB",
+      "age": 31,
+      "years_exp": 5,
+      "injury_status": null,
+      "projected_pts": 12.64,
+      "stats": {
+        "pts_ppr": 61.63
+      },
+      "recent_points": [
+        13.31,
+        16.22,
+        14.67
+      ]
+    },
+    "1088": {
+      "player_id": "1088",
+      "full_name": "Zay Flowers",
+      "first_name": "Zay",
+      "last_name": "Flowers",
+      "position": "WR",
+      "team": "BAL",
+      "age": 34,
+      "years_exp": 11,
+      "injury_status": null,
+      "projected_pts": 5.46,
+      "stats": {
+        "pts_ppr": 32.34
+      },
+      "recent_points": [
+        9.83,
+        7.22,
+        10.98
+      ]
+    },
+    "1089": {
+      "player_id": "1089",
+      "full_name": "George Kittle",
+      "first_name": "George",
+      "last_name": "Kittle",
+      "position": "TE",
+      "team": "SF",
+      "age": 26,
+      "years_exp": 3,
+      "injury_status": "Active",
+      "projected_pts": 9.34,
+      "stats": {
+        "pts_ppr": 51.61
+      },
+      "recent_points": [
+        7.07,
+        10.51,
+        9.74
+      ]
+    },
+    "1090": {
+      "player_id": "1090",
+      "full_name": "Malik Nabers",
+      "first_name": "Malik",
+      "last_name": "Nabers",
+      "position": "WR",
+      "team": "NYG",
+      "age": 27,
+      "years_exp": 11,
+      "injury_status": null,
+      "projected_pts": 9.36,
+      "stats": {
+        "pts_ppr": 52.68
+      },
+      "recent_points": [
+        15.23,
+        10.24,
+        9.62
+      ]
+    },
+    "1091": {
+      "player_id": "1091",
+      "full_name": "Jason Myers",
+      "first_name": "Jason",
+      "last_name": "Myers",
+      "position": "K",
+      "team": "SEA",
+      "age": 34,
+      "years_exp": 9,
+      "injury_status": null,
+      "projected_pts": 11.0,
+      "stats": {
+        "pts_ppr": 51.26
+      },
+      "recent_points": [
+        12.19,
+        8.13,
+        14.7
+      ]
+    },
+    "1092": {
+      "player_id": "1092",
+      "full_name": "Ravens",
+      "first_name": "Ravens",
+      "last_name": "",
+      "position": "DEF",
+      "team": "BAL",
+      "age": 30,
+      "years_exp": 1,
+      "injury_status": null,
+      "projected_pts": 7.09,
+      "stats": {
+        "pts_ppr": 32.82
+      },
+      "recent_points": [
+        4.8,
+        11.27,
+        5.61
+      ]
+    },
+    "1093": {
+      "player_id": "1093",
+      "full_name": "CJ Stroud",
+      "position": "QB",
+      "team": "HOU",
+      "age": 29,
+      "years_exp": 11,
+      "injury_status": null,
+      "projected_pts": 15.702,
+      "stats": {
+        "pts_ppr": 77.32
+      },
+      "recent_points": [
+        11.01,
+        15.65,
+        16.69
+      ]
+    },
+    "1094": {
+      "player_id": "1094",
+      "full_name": "Isiah Pacheco",
+      "position": "RB",
+      "team": "KC",
+      "age": 33,
+      "years_exp": 8,
+      "injury_status": null,
+      "projected_pts": 10.752,
+      "stats": {
+        "pts_ppr": 47.39
+      },
+      "recent_points": [
+        9.97,
+        13.75,
+        8.86
+      ]
+    },
+    "1095": {
+      "player_id": "1095",
+      "full_name": "DJ Moore",
+      "position": "WR",
+      "team": "CHI",
+      "age": 22,
+      "years_exp": 9,
+      "injury_status": null,
+      "projected_pts": 2.6759999999999997,
+      "stats": {
+        "pts_ppr": 14.08
+      },
+      "recent_points": [
+        5.81,
+        4.91,
+        0.92
+      ]
+    },
+    "1096": {
+      "player_id": "1096",
+      "full_name": "Pat Freiermuth",
+      "position": "TE",
+      "team": "PIT",
+      "age": 24,
+      "years_exp": 8,
+      "injury_status": null,
+      "projected_pts": 2.418,
+      "stats": {
+        "pts_ppr": 14.47
+      },
+      "recent_points": [
+        7.02,
+        2.51,
+        0
+      ]
+    },
+    "1097": {
+      "player_id": "1097",
+      "full_name": "Ladd McConkey",
+      "position": "WR",
+      "team": "LAC",
+      "age": 30,
+      "years_exp": 3,
+      "injury_status": null,
+      "projected_pts": 7.284,
+      "stats": {
+        "pts_ppr": 33.12
+      },
+      "recent_points": [
+        9.97,
+        11.43,
+        4.06
+      ]
+    },
+    "1098": {
+      "player_id": "1098",
+      "full_name": "CJ Stroud",
+      "first_name": "CJ",
+      "last_name": "Stroud",
+      "position": "QB",
+      "team": "HOU",
+      "age": 34,
+      "years_exp": 9,
+      "injury_status": null,
+      "projected_pts": 26.31,
+      "stats": {
+        "pts_ppr": 150.71
+      },
+      "recent_points": [
+        27.9,
+        33.04,
+        29.29
+      ]
+    },
+    "1099": {
+      "player_id": "1099",
+      "full_name": "Isiah Pacheco",
+      "first_name": "Isiah",
+      "last_name": "Pacheco",
+      "position": "RB",
+      "team": "KC",
+      "age": 29,
+      "years_exp": 3,
+      "injury_status": null,
+      "projected_pts": 18.95,
+      "stats": {
+        "pts_ppr": 86.52
+      },
+      "recent_points": [
+        15.29,
+        18.17,
+        22.29
+      ]
+    },
+    "1100": {
+      "player_id": "1100",
+      "full_name": "Kyren Williams",
+      "first_name": "Kyren",
+      "last_name": "Williams",
+      "position": "RB",
+      "team": "LAR",
+      "age": 27,
+      "years_exp": 4,
+      "injury_status": null,
+      "projected_pts": 14.16,
+      "stats": {
+        "pts_ppr": 66.41
+      },
+      "recent_points": [
+        13.8,
+        13.72,
+        12.84
+      ]
+    },
+    "1101": {
+      "player_id": "1101",
+      "full_name": "DJ Moore",
+      "first_name": "DJ",
+      "last_name": "Moore",
+      "position": "WR",
+      "team": "CHI",
+      "age": 29,
+      "years_exp": 12,
+      "injury_status": null,
+      "projected_pts": 7.82,
+      "stats": {
+        "pts_ppr": 37.27
+      },
+      "recent_points": [
+        11.01,
+        6.56,
+        5.64
+      ]
+    },
+    "1102": {
+      "player_id": "1102",
+      "full_name": "Drake London",
+      "first_name": "Drake",
+      "last_name": "London",
+      "position": "WR",
+      "team": "ATL",
+      "age": 22,
+      "years_exp": 3,
+      "injury_status": "Questionable",
+      "projected_pts": 10.18,
+      "stats": {
+        "pts_ppr": 54.23
+      },
+      "recent_points": [
+        14.05,
+        15.65,
+        10.8
+      ]
+    },
+    "1103": {
+      "player_id": "1103",
+      "full_name": "Pat Freiermuth",
+      "first_name": "Pat",
+      "last_name": "Freiermuth",
+      "position": "TE",
+      "team": "PIT",
+      "age": 29,
+      "years_exp": 1,
+      "injury_status": null,
+      "projected_pts": 13.62,
+      "stats": {
+        "pts_ppr": 63.52
+      },
+      "recent_points": [
+        8.71,
+        16.15,
+        8.7
+      ]
+    },
+    "1104": {
+      "player_id": "1104",
+      "full_name": "Tee Higgins",
+      "first_name": "Tee",
+      "last_name": "Higgins",
+      "position": "WR",
+      "team": "CIN",
+      "age": 26,
+      "years_exp": 6,
+      "injury_status": "Active",
+      "projected_pts": 6.44,
+      "stats": {
+        "pts_ppr": 36.98
+      },
+      "recent_points": [
+        12.1,
+        3.14,
+        10.21
+      ]
+    },
+    "1105": {
+      "player_id": "1105",
+      "full_name": "Blake Grupe",
+      "first_name": "Blake",
+      "last_name": "Grupe",
+      "position": "K",
+      "team": "NO",
+      "age": 28,
+      "years_exp": 6,
+      "injury_status": null,
+      "projected_pts": 9.85,
+      "stats": {
+        "pts_ppr": 52.2
+      },
+      "recent_points": [
+        13.96,
+        13.96,
+        14.03
+      ]
+    },
+    "1106": {
+      "player_id": "1106",
+      "full_name": "Eagles",
+      "first_name": "Eagles",
+      "last_name": "",
+      "position": "DEF",
+      "team": "PHI",
+      "age": 32,
+      "years_exp": 11,
+      "injury_status": null,
+      "projected_pts": 9.47,
+      "stats": {
+        "pts_ppr": 52.26
+      },
+      "recent_points": [
+        14.18,
+        5.81,
+        6.14
+      ]
+    },
+    "1107": {
+      "player_id": "1107",
+      "full_name": "Matthew Stafford",
+      "position": "QB",
+      "team": "LAR",
+      "age": 23,
+      "years_exp": 8,
+      "injury_status": null,
+      "projected_pts": 16.776,
+      "stats": {
+        "pts_ppr": 92.16
+      },
+      "recent_points": [
+        17.77,
+        14.42,
+        19.77
+      ]
+    },
+    "1108": {
+      "player_id": "1108",
+      "full_name": "Raheem Mostert",
+      "position": "RB",
+      "team": "MIA",
+      "age": 27,
+      "years_exp": 7,
+      "injury_status": null,
+      "projected_pts": 10.08,
+      "stats": {
+        "pts_ppr": 58.53
+      },
+      "recent_points": [
+        7.17,
+        14.67,
+        9.64
+      ]
+    },
+    "1109": {
+      "player_id": "1109",
+      "full_name": "Ladd McConkey",
+      "position": "WR",
+      "team": "LAC",
+      "age": 31,
+      "years_exp": 7,
+      "injury_status": "Questionable",
+      "projected_pts": 4.7459999999999996,
+      "stats": {
+        "pts_ppr": 22.9
+      },
+      "recent_points": [
+        6.4,
+        1.38,
+        1.33
+      ]
+    },
+    "1110": {
+      "player_id": "1110",
+      "full_name": "Travis Kelce",
+      "position": "TE",
+      "team": "KC",
+      "age": 29,
+      "years_exp": 5,
+      "injury_status": null,
+      "projected_pts": 6.306,
+      "stats": {
+        "pts_ppr": 31.5
+      },
+      "recent_points": [
+        7.13,
+        3.62,
+        7.68
+      ]
+    },
+    "1111": {
+      "player_id": "1111",
+      "full_name": "Tank Dell",
+      "position": "WR",
+      "team": "HOU",
+      "age": 27,
+      "years_exp": 10,
+      "injury_status": null,
+      "projected_pts": 11.027999999999999,
+      "stats": {
+        "pts_ppr": 54.37
+      },
+      "recent_points": [
+        8.75,
+        11.34,
+        6.61
+      ]
+    },
+    "1112": {
+      "player_id": "1112",
+      "full_name": "Matthew Stafford",
+      "first_name": "Matthew",
+      "last_name": "Stafford",
+      "position": "QB",
+      "team": "LAR",
+      "age": 27,
+      "years_exp": 10,
+      "injury_status": null,
+      "projected_pts": 18.23,
+      "stats": {
+        "pts_ppr": 109.36
+      },
+      "recent_points": [
+        25.41,
+        17.94,
+        20.69
+      ]
+    },
+    "1113": {
+      "player_id": "1113",
+      "full_name": "Raheem Mostert",
+      "first_name": "Raheem",
+      "last_name": "Mostert",
+      "position": "RB",
+      "team": "MIA",
+      "age": 31,
+      "years_exp": 11,
+      "injury_status": null,
+      "projected_pts": 21.88,
+      "stats": {
+        "pts_ppr": 100.44
+      },
+      "recent_points": [
+        24.87,
+        21.67,
+        17.83
+      ]
+    },
+    "1114": {
+      "player_id": "1114",
+      "full_name": "Joe Mixon",
+      "first_name": "Joe",
+      "last_name": "Mixon",
+      "position": "RB",
+      "team": "HOU",
+      "age": 34,
+      "years_exp": 4,
+      "injury_status": "Active",
+      "projected_pts": 21.55,
+      "stats": {
+        "pts_ppr": 125.45
+      },
+      "recent_points": [
+        27.54,
+        28.42,
+        29.12
+      ]
+    },
+    "1115": {
+      "player_id": "1115",
+      "full_name": "Ladd McConkey",
+      "first_name": "Ladd",
+      "last_name": "McConkey",
+      "position": "WR",
+      "team": "LAC",
+      "age": 34,
+      "years_exp": 11,
+      "injury_status": null,
+      "projected_pts": 16.83,
+      "stats": {
+        "pts_ppr": 74.69
+      },
+      "recent_points": [
+        11.84,
+        12.44,
+        17.49
+      ]
+    },
+    "1116": {
+      "player_id": "1116",
+      "full_name": "Romeo Doubs",
+      "first_name": "Romeo",
+      "last_name": "Doubs",
+      "position": "WR",
+      "team": "GB",
+      "age": 29,
+      "years_exp": 1,
+      "injury_status": "Active",
+      "projected_pts": 17.41,
+      "stats": {
+        "pts_ppr": 91.52
+      },
+      "recent_points": [
+        22.34,
+        19.77,
+        16.39
+      ]
+    },
+    "1117": {
+      "player_id": "1117",
+      "full_name": "Travis Kelce",
+      "first_name": "Travis",
+      "last_name": "Kelce",
+      "position": "TE",
+      "team": "KC",
+      "age": 25,
+      "years_exp": 3,
+      "injury_status": "Questionable",
+      "projected_pts": 7.01,
+      "stats": {
+        "pts_ppr": 29.88
+      },
+      "recent_points": [
+        10.07,
+        4.24,
+        5.13
+      ]
+    },
+    "1118": {
+      "player_id": "1118",
+      "full_name": "Amon-Ra St. Brown",
+      "first_name": "Amon-Ra",
+      "last_name": "Brown",
+      "position": "WR",
+      "team": "DET",
+      "age": 29,
+      "years_exp": 5,
+      "injury_status": null,
+      "projected_pts": 13.76,
+      "stats": {
+        "pts_ppr": 65.11
+      },
+      "recent_points": [
+        13.04,
+        10.75,
+        9.67
+      ]
+    },
+    "1119": {
+      "player_id": "1119",
+      "full_name": "Tyler Lacy",
+      "first_name": "Tyler",
+      "last_name": "Lacy",
+      "position": "K",
+      "team": "JAX",
+      "age": 25,
+      "years_exp": 11,
+      "injury_status": null,
+      "projected_pts": 11.09,
+      "stats": {
+        "pts_ppr": 62.2
+      },
+      "recent_points": [
+        12.12,
+        8.19,
+        14.98
+      ]
+    },
+    "1120": {
+      "player_id": "1120",
+      "full_name": "Texans",
+      "first_name": "Texans",
+      "last_name": "",
+      "position": "DEF",
+      "team": "HOU",
+      "age": 28,
+      "years_exp": 1,
+      "injury_status": null,
+      "projected_pts": 9.07,
+      "stats": {
+        "pts_ppr": 43.49
+      },
+      "recent_points": [
+        12.16,
+        9.27,
+        4.6
+      ]
+    },
+    "1121": {
+      "player_id": "1121",
+      "full_name": "Aaron Rodgers",
+      "position": "QB",
+      "team": "NYJ",
+      "age": 32,
+      "years_exp": 6,
+      "injury_status": null,
+      "projected_pts": 12.906,
+      "stats": {
+        "pts_ppr": 63.36
+      },
+      "recent_points": [
+        14.4,
+        14.4,
+        13.52
+      ]
+    },
+    "1122": {
+      "player_id": "1122",
+      "full_name": "Jaylen Warren",
+      "position": "RB",
+      "team": "PIT",
+      "age": 31,
+      "years_exp": 4,
+      "injury_status": null,
+      "projected_pts": 9.882,
+      "stats": {
+        "pts_ppr": 48.85
+      },
+      "recent_points": [
+        10.97,
+        14.2,
+        8.05
+      ]
+    },
+    "1123": {
+      "player_id": "1123",
+      "full_name": "Tank Dell",
+      "position": "WR",
+      "team": "HOU",
+      "age": 22,
+      "years_exp": 1,
+      "injury_status": null,
+      "projected_pts": 8.501999999999999,
+      "stats": {
+        "pts_ppr": 41.9
+      },
+      "recent_points": [
+        10.39,
+        9.87,
+        4.55
+      ]
+    },
+    "1124": {
+      "player_id": "1124",
+      "full_name": "Chig Okonkwo",
+      "position": "TE",
+      "team": "TEN",
+      "age": 27,
+      "years_exp": 11,
+      "injury_status": "Questionable",
+      "projected_pts": 8.376,
+      "stats": {
+        "pts_ppr": 35.45
+      },
+      "recent_points": [
+        4.44,
+        7.47,
+        5.98
+      ]
+    },
+    "1125": {
+      "player_id": "1125",
+      "full_name": "Rome Odunze",
+      "position": "WR",
+      "team": "CHI",
+      "age": 29,
+      "years_exp": 10,
+      "injury_status": null,
+      "projected_pts": 6.426,
+      "stats": {
+        "pts_ppr": 35.24
+      },
+      "recent_points": [
+        3.59,
+        6.2,
+        3.04
+      ]
+    },
+    "1126": {
+      "player_id": "1126",
+      "full_name": "Aaron Rodgers",
+      "first_name": "Aaron",
+      "last_name": "Rodgers",
+      "position": "QB",
+      "team": "NYJ",
+      "age": 30,
+      "years_exp": 11,
+      "injury_status": null,
+      "projected_pts": 20.21,
+      "stats": {
+        "pts_ppr": 119.26
+      },
+      "recent_points": [
+        27.41,
+        19.85,
+        25.71
+      ]
+    },
+    "1127": {
+      "player_id": "1127",
+      "full_name": "Jaylen Warren",
+      "first_name": "Jaylen",
+      "last_name": "Warren",
+      "position": "RB",
+      "team": "PIT",
+      "age": 23,
+      "years_exp": 11,
+      "injury_status": null,
+      "projected_pts": 6.03,
+      "stats": {
+        "pts_ppr": 27.45
+      },
+      "recent_points": [
+        10.17,
+        9.98,
+        8.73
+      ]
+    },
+    "1128": {
+      "player_id": "1128",
+      "full_name": "David Montgomery",
+      "first_name": "David",
+      "last_name": "Montgomery",
+      "position": "RB",
+      "team": "DET",
+      "age": 24,
+      "years_exp": 10,
+      "injury_status": null,
+      "projected_pts": 15.91,
+      "stats": {
+        "pts_ppr": 82.64
+      },
+      "recent_points": [
+        11.74,
+        19.4,
+        13.96
+      ]
+    },
+    "1129": {
+      "player_id": "1129",
+      "full_name": "Tank Dell",
+      "first_name": "Tank",
+      "last_name": "Dell",
+      "position": "WR",
+      "team": "HOU",
+      "age": 27,
+      "years_exp": 3,
+      "injury_status": "Active",
+      "projected_pts": 5.1,
+      "stats": {
+        "pts_ppr": 28.2
+      },
+      "recent_points": [
+        2.71,
+        2.8,
+        9.34
+      ]
+    },
+    "1130": {
+      "player_id": "1130",
+      "full_name": "Tyreek Hill",
+      "first_name": "Tyreek",
+      "last_name": "Hill",
+      "position": "WR",
+      "team": "MIA",
+      "age": 24,
+      "years_exp": 2,
+      "injury_status": null,
+      "projected_pts": 4.05,
+      "stats": {
+        "pts_ppr": 23.15
+      },
+      "recent_points": [
+        1.08,
+        0.93,
+        2.14
+      ]
+    },
+    "1131": {
+      "player_id": "1131",
+      "full_name": "Chig Okonkwo",
+      "first_name": "Chig",
+      "last_name": "Okonkwo",
+      "position": "TE",
+      "team": "TEN",
+      "age": 22,
+      "years_exp": 3,
+      "injury_status": null,
+      "projected_pts": 12.53,
+      "stats": {
+        "pts_ppr": 53.42
+      },
+      "recent_points": [
+        9.27,
+        13.57,
+        11.57
+      ]
+    },
+    "1132": {
+      "player_id": "1132",
+      "full_name": "Marvin Harrison Jr.",
+      "first_name": "Marvin",
+      "last_name": "Jr.",
+      "position": "WR",
+      "team": "ARI",
+      "age": 34,
+      "years_exp": 6,
+      "injury_status": "Questionable",
+      "projected_pts": 5.52,
+      "stats": {
+        "pts_ppr": 30.27
+      },
+      "recent_points": [
+        6.31,
+        8.51,
+        5.82
+      ]
+    },
+    "1133": {
+      "player_id": "1133",
+      "full_name": "Chris Boswell",
+      "first_name": "Chris",
+      "last_name": "Boswell",
+      "position": "K",
+      "team": "PIT",
+      "age": 32,
+      "years_exp": 9,
+      "injury_status": null,
+      "projected_pts": 9.16,
+      "stats": {
+        "pts_ppr": 44.92
+      },
+      "recent_points": [
+        6.2,
+        10.14,
+        11.26
+      ]
+    },
+    "1134": {
+      "player_id": "1134",
+      "full_name": "Steelers",
+      "first_name": "Steelers",
+      "last_name": "",
+      "position": "DEF",
+      "team": "PIT",
+      "age": 32,
+      "years_exp": 2,
+      "injury_status": null,
+      "projected_pts": 7.12,
+      "stats": {
+        "pts_ppr": 42.21
+      },
+      "recent_points": [
+        4.05,
+        8.23,
+        7.46
+      ]
+    },
+    "1135": {
+      "player_id": "1135",
+      "full_name": "Patrick Mahomes",
+      "position": "QB",
+      "team": "KC",
+      "age": 24,
+      "years_exp": 5,
+      "injury_status": "Questionable",
+      "projected_pts": 14.382,
+      "stats": {
+        "pts_ppr": 70.29
+      },
+      "recent_points": [
+        18.05,
+        12.28,
+        10.54
+      ]
+    },
+    "1136": {
+      "player_id": "1136",
+      "full_name": "Breece Hall",
+      "position": "RB",
+      "team": "NYJ",
+      "age": 29,
+      "years_exp": 9,
+      "injury_status": "Questionable",
+      "projected_pts": 9.456,
+      "stats": {
+        "pts_ppr": 48.19
+      },
+      "recent_points": [
+        7.89,
+        14.58,
+        9.94
+      ]
+    },
+    "1137": {
+      "player_id": "1137",
+      "full_name": "Rome Odunze",
+      "position": "WR",
+      "team": "CHI",
+      "age": 30,
+      "years_exp": 12,
+      "injury_status": null,
+      "projected_pts": 6.5280000000000005,
+      "stats": {
+        "pts_ppr": 36.47
+      },
+      "recent_points": [
+        3.44,
+        8.84,
+        11.07
+      ]
+    },
+    "1138": {
+      "player_id": "1138",
+      "full_name": "Mark Andrews",
+      "position": "TE",
+      "team": "BAL",
+      "age": 33,
+      "years_exp": 2,
+      "injury_status": null,
+      "projected_pts": 4.638,
+      "stats": {
+        "pts_ppr": 26.79
+      },
+      "recent_points": [
+        4.5,
+        8.63,
+        4.35
+      ]
+    },
+    "1139": {
+      "player_id": "1139",
+      "full_name": "George Pickens",
+      "position": "WR",
+      "team": "PIT",
+      "age": 23,
+      "years_exp": 2,
+      "injury_status": null,
+      "projected_pts": 6.498,
+      "stats": {
+        "pts_ppr": 34.64
+      },
+      "recent_points": [
+        5.67,
+        3.45,
+        11.16
+      ]
+    },
+    "1140": {
+      "player_id": "1140",
+      "full_name": "Patrick Mahomes",
+      "first_name": "Patrick",
+      "last_name": "Mahomes",
+      "position": "QB",
+      "team": "KC",
+      "age": 32,
+      "years_exp": 2,
+      "injury_status": null,
+      "projected_pts": 19.22,
+      "stats": {
+        "pts_ppr": 81.88
+      },
+      "recent_points": [
+        11.98,
+        20.94,
+        16.99
+      ]
+    },
+    "1141": {
+      "player_id": "1141",
+      "full_name": "Breece Hall",
+      "first_name": "Breece",
+      "last_name": "Hall",
+      "position": "RB",
+      "team": "NYJ",
+      "age": 26,
+      "years_exp": 10,
+      "injury_status": null,
+      "projected_pts": 11.01,
+      "stats": {
+        "pts_ppr": 58.69
+      },
+      "recent_points": [
+        14.24,
+        15.42,
+        13.95
+      ]
+    },
+    "1142": {
+      "player_id": "1142",
+      "full_name": "Josh Jacobs",
+      "first_name": "Josh",
+      "last_name": "Jacobs",
+      "position": "RB",
+      "team": "GB",
+      "age": 23,
+      "years_exp": 6,
+      "injury_status": "Questionable",
+      "projected_pts": 10.98,
+      "stats": {
+        "pts_ppr": 56.61
+      },
+      "recent_points": [
+        8.45,
+        12.89,
+        8.56
+      ]
+    },
+    "1143": {
+      "player_id": "1143",
+      "full_name": "Rome Odunze",
+      "first_name": "Rome",
+      "last_name": "Odunze",
+      "position": "WR",
+      "team": "CHI",
+      "age": 34,
+      "years_exp": 10,
+      "injury_status": "Active",
+      "projected_pts": 9.88,
+      "stats": {
+        "pts_ppr": 54.59
+      },
+      "recent_points": [
+        11.66,
+        13.99,
+        14.37
+      ]
+    },
+    "1144": {
+      "player_id": "1144",
+      "full_name": "Justin Jefferson",
+      "first_name": "Justin",
+      "last_name": "Jefferson",
+      "position": "WR",
+      "team": "MIN",
+      "age": 22,
+      "years_exp": 3,
+      "injury_status": null,
+      "projected_pts": 14.8,
+      "stats": {
+        "pts_ppr": 75.68
+      },
+      "recent_points": [
+        16.23,
+        16.71,
+        17.07
+      ]
+    },
+    "1145": {
+      "player_id": "1145",
+      "full_name": "Mark Andrews",
+      "first_name": "Mark",
+      "last_name": "Andrews",
+      "position": "TE",
+      "team": "BAL",
+      "age": 31,
+      "years_exp": 11,
+      "injury_status": null,
+      "projected_pts": 10.73,
+      "stats": {
+        "pts_ppr": 49.55
+      },
+      "recent_points": [
+        8.31,
+        4.97,
+        13.61
+      ]
+    },
+    "1146": {
+      "player_id": "1146",
+      "full_name": "Davante Adams",
+      "first_name": "Davante",
+      "last_name": "Adams",
+      "position": "WR",
+      "team": "LV",
+      "age": 28,
+      "years_exp": 7,
+      "injury_status": null,
+      "projected_pts": 5.7,
+      "stats": {
+        "pts_ppr": 31.25
+      },
+      "recent_points": [
+        10.97,
+        2.17,
+        6.55
+      ]
+    },
+    "1147": {
+      "player_id": "1147",
+      "full_name": "Cameron Dicker",
+      "first_name": "Cameron",
+      "last_name": "Dicker",
+      "position": "K",
+      "team": "LAC",
+      "age": 23,
+      "years_exp": 1,
+      "injury_status": null,
+      "projected_pts": 7.39,
+      "stats": {
+        "pts_ppr": 35.03
+      },
+      "recent_points": [
+        9.22,
+        9.77,
+        7.68
+      ]
+    },
+    "1148": {
+      "player_id": "1148",
+      "full_name": "Packers",
+      "first_name": "Packers",
+      "last_name": "",
+      "position": "DEF",
+      "team": "GB",
+      "age": 29,
+      "years_exp": 10,
+      "injury_status": null,
+      "projected_pts": 4.42,
+      "stats": {
+        "pts_ppr": 23.14
+      },
+      "recent_points": [
+        6.37,
+        2.35,
+        6.25
+      ]
+    },
+    "1149": {
+      "player_id": "1149",
+      "full_name": "Tua Tagovailoa",
+      "position": "QB",
+      "team": "MIA",
+      "age": 32,
+      "years_exp": 11,
+      "injury_status": "Questionable",
+      "projected_pts": 11.88,
+      "stats": {
+        "pts_ppr": 52.64
+      },
+      "recent_points": [
+        10.65,
+        8.98,
+        6.64
+      ]
+    },
+    "1150": {
+      "player_id": "1150",
+      "full_name": "Chuba Hubbard",
+      "position": "RB",
+      "team": "CAR",
+      "age": 22,
+      "years_exp": 4,
+      "injury_status": null,
+      "projected_pts": 7.962,
+      "stats": {
+        "pts_ppr": 42.47
+      },
+      "recent_points": [
+        3.95,
+        7.45,
+        9.49
+      ]
+    },
+    "1151": {
+      "player_id": "1151",
+      "full_name": "George Pickens",
+      "position": "WR",
+      "team": "PIT",
+      "age": 29,
+      "years_exp": 12,
+      "injury_status": null,
+      "projected_pts": 11.478,
+      "stats": {
+        "pts_ppr": 63.53
+      },
+      "recent_points": [
+        15.35,
+        10.6,
+        8.91
+      ]
+    },
+    "1152": {
+      "player_id": "1152",
+      "full_name": "Kyle Pitts",
+      "position": "TE",
+      "team": "ATL",
+      "age": 34,
+      "years_exp": 6,
+      "injury_status": null,
+      "projected_pts": 2.9579999999999997,
+      "stats": {
+        "pts_ppr": 14.08
+      },
+      "recent_points": [
+        4.85,
+        2.82,
+        6.15
+      ]
+    },
+    "1153": {
+      "player_id": "1153",
+      "full_name": "Stefon Diggs",
+      "position": "WR",
+      "team": "HOU",
+      "age": 27,
+      "years_exp": 10,
+      "injury_status": null,
+      "projected_pts": 6.21,
+      "stats": {
+        "pts_ppr": 34.06
+      },
+      "recent_points": [
+        6.17,
+        6.41,
+        2.59
+      ]
+    },
+    "1154": {
+      "player_id": "1154",
+      "full_name": "Tua Tagovailoa",
+      "first_name": "Tua",
+      "last_name": "Tagovailoa",
+      "position": "QB",
+      "team": "MIA",
+      "age": 33,
+      "years_exp": 6,
+      "injury_status": null,
+      "projected_pts": 15.61,
+      "stats": {
+        "pts_ppr": 63.09
+      },
+      "recent_points": [
+        10.87,
+        15.63,
+        13.8
+      ]
+    },
+    "1155": {
+      "player_id": "1155",
+      "full_name": "Chuba Hubbard",
+      "first_name": "Chuba",
+      "last_name": "Hubbard",
+      "position": "RB",
+      "team": "CAR",
+      "age": 26,
+      "years_exp": 12,
+      "injury_status": null,
+      "projected_pts": 12.42,
+      "stats": {
+        "pts_ppr": 52.31
+      },
+      "recent_points": [
+        9.82,
+        9.47,
+        6.25
+      ]
+    },
+    "1156": {
+      "player_id": "1156",
+      "full_name": "Aaron Jones",
+      "first_name": "Aaron",
+      "last_name": "Jones",
+      "position": "RB",
+      "team": "MIN",
+      "age": 25,
+      "years_exp": 6,
+      "injury_status": null,
+      "projected_pts": 8.77,
+      "stats": {
+        "pts_ppr": 48.75
+      },
+      "recent_points": [
+        5.51,
+        11.08,
+        10.06
+      ]
+    },
+    "1157": {
+      "player_id": "1157",
+      "full_name": "George Pickens",
+      "first_name": "George",
+      "last_name": "Pickens",
+      "position": "WR",
+      "team": "PIT",
+      "age": 25,
+      "years_exp": 3,
+      "injury_status": "Active",
+      "projected_pts": 15.64,
+      "stats": {
+        "pts_ppr": 88.18
+      },
+      "recent_points": [
+        20.79,
+        15.0,
+        14.1
+      ]
+    },
+    "1158": {
+      "player_id": "1158",
+      "full_name": "Jordan Addison",
+      "first_name": "Jordan",
+      "last_name": "Addison",
+      "position": "WR",
+      "team": "MIN",
+      "age": 29,
+      "years_exp": 10,
+      "injury_status": "Active",
+      "projected_pts": 6.45,
+      "stats": {
+        "pts_ppr": 35.59
+      },
+      "recent_points": [
+        2.87,
+        11.63,
+        8.4
+      ]
+    },
+    "1159": {
+      "player_id": "1159",
+      "full_name": "Kyle Pitts",
+      "first_name": "Kyle",
+      "last_name": "Pitts",
+      "position": "TE",
+      "team": "ATL",
+      "age": 32,
+      "years_exp": 6,
+      "injury_status": null,
+      "projected_pts": 7.94,
+      "stats": {
+        "pts_ppr": 46.44
+      },
+      "recent_points": [
+        9.93,
+        10.64,
+        10.53
+      ]
+    },
+    "1160": {
+      "player_id": "1160",
+      "full_name": "Jaxon Smith-Njigba",
+      "first_name": "Jaxon",
+      "last_name": "Smith-Njigba",
+      "position": "WR",
+      "team": "SEA",
+      "age": 27,
+      "years_exp": 9,
+      "injury_status": null,
+      "projected_pts": 9.4,
+      "stats": {
+        "pts_ppr": 46.42
+      },
+      "recent_points": [
+        10.6,
+        12.25,
+        10.2
+      ]
+    },
+    "1161": {
+      "player_id": "1161",
+      "full_name": "Justin Tucker",
+      "first_name": "Justin",
+      "last_name": "Tucker",
+      "position": "K",
+      "team": "BAL",
+      "age": 23,
+      "years_exp": 10,
+      "injury_status": "Active",
+      "projected_pts": 7.17,
+      "stats": {
+        "pts_ppr": 35.16
+      },
+      "recent_points": [
+        2.6,
+        10.35,
+        2.8
+      ]
+    },
+    "1162": {
+      "player_id": "1162",
+      "full_name": "Jets",
+      "first_name": "Jets",
+      "last_name": "",
+      "position": "DEF",
+      "team": "NYJ",
+      "age": 29,
+      "years_exp": 10,
+      "injury_status": null,
+      "projected_pts": 7.56,
+      "stats": {
+        "pts_ppr": 37.24
+      },
+      "recent_points": [
+        7.99,
+        10.37,
+        11.41
+      ]
+    },
+    "1163": {
+      "player_id": "1163",
+      "full_name": "Lamar Jackson",
+      "position": "QB",
+      "team": "BAL",
+      "age": 34,
+      "years_exp": 6,
+      "injury_status": null,
+      "projected_pts": 9.984,
+      "stats": {
+        "pts_ppr": 52.02
+      },
+      "recent_points": [
+        10.42,
+        14.98,
+        9.91
+      ]
+    },
+    "1164": {
+      "player_id": "1164",
+      "full_name": "Jahmyr Gibbs",
+      "position": "RB",
+      "team": "DET",
+      "age": 30,
+      "years_exp": 10,
+      "injury_status": null,
+      "projected_pts": 8.148,
+      "stats": {
+        "pts_ppr": 35.4
+      },
+      "recent_points": [
+        4.56,
+        6.46,
+        6.47
+      ]
+    },
+    "1165": {
+      "player_id": "1165",
+      "full_name": "Stefon Diggs",
+      "position": "WR",
+      "team": "HOU",
+      "age": 22,
+      "years_exp": 11,
+      "injury_status": null,
+      "projected_pts": 5.892,
+      "stats": {
+        "pts_ppr": 34.38
+      },
+      "recent_points": [
+        5.75,
+        9.62,
+        8.66
+      ]
+    },
+    "1166": {
+      "player_id": "1166",
+      "full_name": "Jake Ferguson",
+      "position": "TE",
+      "team": "DAL",
+      "age": 32,
+      "years_exp": 10,
+      "injury_status": null,
+      "projected_pts": 2.238,
+      "stats": {
+        "pts_ppr": 9.38
+      },
+      "recent_points": [
+        3.66,
+        0,
+        4.11
+      ]
+    },
+    "1167": {
+      "player_id": "1167",
+      "full_name": "Deebo Samuel",
+      "position": "WR",
+      "team": "SF",
+      "age": 33,
+      "years_exp": 11,
+      "injury_status": null,
+      "projected_pts": 5.598,
+      "stats": {
+        "pts_ppr": 28.92
+      },
+      "recent_points": [
+        2.2,
+        4.28,
+        10.46
+      ]
+    },
+    "1168": {
+      "player_id": "1168",
+      "full_name": "Lamar Jackson",
+      "position": "QB",
+      "team": "BAL",
+      "age": 27,
+      "years_exp": 3,
+      "injury_status": null,
+      "projected_pts": 8.95,
+      "stats": {
+        "pts_ppr": 35.81
+      },
+      "recent_points": [
+        8.62,
+        6.4,
+        5.78
+      ]
+    },
+    "1169": {
+      "player_id": "1169",
+      "full_name": "Geno Smith",
+      "position": "QB",
+      "team": "SEA",
+      "age": 25,
+      "years_exp": 6,
+      "injury_status": "Questionable",
+      "projected_pts": 7.44,
+      "stats": {
+        "pts_ppr": 29.77
+      },
+      "recent_points": [
+        2.87,
+        10.95,
+        2.5
+      ]
+    },
+    "1170": {
+      "player_id": "1170",
+      "full_name": "Trevor Lawrence",
+      "position": "QB",
+      "team": "JAX",
+      "age": 30,
+      "years_exp": 1,
+      "injury_status": null,
+      "projected_pts": 12.59,
+      "stats": {
+        "pts_ppr": 50.36
+      },
+      "recent_points": [
+        13.84,
+        11.25,
+        11.04
+      ]
+    },
+    "1171": {
+      "player_id": "1171",
+      "full_name": "Puka Nacua",
+      "position": "WR",
+      "team": "LAR",
+      "age": 31,
+      "years_exp": 3,
+      "injury_status": "Questionable",
+      "projected_pts": 2.53,
+      "stats": {
+        "pts_ppr": 10.1
+      },
+      "recent_points": [
+        0,
+        0.66,
+        4.22
+      ]
+    },
+    "1172": {
+      "player_id": "1172",
+      "full_name": "Rashee Rice",
+      "position": "WR",
+      "team": "KC",
+      "age": 29,
+      "years_exp": 4,
+      "injury_status": null,
+      "projected_pts": 11.81,
+      "stats": {
+        "pts_ppr": 47.24
+      },
+      "recent_points": [
+        7.54,
+        12.53,
+        9.14
+      ]
+    },
+    "1173": {
+      "player_id": "1173",
+      "full_name": "Garrett Wilson",
+      "position": "WR",
+      "team": "NYJ",
+      "age": 31,
+      "years_exp": 8,
+      "injury_status": "Questionable",
+      "projected_pts": 8.4,
+      "stats": {
+        "pts_ppr": 33.6
+      },
+      "recent_points": [
+        9.41,
+        9.5,
+        6.75
+      ]
+    },
+    "1174": {
+      "player_id": "1174",
+      "full_name": "Brian Thomas Jr.",
+      "position": "WR",
+      "team": "JAX",
+      "age": 25,
+      "years_exp": 3,
+      "injury_status": null,
+      "projected_pts": 4.08,
+      "stats": {
+        "pts_ppr": 16.31
+      },
+      "recent_points": [
+        0,
+        3.07,
+        1.97
+      ]
+    },
+    "1175": {
+      "player_id": "1175",
+      "full_name": "Courtland Sutton",
+      "position": "WR",
+      "team": "DEN",
+      "age": 30,
+      "years_exp": 2,
+      "injury_status": null,
+      "projected_pts": 12.43,
+      "stats": {
+        "pts_ppr": 49.7
+      },
+      "recent_points": [
+        5.78,
+        6.54,
+        9.43
+      ]
+    },
+    "1176": {
+      "player_id": "1176",
+      "full_name": "DK Metcalf",
+      "position": "WR",
+      "team": "SEA",
+      "age": 23,
+      "years_exp": 4,
+      "injury_status": "Questionable",
+      "projected_pts": 8.74,
+      "stats": {
+        "pts_ppr": 34.95
+      },
+      "recent_points": [
+        10.84,
+        11.29,
+        6.14
+      ]
+    },
+    "1177": {
+      "player_id": "1177",
+      "full_name": "Brock Bowers",
+      "position": "TE",
+      "team": "LV",
+      "age": 28,
+      "years_exp": 2,
+      "injury_status": null,
+      "projected_pts": 3.58,
+      "stats": {
+        "pts_ppr": 14.34
+      },
+      "recent_points": [
+        0.11,
+        1.05,
+        0
+      ]
+    },
+    "1178": {
+      "player_id": "1178",
+      "full_name": "TJ Hockenson",
+      "position": "TE",
+      "team": "MIN",
+      "age": 24,
+      "years_exp": 3,
+      "injury_status": null,
+      "projected_pts": 5.08,
+      "stats": {
+        "pts_ppr": 20.31
+      },
+      "recent_points": [
+        1.93,
+        7.36,
+        6.02
+      ]
+    },
+    "1179": {
+      "player_id": "1179",
+      "full_name": "Taysom Hill",
+      "position": "TE",
+      "team": "NO",
+      "age": 29,
+      "years_exp": 1,
+      "injury_status": null,
+      "projected_pts": 2.96,
+      "stats": {
+        "pts_ppr": 11.83
+      },
+      "recent_points": [
+        0,
+        0,
+        0
+      ]
+    },
+    "1180": {
+      "player_id": "1180",
+      "full_name": "Tyler Conklin",
+      "position": "TE",
+      "team": "NYJ",
+      "age": 28,
+      "years_exp": 2,
+      "injury_status": null,
+      "projected_pts": 8.06,
+      "stats": {
+        "pts_ppr": 32.25
+      },
+      "recent_points": [
+        3.83,
+        2.67,
+        3.83
+      ]
+    },
+    "1181": {
+      "player_id": "1181",
+      "full_name": "Evan Engram",
+      "position": "TE",
+      "team": "JAX",
+      "age": 23,
+      "years_exp": 2,
+      "injury_status": "Questionable",
+      "projected_pts": 6.13,
+      "stats": {
+        "pts_ppr": 24.53
+      },
+      "recent_points": [
+        5.87,
+        0.07,
+        5.06
+      ]
+    }
+  },
+  "trending_adds": [
+    {
+      "player_id": "1140",
+      "count": 441
+    },
+    {
+      "player_id": "1154",
+      "count": 277
+    },
+    {
+      "player_id": "1030",
+      "count": 463
+    },
+    {
+      "player_id": "1148",
+      "count": 133
+    },
+    {
+      "player_id": "1121",
+      "count": 381
+    },
+    {
+      "player_id": "1133",
+      "count": 377
+    },
+    {
+      "player_id": "1081",
+      "count": 248
+    },
+    {
+      "player_id": "1022",
+      "count": 253
+    },
+    {
+      "player_id": "1073",
+      "count": 180
+    },
+    {
+      "player_id": "1149",
+      "count": 464
+    },
+    {
+      "player_id": "1019",
+      "count": 463
+    },
+    {
+      "player_id": "1072",
+      "count": 458
+    },
+    {
+      "player_id": "1131",
+      "count": 426
+    },
+    {
+      "player_id": "1127",
+      "count": 189
+    },
+    {
+      "player_id": "1178",
+      "count": 285
+    },
+    {
+      "player_id": "1112",
+      "count": 360
+    },
+    {
+      "player_id": "1014",
+      "count": 214
+    },
+    {
+      "player_id": "1018",
+      "count": 162
+    },
+    {
+      "player_id": "1029",
+      "count": 202
+    },
+    {
+      "player_id": "1027",
+      "count": 171
+    },
+    {
+      "player_id": "1151",
+      "count": 221
+    },
+    {
+      "player_id": "1012",
+      "count": 352
+    },
+    {
+      "player_id": "1136",
+      "count": 113
+    },
+    {
+      "player_id": "1126",
+      "count": 284
+    },
+    {
+      "player_id": "1071",
+      "count": 383
+    }
+  ],
+  "trending_drops": [
+    {
+      "player_id": "1167",
+      "count": 196
+    },
+    {
+      "player_id": "1177",
+      "count": 144
+    },
+    {
+      "player_id": "1003",
+      "count": 169
+    },
+    {
+      "player_id": "1067",
+      "count": 255
+    },
+    {
+      "player_id": "1068",
+      "count": 191
+    },
+    {
+      "player_id": "1031",
+      "count": 83
+    },
+    {
+      "player_id": "1172",
+      "count": 206
+    },
+    {
+      "player_id": "1025",
+      "count": 276
+    },
+    {
+      "player_id": "1078",
+      "count": 72
+    },
+    {
+      "player_id": "1033",
+      "count": 66
+    },
+    {
+      "player_id": "1053",
+      "count": 129
+    },
+    {
+      "player_id": "1070",
+      "count": 151
+    },
+    {
+      "player_id": "1052",
+      "count": 233
+    },
+    {
+      "player_id": "1179",
+      "count": 234
+    },
+    {
+      "player_id": "1040",
+      "count": 172
+    },
+    {
+      "player_id": "1094",
+      "count": 184
+    },
+    {
+      "player_id": "1147",
+      "count": 155
+    },
+    {
+      "player_id": "1062",
+      "count": 246
+    },
+    {
+      "player_id": "1058",
+      "count": 154
+    },
+    {
+      "player_id": "1059",
+      "count": 260
+    },
+    {
+      "player_id": "1116",
+      "count": 197
+    },
+    {
+      "player_id": "1135",
+      "count": 68
+    },
+    {
+      "player_id": "1048",
+      "count": 82
+    },
+    {
+      "player_id": "1142",
+      "count": 298
+    },
+    {
+      "player_id": "1128",
+      "count": 131
+    }
+  ],
+  "transactions": []
+}

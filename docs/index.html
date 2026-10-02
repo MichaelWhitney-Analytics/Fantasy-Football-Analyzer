@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FF Pipeline | Fantasy Football Analytics</title>
+  <meta name="description" content="Automated fantasy football analytics pipeline with waiver wire edge analysis, matchup breakdowns, and optimal lineup optimization.">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@400,500,700,800&f[]=satoshi@300,400,500,700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+  <!-- ── Navigation ─────────────────────────────────────────── -->
+  <nav class="nav-bar">
+    <div class="nav-inner">
+      <div class="nav-brand">
+        <svg class="nav-logo" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M16 2 L28 8 L28 18 Q28 26 16 30 Q4 26 4 18 L4 8 Z"/>
+          <path d="M16 10 L16 22 M11 16 L21 16" stroke-linecap="round"/>
+        </svg>
+        <span class="nav-title">FF Pipeline</span>
+      </div>
+      <div class="nav-links">
+        <a href="#overview">Overview</a>
+        <a href="#matchup">Matchup</a>
+        <a href="#waiver">Waiver Wire</a>
+        <a href="#lineup">Optimal Lineup</a>
+        <a href="#trends">Trends</a>
+        <a href="#standings">Standings</a>
+      </div>
+      <div class="nav-actions">
+        <span class="nav-week" id="navWeek">Week --</span>
+        <button class="theme-toggle" data-theme-toggle aria-label="Toggle theme">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"/>
+            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ── Loading State ──────────────────────────────────────── -->
+  <div id="loading" class="loading-state">
+    <div class="loading-spinner"></div>
+    <p>Loading dashboard data...</p>
+  </div>
+
+  <!-- ── Main Content (hidden until data loads) ─────────────── -->
+  <main id="dashboard" class="dashboard" style="display:none;">
+
+    <!-- ── Insights Banner ───────────────────────────────────── -->
+    <section class="insights-banner" id="insightsBanner"></section>
+
+    <!-- ── Overview Section ───────────────────────────────────── -->
+    <section id="overview" class="section">
+      <div class="section-header">
+        <h2 class="section-title">Team Overview</h2>
+        <span class="section-subtitle" id="teamNameSubtitle"></span>
+      </div>
+      <div class="kpi-row" id="kpiRow"></div>
+      <div class="roster-grid" id="rosterGrid"></div>
+    </section>
+
+    <!-- ── Matchup Analysis ──────────────────────────────────── -->
+    <section id="matchup" class="section">
+      <div class="section-header">
+        <h2 class="section-title">Matchup Analysis</h2>
+        <span class="section-subtitle">Position-by-position breakdown</span>
+      </div>
+      <div id="matchupContent"></div>
+    </section>
+
+    <!-- ── Waiver Wire Edge ──────────────────────────────────── -->
+    <section id="waiver" class="section">
+      <div class="section-header">
+        <h2 class="section-title">Waiver Wire Edge</h2>
+        <span class="section-subtitle">Ranked by projected point improvement</span>
+      </div>
+      <div id="waiverContent"></div>
+    </section>
+
+    <!-- ── Optimal Lineup ────────────────────────────────────── -->
+    <section id="lineup" class="section">
+      <div class="section-header">
+        <h2 class="section-title">Optimal Lineup</h2>
+        <span class="section-subtitle">Maximized projected points</span>
+      </div>
+      <div id="lineupContent"></div>
+    </section>
+
+    <!-- ── Player Trends ─────────────────────────────────────── -->
+    <section id="trends" class="section">
+      <div class="section-header">
+        <h2 class="section-title">Player Trends</h2>
+        <span class="section-subtitle">Performance &amp; trending activity</span>
+      </div>
+      <div class="trends-grid">
+        <div id="trendChartContainer" class="chart-container">
+          <canvas id="trendChart"></canvas>
+        </div>
+        <div id="trendingActivity"></div>
+      </div>
+      <div id="trendsTable"></div>
+    </section>
+
+    <!-- ── League Standings ──────────────────────────────────── -->
+    <section id="standings" class="section">
+      <div class="section-header">
+        <h2 class="section-title">League Standings</h2>
+        <span class="section-subtitle">Full table with playoff positioning</span>
+      </div>
+      <div id="standingsTable"></div>
+    </section>
+
+    <!-- ── Footer ────────────────────────────────────────────── -->
+    <footer class="dashboard-footer">
+      <p>FF Pipeline &mdash; Automated Fantasy Football Analytics</p>
+      <p class="footer-meta" id="footerMeta"></p>
+    </footer>
+  </main>
+
+  <script src="assets/app.js"></script>
+</body>
+</html>
