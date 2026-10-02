@@ -32,13 +32,24 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Generate demo data
+      - name: Generate demo data (always, as fallback)
         run: python -m src.dashboard.generate_demo
 
-      - name: Run pipeline
-        run: python -m src.main --demo
+      - name: Run pipeline (live mode if secrets configured, otherwise demo)
+        run: |
+          if [ -n "${{ secrets.SLEEPER_LEAGUE_ID }}" ]; then
+            echo "Running in LIVE mode"
+            python -m src.main --live
+          else
+            echo "No SLEEPER_LEAGUE_ID secret found — running in DEMO mode"
+            python -m src.main --demo
+          fi
         env:
-          DEMO_MODE: 'true'
+          SLEEPER_USERNAME: ${{ secrets.SLEEPER_USERNAME }}
+          SLEEPER_LEAGUE_ID: ${{ secrets.SLEEPER_LEAGUE_ID }}
+          NFL_SEASON: ${{ secrets.NFL_SEASON }}
+          SCORING_TYPE: ${{ secrets.SCORING_TYPE }}
+          DEMO_MODE: ${{ secrets.DEMO_MODE }}
 
       - name: Run tests
         run: python -m pytest tests/ -v
