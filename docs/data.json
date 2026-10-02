@@ -1,20 +1,20 @@
 {
   "meta": {
-    "fetched_at": "2026-10-02T19:42:23.217018+00:00",
+    "fetched_at": "2026-10-02T19:51:26.937559+00:00",
     "season": "2026",
     "week": 5,
     "season_type": "regular",
     "league_id": "demo-league-2026",
     "league_name": "Demo Fantasy League",
     "api_calls": 0,
-    "generated_at": "2026-10-02T19:42:23.217018+00:00",
+    "generated_at": "2026-10-02T19:51:26.937559+00:00",
     "pipeline_version": "1.0.0"
   },
   "league": {
     "name": "Demo Fantasy League",
     "season": "2026",
     "week": 5,
-    "scoring_type": "ppr",
+    "scoring_type": "",
     "roster_positions": [
       "QB",
       "RB",
