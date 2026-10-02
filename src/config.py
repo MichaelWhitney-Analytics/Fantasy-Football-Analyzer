@@ -9,6 +9,13 @@ import os
 from dataclasses import dataclass, field
 from pathlib import Path
 
+# Load .env file if present (for local development)
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass  # python-dotenv not installed; env vars must be set manually
+
 
 @dataclass
 class Config:

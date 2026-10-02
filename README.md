@@ -263,6 +263,8 @@ edge = free_agent_projected_points - weakest_bench_player_projected_points
 
 Only recommendations with an edge above the threshold (default: 1.5 points) are shown. For FLEX-eligible positions (RB, WR, TE), the analysis compares across all three positions since they compete for the same roster slots.
 
+> **Note on projections:** The Sleeper API provides player metadata and stats but does not expose official weekly fantasy point projections. The pipeline estimates projections from available season stats and recent form. For production use, a projections provider (e.g., FantasyPros, ESPN) can be integrated via the `sleeper_client.py` abstraction layer.
+
 ### Win Probability
 
 Win probability is calculated using a logistic (sigmoid) function on the projected point differential:
@@ -325,16 +327,19 @@ Rate limit: Stay under 1,000 calls/minute. The client includes built-in rate lim
 ## Running Tests
 
 ```bash
+pip install -r requirements.txt
 python -m pytest tests/ -v
 ```
 
-Tests cover:
-- Waiver edge ranking, filtering, and trend bonus
-- Matchup analysis structure and win probability range
-- Lineup optimizer output and change suggestions
-- Helper functions (comparable positions, drop reasons)
-- Player trend labels
+The test suite includes 18 unit tests for the analysis engine, covering:
+- Waiver edge ranking, filtering, and trend bonus calculation
+- Matchup analysis structure and win probability range validation
+- Lineup optimizer output and change suggestion logic
+- Helper functions (comparable positions, drop reasoning)
+- Player trend label assignment
 - Insights generation
+
+Tests use fixture data (no live API calls) for reproducible, fast results.
 
 ---
 

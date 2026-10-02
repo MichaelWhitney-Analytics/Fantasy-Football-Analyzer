@@ -48,6 +48,16 @@ def fetch_all(client: SleeperClient = None) -> dict:
 
     print(f"  NFL State: Season {season}, Week {current_week} ({season_type})")
 
+    # 1b. Resolve user ID from username (for team selection)
+    user_id = None
+    if config.sleeper_username:
+        try:
+            user = client.get_user(config.sleeper_username)
+            user_id = user.get("user_id")
+            print(f"  User: {user.get('display_name', config.sleeper_username)} ({user_id})")
+        except Exception as e:
+            print(f"  User resolution failed: {e}")
+
     # 2. League data
     league = client.get_league()
     league_id = league.get("league_id", config.league_id)
@@ -95,6 +105,7 @@ def fetch_all(client: SleeperClient = None) -> dict:
             "league_id": league_id,
             "league_name": league.get("name", ""),
             "api_calls": client.get_call_count(),
+            "user_id": user_id,
         },
         "league": league,
         "rosters": rosters,

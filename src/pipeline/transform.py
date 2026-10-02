@@ -61,9 +61,20 @@ def transform(raw_data: dict) -> dict:
         enriched = _enrich_roster(roster, players_db, roster_to_user)
         all_rosters_enriched.append(enriched)
 
-    # Find the user's roster (first roster or by matching username)
+    # Find the user's roster (by user_id from API, or first roster as fallback)
     my_roster = all_rosters_enriched[0] if all_rosters_enriched else None
-    if config.sleeper_username:
+    user_id = meta.get("user_id")
+    if user_id:
+        # Match by owner_id (most reliable — resolved from Sleeper username via API)
+        for roster in rosters:
+            if str(roster.get("owner_id")) == str(user_id):
+                for r in all_rosters_enriched:
+                    if r["roster_id"] == roster.get("roster_id"):
+                        my_roster = r
+                        break
+                break
+    elif config.sleeper_username:
+        # Fallback: match by display name (less reliable)
         for r in all_rosters_enriched:
             manager = r.get("manager", {}).get("display_name", "")
             if manager.lower() == config.sleeper_username.lower():
