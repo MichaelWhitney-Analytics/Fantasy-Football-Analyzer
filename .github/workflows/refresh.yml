@@ -4,28 +4,42 @@ on:
   schedule:
     # Run at 3 PM UTC (8 AM Mountain Time) on:
     # Tuesday (after MNF), Thursday (after TNF), Sunday (morning before games)
-    - cron: '0 15 * * 2'
-    - cron: '0 15 * * 4'
-    - cron: '0 15 * * 0'
-  workflow_dispatch: {}  # Manual trigger button
+    - cron: "0 15 * * 2"
+    - cron: "0 15 * * 4"
+    - cron: "0 15 * * 0"
+
+  workflow_dispatch:
 
 permissions:
-  contents: write   # Required for committing data and deploying to Pages
-  pages: write      # Required for GitHub Pages deployment
-  id-token: write   # Required for Pages deployment
+  contents: write
+  pages: write
+  id-token: write
+
+# Prevent scheduled/manual refreshes from pushing at the same time.
+# cancel-in-progress: false means an already-running refresh completes,
+# while a second request waits rather than creating a Git push collision.
+concurrency:
+  group: fantasy-football-data-refresh
+  cancel-in-progress: false
 
 jobs:
   refresh:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          # Full history is required so git pull --rebase can safely place
+          # the generated-data commit on top of newer commits on main.
+          fetch-depth: 0
+          ref: main
 
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
-          cache: 'pip'
+          python-version: "3.12"
+          cache: pip
 
       - name: Install dependencies
         run: |
@@ -54,13 +68,29 @@ jobs:
       - name: Run tests
         run: python -m pytest tests/ -v
 
-      - name: Commit updated data
+      - name: Commit updated data safely
+        id: commit_data
         run: |
           git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
           git add docs/data.json data/demo/league_data.json
-          git commit -m "Auto-refresh: $(date -u +%Y-%m-%d) Week data update" || echo "No changes to commit"
-          git push
+
+          if git diff --cached --quiet; then
+            echo "No generated data changes to commit."
+            echo "data_changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          git commit -m "Auto-refresh: $(date -u +%Y-%m-%d) Week data update"
+
+          # A user may have pushed website or workflow changes after this
+          # job started. Rebase the generated-data commit on the current
+          # remote main before pushing instead of failing with "fetch first".
+          git pull --rebase origin main
+          git push origin HEAD:main
+
+          echo "data_changed=true" >> "$GITHUB_OUTPUT"
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
@@ -68,3 +98,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs
           publish_branch: gh-pages
+          force_orphan: false
