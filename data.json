@@ -1,0 +1,2394 @@
+{
+  "meta": {
+    "fetched_at": "2026-10-02T19:51:26.937559+00:00",
+    "season": "2026",
+    "week": 5,
+    "season_type": "regular",
+    "league_id": "demo-league-2026",
+    "league_name": "Demo Fantasy League",
+    "api_calls": 0,
+    "generated_at": "2026-10-02T19:51:26.937559+00:00",
+    "pipeline_version": "1.0.0"
+  },
+  "league": {
+    "name": "Demo Fantasy League",
+    "season": "2026",
+    "week": 5,
+    "scoring_type": "",
+    "roster_positions": [
+      "QB",
+      "RB",
+      "RB",
+      "WR",
+      "WR",
+      "TE",
+      "FLEX",
+      "K",
+      "DEF",
+      "BN",
+      "BN",
+      "BN",
+      "BN",
+      "BN",
+      "BN"
+    ],
+    "total_rosters": 12,
+    "scoring_settings": {
+      "pass_td": 4,
+      "pass_yd": 0.04,
+      "pass_int": -2,
+      "rush_td": 6,
+      "rush_yd": 0.1,
+      "rec": 0.5,
+      "rec_td": 6,
+      "rec_yd": 0.1
+    }
+  },
+  "my_team": {
+    "roster_id": 1,
+    "manager": {
+      "display_name": "Gridiron Goblins",
+      "avatar_id": null
+    },
+    "record": {
+      "wins": 3,
+      "losses": 2,
+      "ties": 0
+    },
+    "points_for": 457.48,
+    "points_against": 510.89,
+    "player_ids": [
+      "1000",
+      "1001",
+      "1002",
+      "1003",
+      "1004",
+      "1005",
+      "1006",
+      "1007",
+      "1008",
+      "1009",
+      "1010",
+      "1011",
+      "1012",
+      "1013"
+    ],
+    "starters": [
+      {
+        "player_id": "1000",
+        "name": "Baker Mayfield",
+        "first_name": "Baker",
+        "last_name": "Mayfield",
+        "position": "QB",
+        "team": "TB",
+        "age": 28,
+        "years_exp": 7,
+        "injury_status": "Active",
+        "injury_body_part": null,
+        "injury_notes": "",
+        "bye_week": 9,
+        "projected_points": 26.06,
+        "season_points": 112.21,
+        "recent_avg": 22.23,
+        "recent_points": [
+          19.04,
+          24.25,
+          23.41
+        ],
+        "is_starter": true,
+        "avatar_id": null
+      },
+      {
+        "player_id": "1001",
+        "name": "D'Andre Swift",
+        "first_name": "D'Andre",
+        "last_name": "Swift",
+        "position": "RB",
+        "team": "CHI",
+        "age": 33,
+        "years_exp": 2,
+        "injury_status": null,
+        "injury_body_part": null,
+        "injury_notes": "",
+        "bye_week": 12,
+        "projected_points": 21.93,
+        "season_points": 110.93,
+        "recent_avg": 23.33,
+        "recent_points": [
+          26.9,
+          25.79,
+          17.3
+        ],
+        "is_starter": true,
+        "avatar_id": null
+      },
+      {
+        "player_id": "1002",
+        "name": "Jahmyr Gibbs",
+        "first_name": "Jahmyr",
+        "last_name": "Gibbs",
+        "position": "RB",
+        "team": "DET",
+        "age": 24,
+        "years_exp": 8,
+        "injury_status": null,
+        "injury_body_part": null,
+        "injury_notes": "",
+        "bye_week": 11,
+        "projected_points": 20.04,
+        "season_points": 110.26,
+        "recent_avg": 21.73,
+        "recent_points": [
+          24.74,
+          20.45,
+          19.99
+        ],
+        "is_starter": true,
+        "avatar_id": null
+      },
+      {
+        "player_id": "1003",
+        "name": "Brandon Aiyuk",
+        "first_name": "Brandon",
+        "last_name": "Aiyuk",
+        "position": "WR",
+        "team": "SF",
+        "age": 23,
+        "years_exp": 11,
+        "injury_status": null,
+        "injury_body_part": null,
+        "injury_notes": "",
+        "bye_week": 9,
+        "projected_points": 19.26,
+        "season_points": 110.78,
+        "recent_avg": 20.3,
+        "recent_points": [
+          19.79,
+          22.16,
+          18.94
+        ],
+        "is_starter": true,
+        "avatar_id": null
+      },
+      {
+        "player_id": "1004",
+        "name": "Stefon Diggs",
+        "first_name": "Stefon",
+        "last_name": "Diggs",
+        "position": "WR",
+        "team": "HOU",
+        "age": 34,
+        "years_exp": 9,
+        "injury_status": null,
+        "injury_body_part": null,
+        "injury_notes": "",
+        "bye_week": 10,
+        "projected_points": 17.47,
+        "season_points": 87.62,
+        "recent_avg": 14.97,
+        "recent_points": [
+          14.51,
+          16.26,
+          14.14
+        ],
+        "is_starter": true,
+        "avatar_id": null
+      },
+      {
+        "player_id": "1005",
+        "name": "Hunter Henry",
+        "first_name": "Hunter",
+        "last_name": "Henry",
+        "position": "TE",
+        "team": "NE",
+        "age": 34,
+        "years_exp": 5,
+        "injury_status": null,
+        "injury_body_part": null,
+        "injury_notes": "",
+        "bye_week": 10,
+        "projected_points": 9.59,
+        "season_points": 47.73,
+        "recent_avg": 9.41,
+        "recent_points": [
+          5.66,
+          8.18,
+          14.4
+        ],
+        "is_starter": true,
+        "avatar_id": null
+      },
+      {
+        "player_id": "1006",
+        "name": "Tony Pollard",
+        "first_name": "Tony",
+        "last_name": "Pollard",
+        "position": "RB",
+        "team": "TEN",
+        "age": 23,
+        "years_exp": 9,
+        "injury_status": null,
+        "injury_body_part": null,
+        "injury_notes": "",
+        "bye_week": 9,
+        "projected_points": 5.58,
+        "season_points": 32.12,
+        "recent_avg": 6.48,
+        "recent_points": [
+          10.89,
+          2.28,
+          6.28
+        ],
+        "is_starter": true,
+        "avatar_id": null
+      },
+      {
+        "player_id": "1007",
+        "name": "Younghoe Koo",
+        "first_name": "Younghoe",
+        "last_name": "Koo",
+        "position": "K",
+        "team": "ATL",
+        "age": 28,
+        "years_exp": 4,
+        "injury_status": "Questionable",
+        "injury_body_part": null,
+        "injury_notes": "",
+        "bye_week": 12,
+        "projected_points": 5.9,
+        "season_points": 29.21,
+        "recent_avg": 6.47,
+        "recent_points": [
+          6.34,
+          3.49,
+          9.57
+        ],
+        "is_starter": true,
+        "avatar_id": null
+      },
+      {
+        "player_id": "1008",
+        "name": "Saints",
+        "first_name": "Saints",
+        "last_name": "",
+        "position": "DEF",
+        "team": "NO",
+        "age": 27,
+        "years_exp": 8,
+        "injury_status": "Questionable",
+        "injury_body_part": null,
+        "injury_notes": "",
+        "bye_week": 11,
+        "projected_points": 9.8,
+        "season_points": 52.72,
+        "recent_avg": 11.49,
+        "recent_points": [
+          12.67,
+          9.53,
+          12.26
+        ],
+        "is_starter": true,
+        "avatar_id": null
+      }
+    ],
+    "bench": [
+      {
+        "player_id": "1009",
+        "name": "Kyler Murray",
+        "first_name": "",
+        "last_name": "",
+        "position": "QB",
+        "team": "ARI",
+        "age": 31,
+        "years_exp": 4,
+        "injury_status": null,
+        "injury_body_part": null,
+        "injury_notes": "",
+        "bye_week": 10,
+        "projected_points": 12.19,
+        "season_points": 54.81,
+        "recent_avg": 8.09,
+        "recent_points": [
+          6.6,
+          6.17,
+          11.5
+        ],
+        "is_starter": false,
+        "avatar_id": null
+      },
+      {
+        "player_id": "1010",
+        "name": "Tyjae Spears",
+        "first_name": "",
+        "last_name": "",
+        "position": "RB",
+        "team": "TEN",
+        "age": 23,
+        "years_exp": 9,
+        "injury_status": null,
+        "injury_body_part": null,
+        "injury_notes": "",
+        "bye_week": 9,
+        "projected_points": 3.73,
+        "season_points": 19.61,
+        "recent_avg": 5.57,
+        "recent_points": [
+          1.21,
+          7.98,
+          7.52
+        ],
+        "is_starter": false,
+        "avatar_id": null
+      },
+      {
+        "player_id": "1011",
+        "name": "Jaylen Waddle",
+        "first_name": "",
+        "last_name": "",
+        "position": "WR",
+        "team": "MIA",
+        "age": 31,
+        "years_exp": 8,
+        "injury_status": null,
+        "injury_body_part": null,
+        "injury_notes": "",
+        "bye_week": 10,
+        "projected_points": 5.08,
+        "season_points": 25.23,
+        "recent_avg": 7.2,
+        "recent_points": [
+          5.44,
+          7.28,
+          8.87
+        ],
+        "is_starter": false,
+        "avatar_id": null
+      },
+      {
+        "player_id": "1012",
+        "name": "David Njoku",
+        "first_name": "",
+        "last_name": "",
+        "position": "TE",
+        "team": "CLE",
+        "age": 28,
+        "years_exp": 7,
+        "injury_status": null,
+        "injury_body_part": null,
+        "injury_notes": "",
+        "bye_week": 10,
+        "projected_points": 6.98,
+        "season_points": 39.18,
+        "recent_avg": 5.23,
+        "recent_points": [
+          4.74,
+          3.81,
+          7.15
+        ],
+        "is_starter": false,
+        "avatar_id": null
+      },
+      {
+        "player_id": "1013",
+        "name": "Khalil Shakir",
+        "first_name": "",
+        "last_name": "",
+        "position": "WR",
+        "team": "BUF",
+        "age": 33,
+        "years_exp": 6,
+        "injury_status": null,
+        "injury_body_part": null,
+        "injury_notes": "",
+        "bye_week": 12,
+        "projected_points": 10.69,
+        "season_points": 43.93,
+        "recent_avg": 8.32,
+        "recent_points": [
+          10.32,
+          10.25,
+          4.39
+        ],
+        "is_starter": false,
+        "avatar_id": null
+      }
+    ],
+    "full_roster": [
+      {
+        "player_id": "1000",
+        "name": "Baker Mayfield",
+        "first_name": "Baker",
+        "last_name": "Mayfield",
+        "position": "QB",
+        "team": "TB",
+        "age": 28,
+        "years_exp": 7,
+        "injury_status": "Active",
+        "injury_body_part": null,
+        "injury_notes": "",
+        "bye_week": 9,
+        "projected_points": 26.06,
+        "season_points": 112.21,
+        "recent_avg": 22.23,
+        "recent_points": [
+          19.04,
+          24.25,
+          23.41
+        ],
+        "is_starter": true,
+        "avatar_id": null
+      },
+      {
+        "player_id": "1001",
+        "name": "D'Andre Swift",
+        "first_name": "D'Andre",
+        "last_name": "Swift",
+        "position": "RB",
+        "team": "CHI",
+        "age": 33,
+        "years_exp": 2,
+        "injury_status": null,
+        "injury_body_part": null,
+        "injury_notes": "",
+        "bye_week": 12,
+        "projected_points": 21.93,
+        "season_points": 110.93,
+        "recent_avg": 23.33,
+        "recent_points": [
+          26.9,
+          25.79,
+          17.3
+        ],
+        "is_starter": true,
+        "avatar_id": null
+      },
+      {
+        "player_id": "1002",
+        "name": "Jahmyr Gibbs",
+        "first_name": "Jahmyr",
+        "last_name": "Gibbs",
+        "position": "RB",
+        "team": "DET",
+        "age": 24,
+        "years_exp": 8,
+        "injury_status": null,
+        "injury_body_part": null,
+        "injury_notes": "",
+        "bye_week": 11,
+        "projected_points": 20.04,
+        "season_points": 110.26,
+        "recent_avg": 21.73,
+        "recent_points": [
+          24.74,
+          20.45,
+          19.99
+        ],
+        "is_starter": true,
+        "avatar_id": null
+      },
+      {
+        "player_id": "1003",
+        "name": "Brandon Aiyuk",
+        "first_name": "Brandon",
+        "last_name": "Aiyuk",
+        "position": "WR",
+        "team": "SF",
+        "age": 23,
+        "years_exp": 11,
+        "injury_status": null,
+        "injury_body_part": null,
+        "injury_notes": "",
+        "bye_week": 9,
+        "projected_points": 19.26,
+        "season_points": 110.78,
+        "recent_avg": 20.3,
+        "recent_points": [
+          19.79,
+          22.16,
+          18.94
+        ],
+        "is_starter": true,
+        "avatar_id": null
+      },
+      {
+        "player_id": "1004",
+        "name": "Stefon Diggs",
+        "first_name": "Stefon",
+        "last_name": "Diggs",
+        "position": "WR",
+        "team": "HOU",
+        "age": 34,
+        "years_exp": 9,
+        "injury_status": null,
+        "injury_body_part": null,
+        "injury_notes": "",
+        "bye_week": 10,
+        "projected_points": 17.47,
+        "season_points": 87.62,
+        "recent_avg": 14.97,
+        "recent_points": [
+          14.51,
+          16.26,
+          14.14
+        ],
+        "is_starter": true,
+        "avatar_id": null
+      },
+      {
+        "player_id": "1005",
+        "name": "Hunter Henry",
+        "first_name": "Hunter",
+        "last_name": "Henry",
+        "position": "TE",
+        "team": "NE",
+        "age": 34,
+        "years_exp": 5,
+        "injury_status": null,
+        "injury_body_part": null,
+        "injury_notes": "",
+        "bye_week": 10,
+        "projected_points": 9.59,
+        "season_points": 47.73,
+        "recent_avg": 9.41,
+        "recent_points": [
+          5.66,
+          8.18,
+          14.4
+        ],
+        "is_starter": true,
+        "avatar_id": null
+      },
+      {
+        "player_id": "1006",
+        "name": "Tony Pollard",
+        "first_name": "Tony",
+        "last_name": "Pollard",
+        "position": "RB",
+        "team": "TEN",
+        "age": 23,
+        "years_exp": 9,
+        "injury_status": null,
+        "injury_body_part": null,
+        "injury_notes": "",
+        "bye_week": 9,
+        "projected_points": 5.58,
+        "season_points": 32.12,
+        "recent_avg": 6.48,
+        "recent_points": [
+          10.89,
+          2.28,
+          6.28
+        ],
+        "is_starter": true,
+        "avatar_id": null
+      },
+      {
+        "player_id": "1007",
+        "name": "Younghoe Koo",
+        "first_name": "Younghoe",
+        "last_name": "Koo",
+        "position": "K",
+        "team": "ATL",
+        "age": 28,
+        "years_exp": 4,
+        "injury_status": "Questionable",
+        "injury_body_part": null,
+        "injury_notes": "",
+        "bye_week": 12,
+        "projected_points": 5.9,
+        "season_points": 29.21,
+        "recent_avg": 6.47,
+        "recent_points": [
+          6.34,
+          3.49,
+          9.57
+        ],
+        "is_starter": true,
+        "avatar_id": null
+      },
+      {
+        "player_id": "1008",
+        "name": "Saints",
+        "first_name": "Saints",
+        "last_name": "",
+        "position": "DEF",
+        "team": "NO",
+        "age": 27,
+        "years_exp": 8,
+        "injury_status": "Questionable",
+        "injury_body_part": null,
+        "injury_notes": "",
+        "bye_week": 11,
+        "projected_points": 9.8,
+        "season_points": 52.72,
+        "recent_avg": 11.49,
+        "recent_points": [
+          12.67,
+          9.53,
+          12.26
+        ],
+        "is_starter": true,
+        "avatar_id": null
+      },
+      {
+        "player_id": "1009",
+        "name": "Kyler Murray",
+        "first_name": "",
+        "last_name": "",
+        "position": "QB",
+        "team": "ARI",
+        "age": 31,
+        "years_exp": 4,
+        "injury_status": null,
+        "injury_body_part": null,
+        "injury_notes": "",
+        "bye_week": 10,
+        "projected_points": 12.19,
+        "season_points": 54.81,
+        "recent_avg": 8.09,
+        "recent_points": [
+          6.6,
+          6.17,
+          11.5
+        ],
+        "is_starter": false,
+        "avatar_id": null
+      },
+      {
+        "player_id": "1010",
+        "name": "Tyjae Spears",
+        "first_name": "",
+        "last_name": "",
+        "position": "RB",
+        "team": "TEN",
+        "age": 23,
+        "years_exp": 9,
+        "injury_status": null,
+        "injury_body_part": null,
+        "injury_notes": "",
+        "bye_week": 9,
+        "projected_points": 3.73,
+        "season_points": 19.61,
+        "recent_avg": 5.57,
+        "recent_points": [
+          1.21,
+          7.98,
+          7.52
+        ],
+        "is_starter": false,
+        "avatar_id": null
+      },
+      {
+        "player_id": "1011",
+        "name": "Jaylen Waddle",
+        "first_name": "",
+        "last_name": "",
+        "position": "WR",
+        "team": "MIA",
+        "age": 31,
+        "years_exp": 8,
+        "injury_status": null,
+        "injury_body_part": null,
+        "injury_notes": "",
+        "bye_week": 10,
+        "projected_points": 5.08,
+        "season_points": 25.23,
+        "recent_avg": 7.2,
+        "recent_points": [
+          5.44,
+          7.28,
+          8.87
+        ],
+        "is_starter": false,
+        "avatar_id": null
+      },
+      {
+        "player_id": "1012",
+        "name": "David Njoku",
+        "first_name": "",
+        "last_name": "",
+        "position": "TE",
+        "team": "CLE",
+        "age": 28,
+        "years_exp": 7,
+        "injury_status": null,
+        "injury_body_part": null,
+        "injury_notes": "",
+        "bye_week": 10,
+        "projected_points": 6.98,
+        "season_points": 39.18,
+        "recent_avg": 5.23,
+        "recent_points": [
+          4.74,
+          3.81,
+          7.15
+        ],
+        "is_starter": false,
+        "avatar_id": null
+      },
+      {
+        "player_id": "1013",
+        "name": "Khalil Shakir",
+        "first_name": "",
+        "last_name": "",
+        "position": "WR",
+        "team": "BUF",
+        "age": 33,
+        "years_exp": 6,
+        "injury_status": null,
+        "injury_body_part": null,
+        "injury_notes": "",
+        "bye_week": 12,
+        "projected_points": 10.69,
+        "season_points": 43.93,
+        "recent_avg": 8.32,
+        "recent_points": [
+          10.32,
+          10.25,
+          4.39
+        ],
+        "is_starter": false,
+        "avatar_id": null
+      }
+    ],
+    "projected_total": 135.63
+  },
+  "opponent": {
+    "roster_id": 2,
+    "manager": {
+      "display_name": "End Zone Enforcers",
+      "avatar_id": null
+    },
+    "record": {
+      "wins": 4,
+      "losses": 1,
+      "ties": 0
+    },
+    "points_for": 413.23,
+    "points_against": 450.07,
+    "player_ids": [
+      "1014",
+      "1015",
+      "1016",
+      "1017",
+      "1018",
+      "1019",
+      "1020",
+      "1021",
+      "1022",
+      "1023",
+      "1024",
+      "1025",
+      "1026",
+      "1027"
+    ],
+    "starters": [
+      {
+        "player_id": "1014",
+        "name": "Kyler Murray",
+        "first_name": "Kyler",
+        "last_name": "Murray",
+        "position": "QB",
+        "team": "ARI",
+        "age": 34,
+        "years_exp": 9,
+        "injury_status": null,
+        "injury_body_part": null,
+        "injury_notes": "",
+        "bye_week": 10,
+        "projected_points": 15.96,
+        "season_points": 69.7,
+        "recent_avg": 13.65,
+        "recent_points": [
+          13.57,
+          17.68,
+          9.69
+        ],
+        "is_starter": true,
+        "avatar_id": null
+      },
+      {
+        "player_id": "1015",
+        "name": "Tyjae Spears",
+        "first_name": "Tyjae",
+        "last_name": "Spears",
+        "position": "RB",
+        "team": "TEN",
+        "age": 25,
+        "years_exp": 3,
+        "injury_status": null,
+        "injury_body_part": null,
+        "injury_notes": "",
+        "bye_week": 9,
+        "projected_points": 5.86,
+        "season_points": 35.15,
+        "recent_avg": 11.13,
+        "recent_points": [
+          10.39,
+          11.72,
+          11.29
+        ],
+        "is_starter": true,
+        "avatar_id": null
+      },
+      {
+        "player_id": "1016",
+        "name": "Bijan Robinson",
+        "first_name": "Bijan",
+        "last_name": "Robinson",
+        "position": "RB",
+        "team": "ATL",
+        "age": 28,
+        "years_exp": 5,
+        "injury_status": null,
+        "injury_body_part": null,
+        "injury_notes": "",
+        "bye_week": 12,
+        "projected_points": 13.26,
+        "season_points": 58.71,
+        "recent_avg": 9.54,
+        "recent_points": [
+          10.75,
+          7.33,
+          10.53
+        ],
+        "is_starter": true,
+        "avatar_id": null
+      },
+      {
+        "player_id": "1017",
+        "name": "Jaylen Waddle",
+        "first_name": "Jaylen",
+        "last_name": "Waddle",
+        "position": "WR",
+        "team": "MIA",
+        "age": 29,
+        "years_exp": 3,
+        "injury_status": null,
+        "injury_body_part": null,
+        "injury_notes": "",
+        "bye_week": 10,
+        "projected_points": 8.56,
+        "season_points": 46.17,
+        "recent_avg": 11.49,
+        "recent_points": [
+          11.54,
+          12.07,
+          10.85
+        ],
+        "is_starter": true,
+        "avatar_id": null
+      },
+      {
+        "player_id": "1018",
+        "name": "Deebo Samuel",
+        "first_name": "Deebo",
+        "last_name": "Samuel",
+        "position": "WR",
+        "team": "SF",
+        "age": 22,
+        "years_exp": 1,
+        "injury_status": "Active",
+        "injury_body_part": null,
+        "injury_notes": "",
+        "bye_week": 9,
+        "projected_points": 8.75,
+        "season_points": 51.95,
+        "recent_avg": 11.62,
+        "recent_points": [
+          11.18,
+          10.81,
+          12.87
+        ],
+        "is_starter": true,
+        "avatar_id": null
+      },
+      {
+        "player_id": "1019",
+        "name": "David Njoku",
+        "first_name": "David",
+        "last_name": "Njoku",
+        "position": "TE",
+        "team": "CLE",
+        "age": 24,
+        "years_exp": 2,
+        "injury_status": "Active",
+        "injury_body_part": null,
+        "injury_notes": "",
+        "bye_week": 10,
+        "projected_points": 8.24,
+        "season_points": 48.11,
+        "recent_avg": 8.27,
+        "recent_points": [
+          9.93,
+          5.19,
+          9.7
+        ],
+        "is_starter": true,
+        "avatar_id": null
+      },
+      {
+        "player_id": "1020",
+        "name": "Zack Moss",
+        "first_name": "Zack",
+        "last_name": "Moss",
+        "position": "RB",
+        "team": "DEN",
+        "age": 31,
+        "years_exp": 10,
+        "injury_status": null,
+        "injury_body_part": null,
+        "injury_notes": "",
+        "bye_week": 11,
+        "projected_points": 5.68,
+        "season_points": 32.51,
+        "recent_avg": 7.89,
+        "recent_points": [
+          5.54,
+          10.92,
+          7.2
+        ],
+        "is_starter": true,
+        "avatar_id": null
+      },
+      {
+        "player_id": "1021",
+        "name": "Harrison Butker",
+        "first_name": "Harrison",
+        "last_name": "Butker",
+        "position": "K",
+        "team": "KC",
+        "age": 25,
+        "years_exp": 11,
+        "injury_status": null,
+        "injury_body_part": null,
+        "injury_notes": "",
+        "bye_week": 11,
+        "projected_points": 9.34,
+        "season_points": 45.19,
+        "recent_avg": 10.84,
+        "recent_points": [
+          9.87,
+          9.27,
+          13.39
+        ],
+        "is_starter": true,
+        "avatar_id": null
+      },
+      {
+        "player_id": "1022",
+        "name": "Browns",
+        "first_name": "Browns",
+        "last_name": "",
+        "position": "DEF",
+        "team": "CLE",
+        "age": 34,
+        "years_exp": 2,
+        "injury_status": null,
+        "injury_body_part": null,
+        "injury_notes": "",
+        "bye_week": 10,
+        "projected_points": 5.83,
+        "season_points": 26.42,
+        "recent_avg": 4.4,
+        "recent_points": [
+          1.59,
+          6.74,
+          4.86
+        ],
+        "is_starter": true,
+        "avatar_id": null
+      }
+    ],
+    "bench": [
+      {
+        "player_id": "1023",
+        "name": "Jalen Hurts",
+        "first_name": "",
+        "last_name": "",
+        "position": "QB",
+        "team": "PHI",
+        "age": 26,
+        "years_exp": 3,
+        "injury_status": null,
+        "injury_body_part": null,
+        "injury_notes": "",
+        "bye_week": 10,
+        "projected_points": 12.25,
+        "season_points": 73.47,
+        "recent_avg": 13.97,
+        "recent_points": [
+          19.65,
+          10.43,
+          11.83
+        ],
+        "is_starter": false,
+        "avatar_id": null
+      },
+      {
+        "player_id": "1024",
+        "name": "Antonio Gibson",
+        "first_name": "",
+        "last_name": "",
+        "position": "RB",
+        "team": "NE",
+        "age": 33,
+        "years_exp": 5,
+        "injury_status": "Questionable",
+        "injury_body_part": null,
+        "injury_notes": "",
+        "bye_week": 10,
+        "projected_points": 11.98,
+        "season_points": 69.0,
+        "recent_avg": 13.34,
+        "recent_points": [
+          12.5,
+          10.38,
+          17.14
+        ],
+        "is_starter": false,
+        "avatar_id": null
+      },
+      {
+        "player_id": "1025",
+        "name": "Khalil Shakir",
+        "first_name": "",
+        "last_name": "",
+        "position": "WR",
+        "team": "BUF",
+        "age": 32,
+        "years_exp": 2,
+        "injury_status": null,
+        "injury_body_part": null,
+        "injury_notes": "",
+        "bye_week": 12,
+        "projected_points": 11.84,
+        "season_points": 66.49,
+        "recent_avg": 14.14,
+        "recent_points": [
+          13.59,
+          14.98,
+          13.84
+        ],
+        "is_starter": false,
+        "avatar_id": null
+      },
+      {
+        "player_id": "1026",
+        "name": "Sam LaPorta",
+        "first_name": "",
+        "last_name": "",
+        "position": "TE",
+        "team": "DET",
+        "age": 25,
+        "years_exp": 12,
+        "injury_status": null,
+        "injury_body_part": null,
+        "injury_notes": "",
+        "bye_week": 11,
+        "projected_points": 3.55,
+        "season_points": 20.49,
+        "recent_avg": 3.03,
+        "recent_points": [
+          6.52,
+          0.65,
+          1.92
+        ],
+        "is_starter": false,
+        "avatar_id": null
+      },
+      {
+        "player_id": "1027",
+        "name": "Christian Kirk",
+        "first_name": "",
+        "last_name": "",
+        "position": "WR",
+        "team": "JAX",
+        "age": 22,
+        "years_exp": 2,
+        "injury_status": null,
+        "injury_body_part": null,
+        "injury_notes": "",
+        "bye_week": 11,
+        "projected_points": 4.36,
+        "season_points": 22.95,
+        "recent_avg": 5.12,
+        "recent_points": [
+          2.23,
+          4.48,
+          8.64
+        ],
+        "is_starter": false,
+        "avatar_id": null
+      }
+    ],
+    "full_roster": [
+      {
+        "player_id": "1014",
+        "name": "Kyler Murray",
+        "first_name": "Kyler",
+        "last_name": "Murray",
+        "position": "QB",
+        "team": "ARI",
+        "age": 34,
+        "years_exp": 9,
+        "injury_status": null,
+        "injury_body_part": null,
+        "injury_notes": "",
+        "bye_week": 10,
+        "projected_points": 15.96,
+        "season_points": 69.7,
+        "recent_avg": 13.65,
+        "recent_points": [
+          13.57,
+          17.68,
+          9.69
+        ],
+        "is_starter": true,
+        "avatar_id": null
+      },
+      {
+        "player_id": "1015",
+        "name": "Tyjae Spears",
+        "first_name": "Tyjae",
+        "last_name": "Spears",
+        "position": "RB",
+        "team": "TEN",
+        "age": 25,
+        "years_exp": 3,
+        "injury_status": null,
+        "injury_body_part": null,
+        "injury_notes": "",
+        "bye_week": 9,
+        "projected_points": 5.86,
+        "season_points": 35.15,
+        "recent_avg": 11.13,
+        "recent_points": [
+          10.39,
+          11.72,
+          11.29
+        ],
+        "is_starter": true,
+        "avatar_id": null
+      },
+      {
+        "player_id": "1016",
+        "name": "Bijan Robinson",
+        "first_name": "Bijan",
+        "last_name": "Robinson",
+        "position": "RB",
+        "team": "ATL",
+        "age": 28,
+        "years_exp": 5,
+        "injury_status": null,
+        "injury_body_part": null,
+        "injury_notes": "",
+        "bye_week": 12,
+        "projected_points": 13.26,
+        "season_points": 58.71,
+        "recent_avg": 9.54,
+        "recent_points": [
+          10.75,
+          7.33,
+          10.53
+        ],
+        "is_starter": true,
+        "avatar_id": null
+      },
+      {
+        "player_id": "1017",
+        "name": "Jaylen Waddle",
+        "first_name": "Jaylen",
+        "last_name": "Waddle",
+        "position": "WR",
+        "team": "MIA",
+        "age": 29,
+        "years_exp": 3,
+        "injury_status": null,
+        "injury_body_part": null,
+        "injury_notes": "",
+        "bye_week": 10,
+        "projected_points": 8.56,
+        "season_points": 46.17,
+        "recent_avg": 11.49,
+        "recent_points": [
+          11.54,
+          12.07,
+          10.85
+        ],
+        "is_starter": true,
+        "avatar_id": null
+      },
+      {
+        "player_id": "1018",
+        "name": "Deebo Samuel",
+        "first_name": "Deebo",
+        "last_name": "Samuel",
+        "position": "WR",
+        "team": "SF",
+        "age": 22,
+        "years_exp": 1,
+        "injury_status": "Active",
+        "injury_body_part": null,
+        "injury_notes": "",
+        "bye_week": 9,
+        "projected_points": 8.75,
+        "season_points": 51.95,
+        "recent_avg": 11.62,
+        "recent_points": [
+          11.18,
+          10.81,
+          12.87
+        ],
+        "is_starter": true,
+        "avatar_id": null
+      },
+      {
+        "player_id": "1019",
+        "name": "David Njoku",
+        "first_name": "David",
+        "last_name": "Njoku",
+        "position": "TE",
+        "team": "CLE",
+        "age": 24,
+        "years_exp": 2,
+        "injury_status": "Active",
+        "injury_body_part": null,
+        "injury_notes": "",
+        "bye_week": 10,
+        "projected_points": 8.24,
+        "season_points": 48.11,
+        "recent_avg": 8.27,
+        "recent_points": [
+          9.93,
+          5.19,
+          9.7
+        ],
+        "is_starter": true,
+        "avatar_id": null
+      },
+      {
+        "player_id": "1020",
+        "name": "Zack Moss",
+        "first_name": "Zack",
+        "last_name": "Moss",
+        "position": "RB",
+        "team": "DEN",
+        "age": 31,
+        "years_exp": 10,
+        "injury_status": null,
+        "injury_body_part": null,
+        "injury_notes": "",
+        "bye_week": 11,
+        "projected_points": 5.68,
+        "season_points": 32.51,
+        "recent_avg": 7.89,
+        "recent_points": [
+          5.54,
+          10.92,
+          7.2
+        ],
+        "is_starter": true,
+        "avatar_id": null
+      },
+      {
+        "player_id": "1021",
+        "name": "Harrison Butker",
+        "first_name": "Harrison",
+        "last_name": "Butker",
+        "position": "K",
+        "team": "KC",
+        "age": 25,
+        "years_exp": 11,
+        "injury_status": null,
+        "injury_body_part": null,
+        "injury_notes": "",
+        "bye_week": 11,
+        "projected_points": 9.34,
+        "season_points": 45.19,
+        "recent_avg": 10.84,
+        "recent_points": [
+          9.87,
+          9.27,
+          13.39
+        ],
+        "is_starter": true,
+        "avatar_id": null
+      },
+      {
+        "player_id": "1022",
+        "name": "Browns",
+        "first_name": "Browns",
+        "last_name": "",
+        "position": "DEF",
+        "team": "CLE",
+        "age": 34,
+        "years_exp": 2,
+        "injury_status": null,
+        "injury_body_part": null,
+        "injury_notes": "",
+        "bye_week": 10,
+        "projected_points": 5.83,
+        "season_points": 26.42,
+        "recent_avg": 4.4,
+        "recent_points": [
+          1.59,
+          6.74,
+          4.86
+        ],
+        "is_starter": true,
+        "avatar_id": null
+      },
+      {
+        "player_id": "1023",
+        "name": "Jalen Hurts",
+        "first_name": "",
+        "last_name": "",
+        "position": "QB",
+        "team": "PHI",
+        "age": 26,
+        "years_exp": 3,
+        "injury_status": null,
+        "injury_body_part": null,
+        "injury_notes": "",
+        "bye_week": 10,
+        "projected_points": 12.25,
+        "season_points": 73.47,
+        "recent_avg": 13.97,
+        "recent_points": [
+          19.65,
+          10.43,
+          11.83
+        ],
+        "is_starter": false,
+        "avatar_id": null
+      },
+      {
+        "player_id": "1024",
+        "name": "Antonio Gibson",
+        "first_name": "",
+        "last_name": "",
+        "position": "RB",
+        "team": "NE",
+        "age": 33,
+        "years_exp": 5,
+        "injury_status": "Questionable",
+        "injury_body_part": null,
+        "injury_notes": "",
+        "bye_week": 10,
+        "projected_points": 11.98,
+        "season_points": 69.0,
+        "recent_avg": 13.34,
+        "recent_points": [
+          12.5,
+          10.38,
+          17.14
+        ],
+        "is_starter": false,
+        "avatar_id": null
+      },
+      {
+        "player_id": "1025",
+        "name": "Khalil Shakir",
+        "first_name": "",
+        "last_name": "",
+        "position": "WR",
+        "team": "BUF",
+        "age": 32,
+        "years_exp": 2,
+        "injury_status": null,
+        "injury_body_part": null,
+        "injury_notes": "",
+        "bye_week": 12,
+        "projected_points": 11.84,
+        "season_points": 66.49,
+        "recent_avg": 14.14,
+        "recent_points": [
+          13.59,
+          14.98,
+          13.84
+        ],
+        "is_starter": false,
+        "avatar_id": null
+      },
+      {
+        "player_id": "1026",
+        "name": "Sam LaPorta",
+        "first_name": "",
+        "last_name": "",
+        "position": "TE",
+        "team": "DET",
+        "age": 25,
+        "years_exp": 12,
+        "injury_status": null,
+        "injury_body_part": null,
+        "injury_notes": "",
+        "bye_week": 11,
+        "projected_points": 3.55,
+        "season_points": 20.49,
+        "recent_avg": 3.03,
+        "recent_points": [
+          6.52,
+          0.65,
+          1.92
+        ],
+        "is_starter": false,
+        "avatar_id": null
+      },
+      {
+        "player_id": "1027",
+        "name": "Christian Kirk",
+        "first_name": "",
+        "last_name": "",
+        "position": "WR",
+        "team": "JAX",
+        "age": 22,
+        "years_exp": 2,
+        "injury_status": null,
+        "injury_body_part": null,
+        "injury_notes": "",
+        "bye_week": 11,
+        "projected_points": 4.36,
+        "season_points": 22.95,
+        "recent_avg": 5.12,
+        "recent_points": [
+          2.23,
+          4.48,
+          8.64
+        ],
+        "is_starter": false,
+        "avatar_id": null
+      }
+    ],
+    "projected_total": 81.48
+  },
+  "standings": [
+    {
+      "roster_id": 11,
+      "manager": "Comeback Kids",
+      "record": "5-0",
+      "wins": 5,
+      "losses": 0,
+      "ties": 0,
+      "win_pct": 1.0,
+      "points_for": 612.85,
+      "points_against": 475.31,
+      "projected_total": 94.13
+    },
+    {
+      "roster_id": 8,
+      "manager": "Field Goal Phantoms",
+      "record": "5-0",
+      "wins": 5,
+      "losses": 0,
+      "ties": 0,
+      "win_pct": 1.0,
+      "points_for": 607.09,
+      "points_against": 487.05,
+      "projected_total": 116.8
+    },
+    {
+      "roster_id": 6,
+      "manager": "Blitz Brigade",
+      "record": "5-0",
+      "wins": 5,
+      "losses": 0,
+      "ties": 0,
+      "win_pct": 1.0,
+      "points_for": 421.35,
+      "points_against": 420.03,
+      "projected_total": 92.75
+    },
+    {
+      "roster_id": 2,
+      "manager": "End Zone Enforcers",
+      "record": "4-1",
+      "wins": 4,
+      "losses": 1,
+      "ties": 0,
+      "win_pct": 0.8,
+      "points_for": 413.23,
+      "points_against": 450.07,
+      "projected_total": 81.48
+    },
+    {
+      "roster_id": 9,
+      "manager": "Sack Attack",
+      "record": "4-1",
+      "wins": 4,
+      "losses": 1,
+      "ties": 0,
+      "win_pct": 0.8,
+      "points_for": 409.81,
+      "points_against": 461.16,
+      "projected_total": 136.83
+    },
+    {
+      "roster_id": 7,
+      "manager": "Pocket Passers",
+      "record": "3-2",
+      "wins": 3,
+      "losses": 2,
+      "ties": 0,
+      "win_pct": 0.6,
+      "points_for": 676.56,
+      "points_against": 502.47,
+      "projected_total": 107.61
+    },
+    {
+      "roster_id": 3,
+      "manager": "Touchdown Titans",
+      "record": "3-2",
+      "wins": 3,
+      "losses": 2,
+      "ties": 0,
+      "win_pct": 0.6,
+      "points_for": 584.65,
+      "points_against": 440.28,
+      "projected_total": 104.67
+    },
+    {
+      "roster_id": 12,
+      "manager": "Warriors of Winter",
+      "record": "3-2",
+      "wins": 3,
+      "losses": 2,
+      "ties": 0,
+      "win_pct": 0.6,
+      "points_for": 578.51,
+      "points_against": 631.4,
+      "projected_total": 90.96
+    },
+    {
+      "roster_id": 5,
+      "manager": "Hail Mary Heroes",
+      "record": "3-2",
+      "wins": 3,
+      "losses": 2,
+      "ties": 0,
+      "win_pct": 0.6,
+      "points_for": 506.45,
+      "points_against": 427.51,
+      "projected_total": 74.08
+    },
+    {
+      "roster_id": 4,
+      "manager": "Red Zone Raiders",
+      "record": "3-2",
+      "wins": 3,
+      "losses": 2,
+      "ties": 0,
+      "win_pct": 0.6,
+      "points_for": 481.88,
+      "points_against": 495.69,
+      "projected_total": 100.16
+    },
+    {
+      "roster_id": 1,
+      "manager": "Gridiron Goblins",
+      "record": "3-2",
+      "wins": 3,
+      "losses": 2,
+      "ties": 0,
+      "win_pct": 0.6,
+      "points_for": 457.48,
+      "points_against": 510.89,
+      "projected_total": 135.63
+    },
+    {
+      "roster_id": 10,
+      "manager": "Dynasty Dragons",
+      "record": "2-3",
+      "wins": 2,
+      "losses": 3,
+      "ties": 0,
+      "win_pct": 0.4,
+      "points_for": 529.56,
+      "points_against": 573.38,
+      "projected_total": 85.63
+    }
+  ],
+  "analysis": {
+    "waiver_edge": [
+      {
+        "rank": 1,
+        "player": {
+          "name": "Courtland Sutton",
+          "position": "WR",
+          "team": "DEN",
+          "projected_points": 12.43,
+          "season_points": 49.7,
+          "recent_avg": 7.25,
+          "injury_status": null,
+          "bye_week": 11
+        },
+        "drop_suggestion": {
+          "name": "Tyjae Spears",
+          "position": "RB",
+          "projected_points": 3.73,
+          "reason": "+8.7 pts/wk upgrade"
+        },
+        "edge_value": 9.0,
+        "raw_edge": 8.7,
+        "trending": false,
+        "analysis": "Adding Courtland Sutton (WR, DEN) over Tyjae Spears yields a +9.0 projected point edge per week. Bye week: 11."
+      },
+      {
+        "rank": 2,
+        "player": {
+          "name": "Rashee Rice",
+          "position": "WR",
+          "team": "KC",
+          "projected_points": 11.81,
+          "season_points": 47.24,
+          "recent_avg": 9.74,
+          "injury_status": null,
+          "bye_week": 11
+        },
+        "drop_suggestion": {
+          "name": "Tyjae Spears",
+          "position": "RB",
+          "projected_points": 3.73,
+          "reason": "+8.1 pts/wk upgrade"
+        },
+        "edge_value": 8.38,
+        "raw_edge": 8.08,
+        "trending": false,
+        "analysis": "Adding Rashee Rice (WR, KC) over Tyjae Spears yields a +8.4 projected point edge per week. Bye week: 11."
+      },
+      {
+        "rank": 3,
+        "player": {
+          "name": "Tyler Conklin",
+          "position": "TE",
+          "team": "NYJ",
+          "projected_points": 8.06,
+          "season_points": 32.25,
+          "recent_avg": 3.44,
+          "injury_status": null,
+          "bye_week": 11
+        },
+        "drop_suggestion": {
+          "name": "Tyjae Spears",
+          "position": "RB",
+          "projected_points": 3.73,
+          "reason": "+4.3 pts/wk upgrade"
+        },
+        "edge_value": 4.63,
+        "raw_edge": 4.33,
+        "trending": false,
+        "analysis": "Adding Tyler Conklin (TE, NYJ) over Tyjae Spears yields a +4.6 projected point edge per week. Bye week: 11."
+      },
+      {
+        "rank": 4,
+        "player": {
+          "name": "DK Metcalf",
+          "position": "WR",
+          "team": "SEA",
+          "projected_points": 8.74,
+          "season_points": 34.95,
+          "recent_avg": 9.42,
+          "injury_status": "Questionable",
+          "bye_week": 9
+        },
+        "drop_suggestion": {
+          "name": "Tyjae Spears",
+          "position": "RB",
+          "projected_points": 3.73,
+          "reason": "+5.0 pts/wk upgrade"
+        },
+        "edge_value": 4.31,
+        "raw_edge": 5.01,
+        "trending": false,
+        "analysis": "Adding DK Metcalf (WR, SEA) over Tyjae Spears yields a +4.3 projected point edge per week. Note: DK Metcalf is currently Questionable. Bye week: 9."
+      },
+      {
+        "rank": 5,
+        "player": {
+          "name": "Garrett Wilson",
+          "position": "WR",
+          "team": "NYJ",
+          "projected_points": 8.4,
+          "season_points": 33.6,
+          "recent_avg": 8.55,
+          "injury_status": "Questionable",
+          "bye_week": 11
+        },
+        "drop_suggestion": {
+          "name": "Tyjae Spears",
+          "position": "RB",
+          "projected_points": 3.73,
+          "reason": "+4.7 pts/wk upgrade"
+        },
+        "edge_value": 3.97,
+        "raw_edge": 4.67,
+        "trending": false,
+        "analysis": "Adding Garrett Wilson (WR, NYJ) over Tyjae Spears yields a +4.0 projected point edge per week. Note: Garrett Wilson is currently Questionable. Bye week: 11."
+      },
+      {
+        "rank": 6,
+        "player": {
+          "name": "TJ Hockenson",
+          "position": "TE",
+          "team": "MIN",
+          "projected_points": 5.08,
+          "season_points": 20.31,
+          "recent_avg": 5.1,
+          "injury_status": null,
+          "bye_week": 10
+        },
+        "drop_suggestion": {
+          "name": "Tyjae Spears",
+          "position": "RB",
+          "projected_points": 3.73,
+          "reason": "+1.4 pts/wk upgrade"
+        },
+        "edge_value": 1.85,
+        "raw_edge": 1.35,
+        "trending": true,
+        "analysis": "Adding TJ Hockenson (TE, MIN) over Tyjae Spears yields a +1.9 projected point edge per week. Bye week: 10."
+      },
+      {
+        "rank": 7,
+        "player": {
+          "name": "Evan Engram",
+          "position": "TE",
+          "team": "JAX",
+          "projected_points": 6.13,
+          "season_points": 24.53,
+          "recent_avg": 3.67,
+          "injury_status": "Questionable",
+          "bye_week": 11
+        },
+        "drop_suggestion": {
+          "name": "Tyjae Spears",
+          "position": "RB",
+          "projected_points": 3.73,
+          "reason": "+2.4 pts/wk upgrade"
+        },
+        "edge_value": 1.7,
+        "raw_edge": 2.4,
+        "trending": false,
+        "analysis": "Adding Evan Engram (TE, JAX) over Tyjae Spears yields a +1.7 projected point edge per week. Note: Evan Engram is currently Questionable. Bye week: 11."
+      }
+    ],
+    "matchup_analysis": {
+      "available": true,
+      "my_projected": 135.63,
+      "opp_projected": 81.48,
+      "point_spread": 54.15,
+      "win_probability": 100.0,
+      "opponent_name": "End Zone Enforcers",
+      "opponent_record": {
+        "wins": 4,
+        "losses": 1,
+        "ties": 0
+      },
+      "position_comparison": [
+        {
+          "position": "DEF",
+          "my_players": [
+            {
+              "name": "Saints",
+              "team": "NO",
+              "projected": 9.8
+            }
+          ],
+          "opp_players": [
+            {
+              "name": "Browns",
+              "team": "CLE",
+              "projected": 5.83
+            }
+          ],
+          "my_projected": 9.8,
+          "opp_projected": 5.83,
+          "difference": 3.97,
+          "advantage": "mine",
+          "edge_label": "Advantage"
+        },
+        {
+          "position": "K",
+          "my_players": [
+            {
+              "name": "Younghoe Koo",
+              "team": "ATL",
+              "projected": 5.9
+            }
+          ],
+          "opp_players": [
+            {
+              "name": "Harrison Butker",
+              "team": "KC",
+              "projected": 9.34
+            }
+          ],
+          "my_projected": 5.9,
+          "opp_projected": 9.34,
+          "difference": -3.44,
+          "advantage": "opponent",
+          "edge_label": "Disadvantage"
+        },
+        {
+          "position": "QB",
+          "my_players": [
+            {
+              "name": "Baker Mayfield",
+              "team": "TB",
+              "projected": 26.06
+            }
+          ],
+          "opp_players": [
+            {
+              "name": "Kyler Murray",
+              "team": "ARI",
+              "projected": 15.96
+            }
+          ],
+          "my_projected": 26.06,
+          "opp_projected": 15.96,
+          "difference": 10.1,
+          "advantage": "mine",
+          "edge_label": "Advantage"
+        },
+        {
+          "position": "RB",
+          "my_players": [
+            {
+              "name": "D'Andre Swift",
+              "team": "CHI",
+              "projected": 21.93
+            },
+            {
+              "name": "Jahmyr Gibbs",
+              "team": "DET",
+              "projected": 20.04
+            },
+            {
+              "name": "Tony Pollard",
+              "team": "TEN",
+              "projected": 5.58
+            }
+          ],
+          "opp_players": [
+            {
+              "name": "Tyjae Spears",
+              "team": "TEN",
+              "projected": 5.86
+            },
+            {
+              "name": "Bijan Robinson",
+              "team": "ATL",
+              "projected": 13.26
+            },
+            {
+              "name": "Zack Moss",
+              "team": "DEN",
+              "projected": 5.68
+            }
+          ],
+          "my_projected": 47.55,
+          "opp_projected": 24.8,
+          "difference": 22.75,
+          "advantage": "mine",
+          "edge_label": "Advantage"
+        },
+        {
+          "position": "TE",
+          "my_players": [
+            {
+              "name": "Hunter Henry",
+              "team": "NE",
+              "projected": 9.59
+            }
+          ],
+          "opp_players": [
+            {
+              "name": "David Njoku",
+              "team": "CLE",
+              "projected": 8.24
+            }
+          ],
+          "my_projected": 9.59,
+          "opp_projected": 8.24,
+          "difference": 1.35,
+          "advantage": "even",
+          "edge_label": "Even"
+        },
+        {
+          "position": "WR",
+          "my_players": [
+            {
+              "name": "Brandon Aiyuk",
+              "team": "SF",
+              "projected": 19.26
+            },
+            {
+              "name": "Stefon Diggs",
+              "team": "HOU",
+              "projected": 17.47
+            }
+          ],
+          "opp_players": [
+            {
+              "name": "Jaylen Waddle",
+              "team": "MIA",
+              "projected": 8.56
+            },
+            {
+              "name": "Deebo Samuel",
+              "team": "SF",
+              "projected": 8.75
+            }
+          ],
+          "my_projected": 36.73,
+          "opp_projected": 17.31,
+          "difference": 19.42,
+          "advantage": "mine",
+          "edge_label": "Advantage"
+        }
+      ],
+      "my_record": {
+        "wins": 3,
+        "losses": 2,
+        "ties": 0
+      }
+    },
+    "optimal_lineup": {
+      "available": true,
+      "suggested_lineup": [
+        {
+          "name": "Baker Mayfield",
+          "position": "QB",
+          "team": "TB",
+          "projected_points": 26.06,
+          "suggested_slot": "QB",
+          "injury_status": "Active"
+        },
+        {
+          "name": "Hunter Henry",
+          "position": "TE",
+          "team": "NE",
+          "projected_points": 9.59,
+          "suggested_slot": "TE",
+          "injury_status": null
+        },
+        {
+          "name": "Younghoe Koo",
+          "position": "K",
+          "team": "ATL",
+          "projected_points": 5.9,
+          "suggested_slot": "K",
+          "injury_status": "Questionable"
+        },
+        {
+          "name": "Saints",
+          "position": "DEF",
+          "team": "NO",
+          "projected_points": 9.8,
+          "suggested_slot": "DEF",
+          "injury_status": "Questionable"
+        },
+        {
+          "name": "D'Andre Swift",
+          "position": "RB",
+          "team": "CHI",
+          "projected_points": 21.93,
+          "suggested_slot": "RB",
+          "injury_status": null
+        },
+        {
+          "name": "Jahmyr Gibbs",
+          "position": "RB",
+          "team": "DET",
+          "projected_points": 20.04,
+          "suggested_slot": "RB",
+          "injury_status": null
+        },
+        {
+          "name": "Brandon Aiyuk",
+          "position": "WR",
+          "team": "SF",
+          "projected_points": 19.26,
+          "suggested_slot": "WR",
+          "injury_status": null
+        },
+        {
+          "name": "Stefon Diggs",
+          "position": "WR",
+          "team": "HOU",
+          "projected_points": 17.47,
+          "suggested_slot": "WR",
+          "injury_status": null
+        },
+        {
+          "name": "Khalil Shakir",
+          "position": "WR",
+          "team": "BUF",
+          "projected_points": 10.69,
+          "suggested_slot": "FLEX",
+          "injury_status": null
+        }
+      ],
+      "projected_total": 140.74,
+      "current_total": 135.63,
+      "improvement": 5.11,
+      "changes": [
+        {
+          "type": "bench_to_start",
+          "player": "Khalil Shakir",
+          "position": "WR",
+          "replaces": "Tony Pollard",
+          "reason": "Higher projection (10.69 vs 5.58)"
+        }
+      ],
+      "message": "Optimal lineup projects 140.74 points (+5.11 vs current lineup)"
+    },
+    "player_trends": {
+      "players": [
+        {
+          "name": "Baker Mayfield",
+          "position": "QB",
+          "team": "TB",
+          "projected_points": 26.06,
+          "season_points": 112.21,
+          "recent_avg": 22.23,
+          "trend": "hot",
+          "trend_label": "Trending Up",
+          "is_starter": true,
+          "injury_status": "Active"
+        },
+        {
+          "name": "D'Andre Swift",
+          "position": "RB",
+          "team": "CHI",
+          "projected_points": 21.93,
+          "season_points": 110.93,
+          "recent_avg": 23.33,
+          "trend": "hot",
+          "trend_label": "Trending Up",
+          "is_starter": true,
+          "injury_status": null
+        },
+        {
+          "name": "Jahmyr Gibbs",
+          "position": "RB",
+          "team": "DET",
+          "projected_points": 20.04,
+          "season_points": 110.26,
+          "recent_avg": 21.73,
+          "trend": "hot",
+          "trend_label": "Trending Up",
+          "is_starter": true,
+          "injury_status": null
+        },
+        {
+          "name": "Brandon Aiyuk",
+          "position": "WR",
+          "team": "SF",
+          "projected_points": 19.26,
+          "season_points": 110.78,
+          "recent_avg": 20.3,
+          "trend": "hot",
+          "trend_label": "Trending Up",
+          "is_starter": true,
+          "injury_status": null
+        },
+        {
+          "name": "Stefon Diggs",
+          "position": "WR",
+          "team": "HOU",
+          "projected_points": 17.47,
+          "season_points": 87.62,
+          "recent_avg": 14.97,
+          "trend": "hot",
+          "trend_label": "Trending Up",
+          "is_starter": true,
+          "injury_status": null
+        },
+        {
+          "name": "Saints",
+          "position": "DEF",
+          "team": "NO",
+          "projected_points": 9.8,
+          "season_points": 52.72,
+          "recent_avg": 11.49,
+          "trend": "hot",
+          "trend_label": "Trending Up",
+          "is_starter": true,
+          "injury_status": "Questionable"
+        },
+        {
+          "name": "Hunter Henry",
+          "position": "TE",
+          "team": "NE",
+          "projected_points": 9.59,
+          "season_points": 47.73,
+          "recent_avg": 9.41,
+          "trend": "hot",
+          "trend_label": "Trending Up",
+          "is_starter": true,
+          "injury_status": null
+        },
+        {
+          "name": "Younghoe Koo",
+          "position": "K",
+          "team": "ATL",
+          "projected_points": 5.9,
+          "season_points": 29.21,
+          "recent_avg": 6.47,
+          "trend": "hot",
+          "trend_label": "Trending Up",
+          "is_starter": true,
+          "injury_status": "Questionable"
+        },
+        {
+          "name": "Tony Pollard",
+          "position": "RB",
+          "team": "TEN",
+          "projected_points": 5.58,
+          "season_points": 32.12,
+          "recent_avg": 6.48,
+          "trend": "hot",
+          "trend_label": "Trending Up",
+          "is_starter": true,
+          "injury_status": null
+        },
+        {
+          "name": "Kyler Murray",
+          "position": "QB",
+          "team": "ARI",
+          "projected_points": 12.19,
+          "season_points": 54.81,
+          "recent_avg": 8.09,
+          "trend": "hot",
+          "trend_label": "Trending Up",
+          "is_starter": false,
+          "injury_status": null
+        },
+        {
+          "name": "Khalil Shakir",
+          "position": "WR",
+          "team": "BUF",
+          "projected_points": 10.69,
+          "season_points": 43.93,
+          "recent_avg": 8.32,
+          "trend": "hot",
+          "trend_label": "Trending Up",
+          "is_starter": false,
+          "injury_status": null
+        },
+        {
+          "name": "David Njoku",
+          "position": "TE",
+          "team": "CLE",
+          "projected_points": 6.98,
+          "season_points": 39.18,
+          "recent_avg": 5.23,
+          "trend": "hot",
+          "trend_label": "Trending Up",
+          "is_starter": false,
+          "injury_status": null
+        },
+        {
+          "name": "Jaylen Waddle",
+          "position": "WR",
+          "team": "MIA",
+          "projected_points": 5.08,
+          "season_points": 25.23,
+          "recent_avg": 7.2,
+          "trend": "hot",
+          "trend_label": "Trending Up",
+          "is_starter": false,
+          "injury_status": null
+        },
+        {
+          "name": "Tyjae Spears",
+          "position": "RB",
+          "team": "TEN",
+          "projected_points": 3.73,
+          "season_points": 19.61,
+          "recent_avg": 5.57,
+          "trend": "hot",
+          "trend_label": "Trending Up",
+          "is_starter": false,
+          "injury_status": null
+        }
+      ],
+      "trending_adds": [
+        {
+          "player_id": "1140",
+          "name": "Patrick Mahomes",
+          "position": "QB",
+          "team": "KC",
+          "count": 441
+        },
+        {
+          "player_id": "1154",
+          "name": "Tua Tagovailoa",
+          "position": "QB",
+          "team": "MIA",
+          "count": 277
+        },
+        {
+          "player_id": "1030",
+          "name": "Saquon Barkley",
+          "position": "RB",
+          "team": "PHI",
+          "count": 463
+        },
+        {
+          "player_id": "1148",
+          "name": "Packers",
+          "position": "DEF",
+          "team": "GB",
+          "count": 133
+        },
+        {
+          "player_id": "1121",
+          "name": "Aaron Rodgers",
+          "position": "QB",
+          "team": "NYJ",
+          "count": 381
+        },
+        {
+          "player_id": "1133",
+          "name": "Chris Boswell",
+          "position": "K",
+          "team": "PIT",
+          "count": 377
+        },
+        {
+          "player_id": "1081",
+          "name": "Mike Evans",
+          "position": "WR",
+          "team": "TB",
+          "count": 248
+        },
+        {
+          "player_id": "1022",
+          "name": "Browns",
+          "position": "DEF",
+          "team": "CLE",
+          "count": 253
+        },
+        {
+          "player_id": "1073",
+          "name": "Nico Collins",
+          "position": "WR",
+          "team": "HOU",
+          "count": 180
+        },
+        {
+          "player_id": "1149",
+          "name": "Tua Tagovailoa",
+          "position": "QB",
+          "team": "MIA",
+          "count": 464
+        }
+      ],
+      "trending_drops": [
+        {
+          "player_id": "1167",
+          "name": "Deebo Samuel",
+          "position": "WR",
+          "team": "SF",
+          "count": 196
+        },
+        {
+          "player_id": "1177",
+          "name": "Brock Bowers",
+          "position": "TE",
+          "team": "LV",
+          "count": 144
+        },
+        {
+          "player_id": "1003",
+          "name": "Brandon Aiyuk",
+          "position": "WR",
+          "team": "SF",
+          "count": 169
+        },
+        {
+          "player_id": "1067",
+          "name": "Nico Collins",
+          "position": "WR",
+          "team": "HOU",
+          "count": 255
+        },
+        {
+          "player_id": "1068",
+          "name": "Cole Kmet",
+          "position": "TE",
+          "team": "CHI",
+          "count": 191
+        },
+        {
+          "player_id": "1031",
+          "name": "Khalil Shakir",
+          "position": "WR",
+          "team": "BUF",
+          "count": 83
+        },
+        {
+          "player_id": "1172",
+          "name": "Rashee Rice",
+          "position": "WR",
+          "team": "KC",
+          "count": 206
+        },
+        {
+          "player_id": "1025",
+          "name": "Khalil Shakir",
+          "position": "WR",
+          "team": "BUF",
+          "count": 276
+        },
+        {
+          "player_id": "1078",
+          "name": "Lions",
+          "position": "DEF",
+          "team": "DET",
+          "count": 72
+        },
+        {
+          "player_id": "1033",
+          "name": "Sam LaPorta",
+          "position": "TE",
+          "team": "DET",
+          "count": 66
+        }
+      ]
+    },
+    "insights": [
+      {
+        "type": "positive",
+        "icon": "trending-up",
+        "title": "Favorable Matchup",
+        "message": "You're projected to win by 54.1 points against End Zone Enforcers."
+      },
+      {
+        "type": "info",
+        "icon": "target",
+        "title": "Top Waiver Target",
+        "message": "Add Courtland Sutton (WR) for a +9.0 edge. Drop Tyjae Spears."
+      },
+      {
+        "type": "negative",
+        "icon": "trending-down",
+        "title": "Needs Improvement",
+        "message": "You're ranked #11 \u2014 waiver moves and lineup optimization could help climb the standings."
+      }
+    ]
+  },
+  "scoring_settings": {
+    "pass_td": 4,
+    "pass_yd": 0.04,
+    "pass_int": -2,
+    "rush_td": 6,
+    "rush_yd": 0.1,
+    "rec": 0.5,
+    "rec_td": 6,
+    "rec_yd": 0.1
+  }
+}
