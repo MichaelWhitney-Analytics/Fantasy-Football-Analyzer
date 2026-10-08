@@ -14,7 +14,7 @@ Python · Flask · JavaScript · Chart.js · GitHub Actions · GitHub Pages · R
 
 ---
 
-![FF Pipeline team overview](screenshots/team-overview.jpg)
+![FF Pipeline team overview](screenshots/team-overview.png)
 
 ## Overview
 
@@ -47,7 +47,7 @@ Player-level detail and league context in one view.
 - Clear starter-slot and bench labels, including multiple WR and FLEX slots.
 - Projected player estimates kept separate from current live scores.
 
-![Team overview with player projections and roster assignments](screenshots/team-overview.jpg)
+![Team overview with player projections and roster assignments](screenshots/team-overview.png)
 
 ### Waiver Wire Edge
 
@@ -58,7 +58,7 @@ Find projected bench upgrades without letting a zero-point IR player distort the
 - Excludes zero or missing projections, reserve/IR and taxi players, and unavailable statuses from drop comparisons.
 - Shows up to 15 positive upgrades with player estimates and suggested drop candidates.
 
-![Waiver wire recommendations and projected bench upgrades](screenshots/waiver-wire-edge.jpg)
+![Waiver wire recommendations and projected bench upgrades](screenshots/waiver-wire-edge.png)
 
 > Recommendations measure estimated bench-value improvement, not guaranteed starting-lineup gains. Unrostered players may still be subject to waiver processing and roster restrictions.
 
@@ -71,7 +71,7 @@ A lineup comparison built around your league—not a fixed standard template.
 - Assigns each eligible player at most once using dynamic programming.
 - Displays current and suggested lineups, projected totals, and estimated improvement.
 
-![Current lineup compared with the highest-projected eligible lineup](screenshots/optimal-lineup.jpg)
+![Current lineup compared with the highest-projected eligible lineup](screenshots/optimal-lineup.png)
 
 > Pregame comparison only. The application does not enforce game-time locks or submit lineup changes to Sleeper.
 
@@ -84,19 +84,19 @@ Discover the most-added players, then narrow the view by position.
 - One shared position filter updates both panels.
 - All positions selected by default; rankings include both rostered and unrostered players.
 
-![Trending-add chart and activity list with shared position filters](screenshots/player-trends.jpg)
+![Trending-add chart and activity list with shared position filters](screenshots/player-trends.png)
 
 #### Roster Performance
 
 A separate table tracks your players' weekly projected estimates, season estimates, recent played-week averages, and trends relative to their season averages.
 
-![Roster performance table](screenshots/player-trends2.jpg)
+![Roster performance table](screenshots/player-trends2.png)
 
 ### Matchup Analysis
 
 View the current matchup, both team records, live scores, and current score share.
 
-![Current matchup scores and score-share display](screenshots/matchup-analysis.jpg)
+![Current matchup scores and score-share display](screenshots/matchup-analysis.png)
 
 > Current score share is not a modeled win probability. Projected position-by-position matchup analysis remains a planned enhancement in the live dashboard.
 
