@@ -1,0 +1,4573 @@
+﻿============================================================
+FILE: docs\assets\app.js
+============================================================
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   FF PIPELINE â€” Dashboard JavaScript
+   - Lets visitors load public Sleeper NFL league data by username
+   - Requests live standings, scores, roster assignments, and matchup data
+     through the Render API
+   - Does not collect, store, or transmit Sleeper credentials
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+
+"use strict";
+
+/* â”€â”€ Shared state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+let dashboardData = null;
+let trendChart = null;
+
+const SLEEPER_API_BASE = "https://api.sleeper.app/v1";
+
+const DASHBOARD_API_BASE =
+  "https://fantasy-football-analyzer-api.onrender.com";
+
+const sleeperState = {
+  username: "",
+  user: null,
+  season: "",
+  leagues: [],
+  selectedLeague: null,
+  users: [],
+  rosters: [],
+  myRosterId: null
+};
+
+/* â”€â”€ Theme Toggle â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+(function initializeThemeToggle() {
+  const toggle = document.querySelector("[data-theme-toggle]");
+  const root = document.documentElement;
+
+  let theme = matchMedia("(prefers-color-scheme: dark)").matches
+    ? "dark"
+    : "light";
+
+  root.setAttribute("data-theme", theme);
+
+  if (!toggle) {
+    return;
+  }
+
+  toggle.addEventListener("click", () => {
+    theme = theme === "dark" ? "light" : "dark";
+
+    root.setAttribute("data-theme", theme);
+
+    toggle.setAttribute(
+      "aria-label",
+      "Switch to " + (theme === "dark" ? "light" : "dark") + " mode"
+    );
+
+    toggle.innerHTML = theme === "dark"
+      ? `
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          aria-hidden="true"
+        >
+          <circle cx="12" cy="12" r="5"/>
+          <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+        </svg>
+      `
+      : `
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          aria-hidden="true"
+        >
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+      `;
+  });
+})();
+
+/* â”€â”€ Small utilities â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+function getElement(id) {
+  return document.getElementById(id);
+}
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function asNumber(value, fallback = 0) {
+  const number = Number(value);
+  return Number.isFinite(number) ? number : fallback;
+}
+
+function formatNumber(value, digits = 1) {
+  return asNumber(value, 0).toFixed(digits);
+}
+
+function normalizeRecord(record) {
+  return {
+    wins: asNumber(record?.wins),
+    losses: asNumber(record?.losses),
+    ties: asNumber(record?.ties),
+    pointsFor: asNumber(record?.points_for ?? record?.pointsFor),
+    pointsAgainst: asNumber(
+      record?.points_against ?? record?.pointsAgainst
+    )
+  };
+}
+
+function getRosterRecord(roster) {
+  const settings = roster?.settings || {};
+
+  return {
+    wins: asNumber(settings.wins),
+    losses: asNumber(settings.losses),
+    ties: asNumber(settings.ties),
+    pointsFor:
+      asNumber(settings.fpts) +
+      asNumber(settings.fpts_decimal) / 100,
+    pointsAgainst:
+      asNumber(settings.fpts_against) +
+      asNumber(settings.fpts_against_decimal) / 100
+  };
+}
+
+function recordLabel(record) {
+  const normalized = normalizeRecord(record);
+  const base = `${normalized.wins}-${normalized.losses}`;
+
+  return normalized.ties > 0
+    ? `${base}-${normalized.ties}`
+    : base;
+}
+
+function getManagerDisplayName(user) {
+  if (!user) {
+    return "Unknown manager";
+  }
+
+  return (
+    user.metadata?.team_name ||
+    user.display_name ||
+    user.username ||
+    "Unknown manager"
+  );
+}
+
+function playerNameFromId(playerId) {
+  if (!playerId) {
+    return "Unknown player";
+  }
+
+  return `Player ${playerId}`;
+}
+
+function buildPlaceholderPlayer(playerId, isStarter) {
+  return {
+    id: String(playerId),
+    name: playerNameFromId(playerId),
+    team: "NFL",
+    position: "FLEX",
+    projected_points: 0,
+    season_points: 0,
+    recent_avg: 0,
+    trend: "stable",
+    trend_label: "Roster assignment",
+    injury_status: "",
+    bye_week: "",
+    is_starter: Boolean(isStarter)
+  };
+}
+
+/* â”€â”€ Sleeper fetch helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+async function sleeperFetchJson(path, fallbackMessage) {
+  const response = await fetch(`${SLEEPER_API_BASE}${path}`);
+
+  if (!response.ok) {
+    throw new Error(fallbackMessage);
+  }
+
+  return response.json();
+}
+
+async function dashboardApiFetch(path, fallbackMessage) {
+  let response;
+
+  try {
+    response = await fetch(`${DASHBOARD_API_BASE}${path}`);
+  } catch {
+    throw new Error(
+      "The live analytics service is unavailable. Please try again in a moment."
+    );
+  }
+
+  let data;
+
+  try {
+    data = await response.json();
+  } catch {
+    throw new Error(
+      "The live analytics service returned an invalid response."
+    );
+  }
+
+  if (!response.ok) {
+    throw new Error(data?.error || fallbackMessage);
+  }
+
+  return data;
+}
+
+/* â”€â”€ Connection page helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+function setSleeperStatus(message, isError = false) {
+  const status = getElement("sleeper-connect-status");
+
+  if (!status) {
+    return;
+  }
+
+  status.textContent = message;
+  status.classList.toggle("is-error", isError);
+}
+
+function setConnectButtonLoading(isLoading) {
+  const button = getElement("sleeper-connect-button");
+  const text = button?.querySelector(".league-connect__button-text");
+  const spinner = button?.querySelector(".league-connect__button-spinner");
+
+  if (!button) {
+    return;
+  }
+
+  button.disabled = isLoading;
+
+  if (text) {
+    text.textContent = isLoading
+      ? "Finding leaguesâ€¦"
+      : "Find my leagues";
+  }
+
+  if (spinner) {
+    spinner.hidden = !isLoading;
+  }
+}
+
+function resetLeaguePicker() {
+  const picker = getElement("sleeper-league-picker");
+  const leagueSelect = getElement("sleeper-league-select");
+
+  if (!picker || !leagueSelect) {
+    return;
+  }
+
+  leagueSelect.replaceChildren(
+    new Option("Choose one of your leagues", "")
+  );
+
+  picker.hidden = true;
+}
+
+function removeTeamPicker() {
+  const existingPicker = getElement("sleeper-team-picker");
+
+  if (existingPicker) {
+    existingPicker.remove();
+  }
+}
+
+function showConnectPage() {
+  const connectPage = getElement("connect");
+  const dashboard = getElement("dashboard");
+  const loading = getElement("loading");
+
+  if (connectPage) {
+    connectPage.style.display = "block";
+  }
+
+  if (dashboard) {
+    dashboard.style.display = "none";
+  }
+
+  if (loading) {
+    loading.style.display = "none";
+  }
+}
+
+function showDashboardPage() {
+  const connectPage = getElement("connect");
+  const dashboard = getElement("dashboard");
+  const loading = getElement("loading");
+
+  if (connectPage) {
+    connectPage.style.display = "none";
+  }
+
+  if (loading) {
+    loading.style.display = "none";
+  }
+
+  if (dashboard) {
+    dashboard.style.display = "block";
+  }
+}
+
+/* â”€â”€ Sleeper connection flow â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+function initializeSleeperConnection() {
+  const form = getElement("sleeper-connect-form");
+  const usernameInput = getElement("sleeper-username");
+  const seasonInput = getElement("sleeper-season");
+  const leagueSelect = getElement("sleeper-league-select");
+  const loadLeagueButton = getElement("sleeper-load-league");
+
+  if (
+    !form ||
+    !usernameInput ||
+    !seasonInput ||
+    !leagueSelect ||
+    !loadLeagueButton
+  ) {
+    return;
+  }
+
+  form.addEventListener("submit", async event => {
+    event.preventDefault();
+
+    const username = usernameInput.value.trim();
+    const season = seasonInput.value;
+
+    if (!username) {
+      setSleeperStatus("Enter your Sleeper username first.", true);
+      usernameInput.focus();
+      return;
+    }
+
+    removeTeamPicker();
+    resetLeaguePicker();
+    setConnectButtonLoading(true);
+
+    try {
+      setSleeperStatus(`Looking up @${username}â€¦`);
+
+      const user = await sleeperFetchJson(
+        `/user/${encodeURIComponent(username)}`,
+        "That Sleeper username could not be found."
+      );
+
+      if (!user?.user_id) {
+        throw new Error("That Sleeper username could not be found.");
+      }
+
+      sleeperState.username = username;
+      sleeperState.user = user;
+      sleeperState.season = season;
+
+      setSleeperStatus(
+        `Finding ${season} NFL leagues for @${user.display_name || username}â€¦`
+      );
+
+      const leagues = await sleeperFetchJson(
+        `/user/${encodeURIComponent(user.user_id)}/leagues/nfl/${encodeURIComponent(season)}`,
+        "Unable to load leagues for that Sleeper account."
+      );
+
+      if (!Array.isArray(leagues) || leagues.length === 0) {
+        setSleeperStatus(
+          `No NFL leagues were found for @${username} in ${season}.`,
+          true
+        );
+        return;
+      }
+
+      sleeperState.leagues = leagues;
+
+      for (const league of leagues) {
+        const leagueName = league.name || `League ${league.league_id}`;
+        const rosterCount = asNumber(league.total_rosters);
+
+        leagueSelect.append(
+          new Option(
+            rosterCount > 0
+              ? `${leagueName} Â· ${rosterCount} teams`
+              : leagueName,
+            league.league_id
+          )
+        );
+      }
+
+      const leaguePicker = getElement("sleeper-league-picker");
+
+      if (leaguePicker) {
+        leaguePicker.hidden = false;
+      }
+
+      setSleeperStatus(
+        `Found ${leagues.length} league${leagues.length === 1 ? "" : "s"}. Choose the league you want to analyze.`
+      );
+    } catch (error) {
+      console.error("Sleeper username lookup failed:", error);
+
+      setSleeperStatus(
+        error.message || "Unable to connect to Sleeper right now.",
+        true
+      );
+    } finally {
+      setConnectButtonLoading(false);
+    }
+  });
+
+  loadLeagueButton.addEventListener("click", async () => {
+    const leagueId = leagueSelect.value;
+
+    if (!leagueId) {
+      setSleeperStatus("Choose a league before loading data.", true);
+      return;
+    }
+
+    loadLeagueButton.disabled = true;
+    loadLeagueButton.textContent = "Loading leagueâ€¦";
+
+    removeTeamPicker();
+
+    try {
+      setSleeperStatus("Loading league details, managers, and rostersâ€¦");
+
+      const [league, users, rosters] = await Promise.all([
+        sleeperFetchJson(
+          `/league/${encodeURIComponent(leagueId)}`,
+          "Unable to load league details."
+        ),
+        sleeperFetchJson(
+          `/league/${encodeURIComponent(leagueId)}/users`,
+          "Unable to load league members."
+        ),
+        sleeperFetchJson(
+          `/league/${encodeURIComponent(leagueId)}/rosters`,
+          "Unable to load league rosters."
+        )
+      ]);
+
+      if (!league || !Array.isArray(users) || !Array.isArray(rosters)) {
+        throw new Error("Sleeper returned incomplete league data.");
+      }
+
+      sleeperState.selectedLeague = league;
+      sleeperState.users = users;
+      sleeperState.rosters = rosters;
+
+      showTeamPicker();
+    } catch (error) {
+      console.error("Sleeper league loading failed:", error);
+
+      setSleeperStatus(
+        error.message || "Unable to load that league right now.",
+        true
+      );
+    } finally {
+      loadLeagueButton.disabled = false;
+      loadLeagueButton.textContent = "Load league data";
+    }
+  });
+}
+
+function showTeamPicker() {
+  const connectCard = document.querySelector(".league-connect-card");
+
+  if (!connectCard) {
+    return;
+  }
+
+  removeTeamPicker();
+
+  const userById = new Map(
+    sleeperState.users.map(user => [String(user.user_id), user])
+  );
+
+  const sortedRosters = [...sleeperState.rosters].sort((left, right) => {
+    const leftManager = getManagerDisplayName(
+      userById.get(String(left.owner_id))
+    );
+
+    const rightManager = getManagerDisplayName(
+      userById.get(String(right.owner_id))
+    );
+
+    return leftManager.localeCompare(rightManager);
+  });
+
+  const teamPicker = document.createElement("div");
+  teamPicker.id = "sleeper-team-picker";
+  teamPicker.className = "league-picker";
+
+  const label = document.createElement("label");
+  label.htmlFor = "sleeper-team-select";
+  label.textContent = "Which team is yours?";
+
+  const select = document.createElement("select");
+  select.id = "sleeper-team-select";
+
+  select.append(
+    new Option("Choose your manager / team", "")
+  );
+
+  for (const roster of sortedRosters) {
+    const manager = userById.get(String(roster.owner_id));
+    const managerName = getManagerDisplayName(manager);
+    const record = getRosterRecord(roster);
+
+    select.append(
+      new Option(
+        `${managerName} Â· ${recordLabel(record)}`,
+        String(roster.roster_id)
+      )
+    );
+  }
+
+  label.append(select);
+
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "league-connect__button league-picker__button";
+  button.textContent = "Open my dashboard";
+
+  button.addEventListener("click", async () => {
+    const rosterId = Number(select.value);
+
+    if (!Number.isFinite(rosterId) || rosterId <= 0) {
+      setSleeperStatus(
+        "Choose your team before opening the dashboard.",
+        true
+      );
+      return;
+    }
+
+    button.disabled = true;
+    button.textContent = "Loading live dataâ€¦";
+
+    try {
+      sleeperState.myRosterId = rosterId;
+
+      setSleeperStatus(
+        "Loading live league standings, roster assignments, and matchup dataâ€¦"
+      );
+
+      await loadLiveSleeperDashboard();
+    } catch (error) {
+      console.error("Live dashboard loading failed:", error);
+
+      setSleeperStatus(
+        error.message || "Unable to prepare the dashboard for that league.",
+        true
+      );
+
+      button.disabled = false;
+      button.textContent = "Open my dashboard";
+    }
+  });
+
+  teamPicker.append(label, button);
+  connectCard.append(teamPicker);
+
+  setSleeperStatus(
+    `Loaded ${sleeperState.selectedLeague.name || "the selected league"}. Choose your team to personalize the dashboard.`
+  );
+}
+
+/* â”€â”€ Render API integration â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+async function loadLiveSleeperDashboard() {
+  const league = sleeperState.selectedLeague;
+  const rosterId = sleeperState.myRosterId;
+
+  if (!league?.league_id || !rosterId) {
+    throw new Error(
+      "Choose a Sleeper league and team before opening the dashboard."
+    );
+  }
+
+  const query = new URLSearchParams({
+    league_id: String(league.league_id),
+    roster_id: String(rosterId)
+  });
+
+  const apiData = await dashboardApiFetch(
+    `/api/dashboard?${query.toString()}`,
+    "Unable to load live league analytics."
+  );
+
+  dashboardData = convertApiDashboardToPageData(apiData);
+
+  renderDashboard();
+  showDashboardPage();
+
+  window.setTimeout(() => {
+    const overview = getElement("overview");
+
+    if (overview) {
+      overview.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+    }
+  }, 100);
+}
+
+function convertApiDashboardToPageData(apiData) {
+  const apiLeague = apiData?.league || {};
+  const apiTeam = apiData?.my_team || {};
+  const apiMatchup = apiData?.matchup || {};
+  const apiSummary = apiData?.summary || {};
+
+  const apiStandings = Array.isArray(apiData?.standings)
+    ? apiData.standings
+    : [];
+
+  const record = normalizeRecord(apiTeam.record);
+
+  const starterIds = Array.isArray(apiTeam.starter_ids)
+    ? apiTeam.starter_ids
+    : [];
+
+  const benchIds = Array.isArray(apiTeam.bench_player_ids)
+    ? apiTeam.bench_player_ids
+    : [];
+
+  const starters = starterIds.map(playerId =>
+    buildPlaceholderPlayer(playerId, true)
+  );
+
+  const bench = benchIds.map(playerId =>
+    buildPlaceholderPlayer(playerId, false)
+  );
+
+  const opponent = apiMatchup.opponent || null;
+  const scoreDifference = asNumber(apiMatchup.score_difference);
+  const scoreShare = Math.max(
+    0,
+    Math.min(100, asNumber(apiMatchup.score_share_percent, 50))
+  );
+
+  const matchupAnalysis = apiMatchup.available && opponent
+    ? {
+        available: true,
+        opponent_name: opponent.manager || "Opponent",
+        opponent_record: normalizeRecord(opponent.record),
+        my_projected: formatNumber(apiMatchup.my_score),
+        opp_projected: formatNumber(apiMatchup.opponent_score),
+        win_probability: scoreShare,
+        point_spread: scoreDifference,
+        position_comparison: []
+      }
+    : {
+        available: false,
+        message:
+          "Current matchup information is unavailable for this league week."
+      };
+
+  const currentWeekScore = asNumber(apiTeam.current_week_score);
+
+  const standings = apiStandings.map(team => ({
+    roster_id: asNumber(team.roster_id),
+    manager: team.manager || "Unknown manager",
+    record: team.record || "--",
+    win_pct: asNumber(team.win_pct),
+    points_for: asNumber(team.points_for),
+    points_against: asNumber(team.points_against),
+    projected_total: asNumber(team.current_week_score)
+  }));
+
+  return {
+    meta: {
+      season: apiData?.meta?.season || "",
+      week: apiData?.meta?.week || "",
+      generated_at: apiData?.meta?.generated_at
+        ? new Date(asNumber(apiData.meta.generated_at) * 1000).toISOString()
+        : new Date().toISOString(),
+      pipeline_version: "live-sleeper-api"
+    },
+
+    league: {
+      league_id: apiLeague.league_id || "",
+      name: apiLeague.name || "Sleeper League",
+      total_rosters: asNumber(
+        apiLeague.total_rosters,
+        standings.length
+      ),
+      roster_positions: apiLeague.roster_positions || []
+    },
+
+    my_team: {
+      roster_id: asNumber(apiTeam.roster_id),
+      manager: {
+        display_name: apiTeam.manager || "Your team"
+      },
+      record,
+      starters,
+      bench,
+      projected_total: currentWeekScore,
+      scored_total: currentWeekScore
+    },
+
+    standings,
+
+    analysis: {
+      insights: [
+        {
+          type: "info",
+          icon: "target",
+          title: apiLeague.name || "Sleeper league connected",
+          message:
+            `Live league data loaded. Your current league rank is ${
+              apiSummary.league_rank
+                ? `#${apiSummary.league_rank}`
+                : "not available"
+            }.`
+        },
+        {
+          type: "info",
+          icon: "alert-circle",
+          title: "Live data status",
+          message:
+            apiSummary.analytics_status ||
+            "Live standings, roster assignments, and matchup scores are loaded."
+        }
+      ],
+
+      matchup_analysis: matchupAnalysis,
+
+      waiver_edge: [],
+
+      optimal_lineup: {
+        available: false,
+        message:
+          "Optimal lineup recommendations require weekly player projection data.",
+        current_total: currentWeekScore,
+        projected_total: currentWeekScore,
+        improvement: 0,
+        suggested_lineup: [],
+        changes: []
+      },
+
+      player_trends: {
+        players: [...starters, ...bench],
+        trending_adds: []
+      }
+    }
+  };
+}
+
+/* â”€â”€ Local demo data loading â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+async function loadDashboardData() {
+  const connectPage = getElement("connect");
+  const loading = getElement("loading");
+
+  if (connectPage) {
+    connectPage.style.display = "block";
+  }
+
+  if (loading) {
+    loading.style.display = "none";
+  }
+
+  try {
+    const response = await fetch("data.json");
+
+    if (!response.ok) {
+      throw new Error("Failed to load data");
+    }
+
+    window.ffPipelineDemoData = await response.json();
+  } catch (error) {
+    console.warn("Demo data was not loaded:", error);
+  }
+}
+
+/* â”€â”€ Main dashboard render â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+function renderDashboard() {
+  const data = dashboardData;
+
+  if (!data) {
+    return;
+  }
+
+  const loading = getElement("loading");
+  const dashboard = getElement("dashboard");
+
+  if (loading) {
+    loading.style.display = "none";
+  }
+
+  if (dashboard) {
+    dashboard.style.display = "block";
+  }
+
+  const meta = data.meta || {};
+  const myTeam = data.my_team;
+  const league = data.league || {};
+
+  const navWeek = getElement("navWeek");
+
+  if (navWeek) {
+    navWeek.textContent =
+      `Week ${meta.week || "--"} Â· ${meta.season || "--"}`;
+  }
+
+  const footerMeta = getElement("footerMeta");
+
+  if (footerMeta) {
+    const generatedAt = meta.generated_at
+      ? new Date(meta.generated_at).toLocaleString()
+      : "Unknown";
+
+    const sourceText = meta.pipeline_version === "live-sleeper-api"
+      ? "Live league data via Render API"
+      : `Pipeline v${meta.pipeline_version || "--"}`;
+
+    footerMeta.textContent =
+      `Last updated: ${generatedAt} Â· ${sourceText}`;
+  }
+
+  const teamSubtitle = getElement("teamNameSubtitle");
+
+  if (teamSubtitle) {
+    teamSubtitle.textContent = myTeam
+      ? `${myTeam.manager.display_name} Â· ${recordLabel(myTeam.record)}`
+      : league.name || "";
+  }
+
+  renderInsights(data.analysis?.insights || []);
+  renderKPIs(data);
+  renderRoster(myTeam);
+  renderMatchup(data.analysis?.matchup_analysis || {});
+  renderWaiver(data.analysis?.waiver_edge || []);
+  renderOptimalLineup(data.analysis?.optimal_lineup || {});
+  renderTrends(
+    data.analysis?.player_trends || {
+      players: [],
+      trending_adds: []
+    }
+  );
+  renderStandings(data.standings || [], myTeam);
+
+  if (window.lucide) {
+    window.lucide.createIcons();
+  }
+}
+
+/* â”€â”€ Insights Banner â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+function renderInsights(insights) {
+  const container = getElement("insightsBanner");
+
+  if (!container) {
+    return;
+  }
+
+  if (!insights || insights.length === 0) {
+    container.innerHTML = "";
+    return;
+  }
+
+  const iconMap = {
+    "trending-up":
+      '<polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>',
+    "trending-down":
+      '<polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/>',
+    "alert-triangle":
+      '<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>',
+    target:
+      '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
+    award:
+      '<circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/>',
+    "alert-circle":
+      '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>'
+  };
+
+  container.innerHTML = insights.map(insight => `
+    <div class="insight-card ${escapeHtml(insight.type || "info")}">
+      <div class="insight-icon">
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          ${iconMap[insight.icon] || ""}
+        </svg>
+      </div>
+
+      <div class="insight-content">
+        <div class="insight-title">${escapeHtml(insight.title)}</div>
+        <div class="insight-message">${escapeHtml(insight.message)}</div>
+      </div>
+    </div>
+  `).join("");
+}
+
+/* â”€â”€ KPI Cards â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+function renderKPIs(data) {
+  const container = getElement("kpiRow");
+
+  if (!container) {
+    return;
+  }
+
+  const myTeam = data.my_team;
+  const analysis = data.analysis || {};
+  const matchup = analysis.matchup_analysis || {};
+  const waiverEdge = analysis.waiver_edge || [];
+  const standings = data.standings || [];
+
+  const kpis = [];
+
+  kpis.push({
+    label: "Current Week Score",
+    value: myTeam ? formatNumber(myTeam.scored_total) : "--",
+    delta: myTeam
+      ? "Live score reported by Sleeper"
+      : "Choose your team",
+    deltaClass: "neutral"
+  });
+
+  if (matchup.available) {
+    const spread = asNumber(matchup.point_spread);
+    const sign = spread > 0 ? "+" : "";
+
+    kpis.push({
+      label: "Matchup Score Edge",
+      value: `${sign}${formatNumber(spread)}`,
+      delta: `${matchup.opponent_name || "Opponent"} Â· current matchup`,
+      deltaClass: spread > 0
+        ? "positive"
+        : spread < 0
+          ? "negative"
+          : "neutral"
+    });
+  }
+
+  const topWaiver = waiverEdge[0];
+
+  kpis.push({
+    label: "Top Waiver Edge",
+    value: topWaiver ? `+${formatNumber(topWaiver.edge_value)}` : "Pending",
+    delta: topWaiver
+      ? topWaiver.player.name
+      : "Requires pipeline projections",
+    deltaClass: topWaiver ? "positive" : "neutral"
+  });
+
+  const myRank = standings.findIndex(
+    team => Number(team.roster_id) === Number(myTeam?.roster_id)
+  ) + 1;
+
+  kpis.push({
+    label: "League Rank",
+    value: myRank ? `#${myRank}` : "--",
+    delta: myRank && myRank <= 6
+      ? "Playoff position"
+      : myRank
+        ? "Outside playoff position"
+        : "Choose your team",
+    deltaClass: myRank && myRank <= 6
+      ? "positive"
+      : myRank
+        ? "negative"
+        : "neutral"
+  });
+
+  if (myTeam) {
+    const record = normalizeRecord(myTeam.record);
+
+    const games =
+      record.wins +
+      record.losses +
+      record.ties;
+
+    const winRate = games > 0
+      ? (
+          (record.wins + record.ties * 0.5) /
+          games *
+          100
+        ).toFixed(0)
+      : "0";
+
+    kpis.push({
+      label: "Team Record",
+      value: recordLabel(record),
+      delta: `${winRate}% win rate`,
+      deltaClass: "neutral"
+    });
+  }
+
+  container.innerHTML = kpis.map(kpi => `
+    <div class="kpi-card">
+      <div class="kpi-label">${escapeHtml(kpi.label)}</div>
+      <div class="kpi-value">${escapeHtml(kpi.value)}</div>
+      <div class="kpi-delta ${escapeHtml(kpi.deltaClass)}">
+        ${escapeHtml(kpi.delta)}
+      </div>
+    </div>
+  `).join("");
+}
+
+/* â”€â”€ Roster Grid â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+function renderRoster(myTeam) {
+  const container = getElement("rosterGrid");
+
+  if (!container) {
+    return;
+  }
+
+  if (!myTeam) {
+    container.innerHTML =
+      '<div class="no-data">No roster data available.</div>';
+    return;
+  }
+
+  const roster = [
+    ...(myTeam.starters || []),
+    ...(myTeam.bench || [])
+  ];
+
+  if (roster.length === 0) {
+    container.innerHTML = `
+      <div class="no-data">
+        Sleeper roster assignments are unavailable for the current matchup week.
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = roster.map(player => {
+    const isStarter = Boolean(player.is_starter);
+
+    const injuryTag =
+      player.injury_status &&
+      player.injury_status !== "Active"
+        ? `<div class="injury-tag">${escapeHtml(player.injury_status)}</div>`
+        : "";
+
+    const byeTag = player.bye_week
+      ? `
+        <div
+          style="
+            font-size:var(--text-xs);
+            color:var(--color-text-faint);
+            margin-top:2px;
+          "
+        >
+          Bye: ${escapeHtml(player.bye_week)}
+        </div>
+      `
+      : "";
+
+    return `
+      <div
+        class="player-card ${isStarter ? "starter" : ""} ${
+          player.injury_status ? "injured" : ""
+        }"
+      >
+        <div class="player-header">
+          <div>
+            <div class="player-name">${escapeHtml(player.name)}</div>
+            <div class="player-meta">
+              ${escapeHtml(player.team)} Â· ${escapeHtml(player.position)}
+            </div>
+          </div>
+
+          <span class="player-badge badge-${escapeHtml(player.position)}">
+            ${escapeHtml(player.position)}
+          </span>
+        </div>
+
+        <div class="player-proj">
+          ${player.projected_points > 0
+            ? formatNumber(player.projected_points)
+            : "--"}
+        </div>
+
+        <div class="player-proj-label">
+          ${isStarter ? "Starter" : "Bench"} ${
+            player.projected_points > 0
+              ? "Proj"
+              : "Assignment"
+          }
+        </div>
+
+        ${injuryTag}
+        ${byeTag}
+      </div>
+    `;
+  }).join("");
+}
+
+/* â”€â”€ Matchup Analysis â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+function renderMatchup(matchup) {
+  const container = getElement("matchupContent");
+
+  if (!container) {
+    return;
+  }
+
+  if (!matchup.available) {
+    container.innerHTML = `
+      <div class="no-data">
+        <svg
+          class="no-data-icon"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          aria-hidden="true"
+        >
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 8v4M12 16h.01"/>
+        </svg>
+
+        <p>
+          ${escapeHtml(
+            matchup.message || "No matchup data available for this week."
+          )}
+        </p>
+      </div>
+    `;
+    return;
+  }
+
+  const myTeam = dashboardData?.my_team;
+
+  const myName = myTeam?.manager?.display_name || "Your team";
+  const myRecord = myTeam ? recordLabel(myTeam.record) : "--";
+
+  const opponentName = matchup.opponent_name || "Opponent";
+  const opponentRecord = matchup.opponent_record
+    ? recordLabel(matchup.opponent_record)
+    : "--";
+
+  const scoreShare = Math.max(
+    0,
+    Math.min(100, asNumber(matchup.win_probability, 50))
+  );
+
+  const scoreColor = scoreShare >= 50
+    ? "var(--color-success)"
+    : "var(--color-warning)";
+
+  container.innerHTML = `
+    <div class="matchup-overview">
+      <div class="matchup-team">
+        <div class="matchup-team-name">${escapeHtml(myName)}</div>
+        <div class="matchup-team-record">${escapeHtml(myRecord)}</div>
+        <div class="matchup-proj" style="color: var(--color-primary);">
+          ${escapeHtml(matchup.my_projected)}
+        </div>
+      </div>
+
+      <div class="matchup-vs">VS</div>
+
+      <div class="matchup-team">
+        <div class="matchup-team-name">${escapeHtml(opponentName)}</div>
+        <div class="matchup-team-record">${escapeHtml(opponentRecord)}</div>
+        <div class="matchup-proj" style="color: var(--color-text-muted);">
+          ${escapeHtml(matchup.opp_projected)}
+        </div>
+      </div>
+    </div>
+
+    <div class="win-prob-bar">
+      <div class="win-prob-label">
+        <span>Current score share</span>
+        <span style="color: ${scoreColor}">
+          ${scoreShare}%
+        </span>
+      </div>
+
+      <div class="win-prob-track">
+        <div
+          class="win-prob-fill"
+          style="width: ${scoreShare}%; background: ${scoreColor};"
+        ></div>
+      </div>
+    </div>
+
+    <p
+      style="
+        margin-top:var(--space-5);
+        color:var(--color-text-muted);
+        font-size:var(--text-sm);
+      "
+    >
+      Position-level projection analysis will appear after weekly player projections are connected to the analytics pipeline.
+    </p>
+  `;
+}
+
+/* â”€â”€ Waiver Wire Edge â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+function renderWaiver(recommendations) {
+  const container = getElement("waiverContent");
+
+  if (!container) {
+    return;
+  }
+
+  if (!recommendations || recommendations.length === 0) {
+    container.innerHTML = `
+      <div class="no-data">
+        <svg
+          class="no-data-icon"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          aria-hidden="true"
+        >
+          <circle cx="11" cy="11" r="8"/>
+          <path d="M21 21l-4.35-4.35"/>
+        </svg>
+
+        <p>
+          Waiver recommendations will appear after weekly player projections and league waiver availability are connected to the analytics pipeline.
+        </p>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = `
+    <table class="waiver-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Player</th>
+          <th>Pos</th>
+          <th>Proj Pts</th>
+          <th>Edge</th>
+          <th>Drop</th>
+          <th class="col-analysis">Analysis</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        ${recommendations.map(recommendation => `
+          <tr>
+            <td>
+              <span
+                class="waiver-rank ${
+                  recommendation.rank <= 3 ? "top-3" : ""
+                }"
+              >
+                ${escapeHtml(recommendation.rank)}
+              </span>
+            </td>
+
+            <td>
+              <strong>${escapeHtml(recommendation.player.name)}</strong>
+              ${
+                recommendation.trending
+                  ? '<span style="color:var(--color-gold);font-size:var(--text-xs);">ðŸ”¥</span>'
+                  : ""
+              }
+              <br>
+              <span
+                style="
+                  font-size:var(--text-xs);
+                  color:var(--color-text-muted);
+                "
+              >
+                ${escapeHtml(recommendation.player.team)}
+              </span>
+            </td>
+
+            <td>
+              <span
+                class="player-badge badge-${escapeHtml(
+                  recommendation.player.position
+                )}"
+              >
+                ${escapeHtml(recommendation.player.position)}
+              </span>
+            </td>
+
+            <td class="tabular">
+              ${formatNumber(recommendation.player.projected_points)}
+            </td>
+
+            <td class="edge-value">
+              +${formatNumber(recommendation.edge_value)}
+            </td>
+
+            <td>
+              <span style="font-size:var(--text-sm);">
+                ${escapeHtml(recommendation.drop_suggestion.name)}
+              </span>
+              <br>
+              <span class="drop-suggestion">
+                ${escapeHtml(recommendation.drop_suggestion.reason)}
+              </span>
+            </td>
+
+            <td class="col-analysis">
+              <div class="waiver-analysis">
+                ${escapeHtml(recommendation.analysis)}
+              </div>
+            </td>
+          </tr>
+        `).join("")}
+      </tbody>
+    </table>
+  `;
+}
+
+/* â”€â”€ Optimal Lineup â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+function renderOptimalLineup(optimal) {
+  const container = getElement("lineupContent");
+
+  if (!container) {
+    return;
+  }
+
+  if (!optimal.available) {
+    container.innerHTML = `
+      <div class="no-data">
+        ${escapeHtml(
+          optimal.message || "No lineup data available."
+        )}
+      </div>
+    `;
+    return;
+  }
+
+  const myTeam = dashboardData?.my_team;
+  const currentStarters = myTeam?.starters || [];
+  const suggestedLineup = optimal.suggested_lineup || [];
+  const improvement = asNumber(optimal.improvement);
+
+  const positions = [
+    "QB",
+    "RB",
+    "RB",
+    "WR",
+    "WR",
+    "TE",
+    "FLEX",
+    "K",
+    "DEF"
+  ];
+
+  container.innerHTML = `
+    <div class="lineup-improvement">
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        style="color:var(--color-primary);"
+        aria-hidden="true"
+      >
+        <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+        <polyline points="17 6 23 6 23 12"/>
+      </svg>
+
+      <span style="font-size:var(--text-sm);">
+        Optimal lineup projects
+      </span>
+
+      <span class="lineup-improvement-value">
+        ${escapeHtml(optimal.projected_total)}
+      </span>
+
+      <span
+        style="
+          font-size:var(--text-sm);
+          color:var(--color-text-muted);
+        "
+      >
+        points (${improvement >= 0 ? "+" : ""}${improvement} vs current ${
+          optimal.current_total
+        })
+      </span>
+    </div>
+
+    <div class="lineup-comparison">
+      <div class="lineup-column">
+        <div class="lineup-column-header">
+          <span class="lineup-column-title">Current Lineup</span>
+          <span class="lineup-total">
+            ${escapeHtml(optimal.current_total)}
+          </span>
+        </div>
+
+        ${currentStarters.map((player, index) => `
+          <div class="lineup-slot">
+            <span class="lineup-slot-label">
+              ${escapeHtml(positions[index] || player.position)}
+            </span>
+
+            <span class="lineup-player">
+              ${escapeHtml(player.name)}
+            </span>
+
+            <span class="lineup-points">
+              ${formatNumber(player.projected_points)}
+            </span>
+          </div>
+        `).join("")}
+      </div>
+
+      <div class="lineup-column">
+        <div class="lineup-column-header">
+          <span class="lineup-column-title">Optimal Lineup</span>
+          <span class="lineup-total optimal">
+            ${escapeHtml(optimal.projected_total)}
+          </span>
+        </div>
+
+        ${suggestedLineup.map(player => `
+          <div class="lineup-slot">
+            <span class="lineup-slot-label">
+              ${escapeHtml(player.suggested_slot || player.position)}
+            </span>
+
+            <span class="lineup-player">
+              ${escapeHtml(player.name)}
+            </span>
+
+            <span class="lineup-points">
+              ${formatNumber(player.projected_points)}
+            </span>
+          </div>
+        `).join("")}
+      </div>
+    </div>
+  `;
+}
+
+/* â”€â”€ Player Trends â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+function renderTrends(trends) {
+  const chartContainer = getElement("trendChartContainer");
+  const trendingContainer = getElement("trendingActivity");
+  const tableContainer = getElement("trendsTable");
+
+  const players = trends?.players || [];
+  const trendingAdds = trends?.trending_adds || [];
+
+  if (players.length > 0) {
+    renderTrendChart(players);
+  } else if (chartContainer) {
+    chartContainer.innerHTML =
+      '<div class="no-data">No roster assignments available.</div>';
+  }
+
+  if (trendingContainer) {
+    if (trendingAdds.length > 0) {
+      trendingContainer.innerHTML = `
+        <div class="trending-list">
+          <div class="trending-list-title">ðŸ”¥ Trending Adds</div>
+
+          ${trendingAdds.slice(0, 8).map(item => `
+            <div class="trending-item">
+              <span>
+                ${escapeHtml(item.name || "Unknown")}
+                <span
+                  style="
+                    color:var(--color-text-muted);
+                    font-size:var(--text-xs);
+                  "
+                >
+                  ${escapeHtml(item.position || "")} Â·
+                  ${escapeHtml(item.team || "")}
+                </span>
+              </span>
+
+              <span class="trending-count">
+                ${escapeHtml(item.count)}
+              </span>
+            </div>
+          `).join("")}
+        </div>
+      `;
+    } else {
+      trendingContainer.innerHTML = `
+        <div class="no-data">
+          Player trend and add/drop activity will appear after the analytics pipeline is enriched with player data.
+        </div>
+      `;
+    }
+  }
+
+  if (!tableContainer) {
+    return;
+  }
+
+  if (players.length === 0) {
+    tableContainer.innerHTML =
+      '<div class="no-data">No roster data available.</div>';
+    return;
+  }
+
+  tableContainer.innerHTML = `
+    <table class="trends-table">
+      <thead>
+        <tr>
+          <th>Player</th>
+          <th>Pos</th>
+          <th>Team</th>
+          <th>Proj</th>
+          <th>Season</th>
+          <th>Recent Avg</th>
+          <th>Trend</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        ${players.map(player => `
+          <tr>
+            <td>
+              <strong>${escapeHtml(player.name)}</strong>
+              ${
+                player.is_starter
+                  ? `
+                    <span
+                      style="
+                        color:var(--color-primary);
+                        font-size:var(--text-xs);
+                      "
+                    >
+                      START
+                    </span>
+                  `
+                  : ""
+              }
+            </td>
+
+            <td>
+              <span
+                class="player-badge badge-${escapeHtml(player.position)}"
+              >
+                ${escapeHtml(player.position)}
+              </span>
+            </td>
+
+            <td>${escapeHtml(player.team)}</td>
+
+            <td class="tabular">--</td>
+            <td class="tabular">--</td>
+            <td class="tabular">--</td>
+
+            <td>
+              <span class="trend-badge trend-stable">
+                â†’ ${escapeHtml(player.trend_label || "Live")}
+              </span>
+            </td>
+          </tr>
+        `).join("")}
+      </tbody>
+    </table>
+  `;
+}
+
+function renderTrendChart(players) {
+  const canvas = getElement("trendChart");
+
+  if (!canvas || typeof Chart === "undefined") {
+    return;
+  }
+
+  const chartContainer = getElement("trendChartContainer");
+
+  if (chartContainer) {
+    chartContainer.innerHTML = `
+      <div class="no-data">
+        Player projection and trend charts will appear after player statistics and projection data are connected.
+      </div>
+    `;
+  }
+
+  if (trendChart) {
+    trendChart.destroy();
+    trendChart = null;
+  }
+}
+
+/* â”€â”€ Standings Table â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+function renderStandings(standings, myTeam) {
+  const container = getElement("standingsTable");
+
+  if (!container) {
+    return;
+  }
+
+  if (!standings || standings.length === 0) {
+    container.innerHTML =
+      '<div class="no-data">No standings data available.</div>';
+    return;
+  }
+
+  const myRosterId = myTeam?.roster_id;
+  const playoffCutoff = Math.min(6, standings.length);
+
+  container.innerHTML = `
+    <div class="standings-table-wrapper">
+      <table class="standings-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Team</th>
+            <th>Record</th>
+            <th>Win %</th>
+            <th>Points For</th>
+            <th>Points Against</th>
+            <th>Current Score</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          ${standings.map((team, index) => {
+            const isMyTeam =
+              Number(team.roster_id) === Number(myRosterId);
+
+            const isPlayoff = index < playoffCutoff;
+
+            return `
+              <tr class="${isMyTeam ? "my-team-row" : ""}">
+                <td class="rank-cell ${isPlayoff ? "playoff" : ""}">
+                  ${index + 1}
+                </td>
+
+                <td>
+                  <strong>${escapeHtml(team.manager)}</strong>
+                </td>
+
+                <td class="tabular">
+                  ${escapeHtml(team.record)}
+                </td>
+
+                <td class="tabular">
+                  ${
+                    team.win_pct > 0
+                      ? `${(team.win_pct * 100).toFixed(0)}%`
+                      : "--"
+                  }
+                </td>
+
+                <td class="tabular">
+                  ${formatNumber(team.points_for)}
+                </td>
+
+                <td class="tabular">
+                  ${formatNumber(team.points_against)}
+                </td>
+
+                <td class="tabular">
+                  ${formatNumber(team.projected_total)}
+                </td>
+              </tr>
+            `;
+          }).join("")}
+        </tbody>
+      </table>
+    </div>
+
+    <p
+      style="
+        font-size:var(--text-xs);
+        color:var(--color-text-faint);
+        margin-top:var(--space-2);
+      "
+    >
+      Top ${playoffCutoff} teams are shown in playoff position. Your selected
+      team is highlighted.
+    </p>
+  `;
+}
+
+/* â”€â”€ Initialize â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+document.addEventListener("DOMContentLoaded", () => {
+  initializeSleeperConnection();
+  loadDashboardData();
+});
+
+============================================================
+FILE: docs\index.html
+============================================================
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>FF Pipeline | Fantasy Football Analytics</title>
+
+  <meta
+    name="description"
+    content="Automated fantasy football analytics pipeline with waiver wire edge analysis, matchup breakdowns, and optimal lineup optimization."
+  >
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link
+    href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@400,500,700,800&f[]=satoshi@300,400,500,700&display=swap"
+    rel="stylesheet"
+  >
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+  <!-- Project styling -->
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+
+<body>
+  <!-- â”€â”€ Navigation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+  <nav class="nav-bar">
+    <div class="nav-inner">
+      <div class="nav-brand">
+        <svg
+          class="nav-logo"
+          viewBox="0 0 32 32"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          aria-hidden="true"
+        >
+          <path d="M16 2 L28 8 L28 18 Q28 26 16 30 Q4 26 4 18 L4 8 Z"/>
+          <path
+            d="M16 10 L16 22 M11 16 L21 16"
+            stroke-linecap="round"
+          />
+        </svg>
+
+        <span class="nav-title">FF Pipeline</span>
+      </div>
+
+      <div class="nav-links">
+        <a href="#connect">Connect League</a>
+        <a href="#overview">Overview</a>
+        <a href="#matchup">Matchup</a>
+        <a href="#waiver">Waiver Wire</a>
+        <a href="#lineup">Optimal Lineup</a>
+        <a href="#trends">Trends</a>
+        <a href="#standings">Standings</a>
+      </div>
+
+      <div class="nav-actions">
+        <span class="nav-week" id="navWeek">Week --</span>
+
+        <button
+          class="theme-toggle"
+          data-theme-toggle
+          aria-label="Toggle theme"
+          type="button"
+        >
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            aria-hidden="true"
+          >
+            <circle cx="12" cy="12" r="5"/>
+            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- â”€â”€ Sleeper League Connection â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+  <main id="connect" class="league-connect-page">
+    <section
+      class="league-connect-card"
+      aria-labelledby="league-connect-title"
+    >
+      <div class="league-connect__eyebrow">
+        Personalized league analytics
+      </div>
+
+      <h1 id="league-connect-title" class="league-connect__title">
+        Connect your Sleeper league
+      </h1>
+
+      <p class="league-connect__intro">
+        Enter your Sleeper username to find your public NFL fantasy leagues and
+        load analytics for a league you choose.
+      </p>
+
+      <div class="league-connect__privacy">
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          aria-hidden="true"
+        >
+          <rect x="3" y="11" width="18" height="10" rx="2"/>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+
+        <span>
+          We never ask for your Sleeper password. This uses public,
+          read-only Sleeper league data.
+        </span>
+      </div>
+
+      <form
+        id="sleeper-connect-form"
+        class="league-connect__form"
+        novalidate
+      >
+        <label for="sleeper-username">
+          Sleeper username
+
+          <input
+            id="sleeper-username"
+            name="username"
+            type="text"
+            autocomplete="username"
+            autocapitalize="none"
+            spellcheck="false"
+            placeholder="Example: fantasyfan23"
+            required
+          >
+        </label>
+
+        <label for="sleeper-season">
+          Season
+
+          <select id="sleeper-season" name="season">
+            <option value="2026" selected>2026</option>
+            <option value="2025">2025</option>
+            <option value="2024">2024</option>
+            <option value="2023">2023</option>
+          </select>
+        </label>
+
+        <button
+          id="sleeper-connect-button"
+          class="league-connect__button"
+          type="submit"
+        >
+          <span class="league-connect__button-text">Find my leagues</span>
+
+          <span
+            class="league-connect__button-spinner"
+            aria-hidden="true"
+            hidden
+          ></span>
+        </button>
+      </form>
+
+      <p
+        id="sleeper-connect-status"
+        class="league-connect__status"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+      ></p>
+
+      <div
+        id="sleeper-league-picker"
+        class="league-picker"
+        hidden
+      >
+        <label for="sleeper-league-select">
+          Select the league to analyze
+
+          <select id="sleeper-league-select">
+            <option value="">Choose one of your leagues</option>
+          </select>
+        </label>
+
+        <button
+          id="sleeper-load-league"
+          class="league-connect__button league-picker__button"
+          type="button"
+        >
+          Load league data
+        </button>
+      </div>
+
+      <p class="league-connect__help">
+        Your username is used only to request public data directly from
+        Sleeper. No account credentials are collected or saved.
+      </p>
+    </section>
+  </main>
+
+  <!-- â”€â”€ Loading State â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+  <div
+    id="loading"
+    class="loading-state"
+    role="status"
+    aria-live="polite"
+  >
+    <div class="loading-spinner" aria-hidden="true"></div>
+    <p>Loading dashboard data...</p>
+  </div>
+
+  <!-- â”€â”€ Main Content (hidden until data loads) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+  <main
+    id="dashboard"
+    class="dashboard"
+    style="display:none;"
+  >
+    <!-- â”€â”€ Insights Banner â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+    <section
+      class="insights-banner"
+      id="insightsBanner"
+      aria-label="Key insights"
+    ></section>
+
+    <!-- â”€â”€ Overview Section â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+    <section id="overview" class="section">
+      <div class="section-header">
+        <h2 class="section-title">Team Overview</h2>
+        <span class="section-subtitle" id="teamNameSubtitle"></span>
+      </div>
+
+      <div class="kpi-row" id="kpiRow"></div>
+      <div class="roster-grid" id="rosterGrid"></div>
+    </section>
+
+    <!-- â”€â”€ Matchup Analysis â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+    <section id="matchup" class="section">
+      <div class="section-header">
+        <h2 class="section-title">Matchup Analysis</h2>
+        <span class="section-subtitle">
+          Position-by-position breakdown
+        </span>
+      </div>
+
+      <div id="matchupContent"></div>
+    </section>
+
+    <!-- â”€â”€ Waiver Wire Edge â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+    <section id="waiver" class="section">
+      <div class="section-header">
+        <h2 class="section-title">Waiver Wire Edge</h2>
+        <span class="section-subtitle">
+          Ranked by projected point improvement
+        </span>
+      </div>
+
+      <div id="waiverContent"></div>
+    </section>
+
+    <!-- â”€â”€ Optimal Lineup â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+    <section id="lineup" class="section">
+      <div class="section-header">
+        <h2 class="section-title">Optimal Lineup</h2>
+        <span class="section-subtitle">
+          Maximized projected points
+        </span>
+      </div>
+
+      <div id="lineupContent"></div>
+    </section>
+
+    <!-- â”€â”€ Player Trends â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+    <section id="trends" class="section">
+      <div class="section-header">
+        <h2 class="section-title">Player Trends</h2>
+        <span class="section-subtitle">
+          Performance &amp; trending activity
+        </span>
+      </div>
+
+      <div class="trends-grid">
+        <div id="trendChartContainer" class="chart-container">
+          <canvas id="trendChart"></canvas>
+        </div>
+
+        <div id="trendingActivity"></div>
+      </div>
+
+      <div id="trendsTable"></div>
+    </section>
+
+    <!-- â”€â”€ League Standings â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+    <section id="standings" class="section">
+      <div class="section-header">
+        <h2 class="section-title">League Standings</h2>
+        <span class="section-subtitle">
+          Full table with playoff positioning
+        </span>
+      </div>
+
+      <div id="standingsTable"></div>
+    </section>
+
+    <!-- â”€â”€ Footer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+    <footer class="dashboard-footer">
+      <p>FF Pipeline &mdash; Automated Fantasy Football Analytics</p>
+      <p class="footer-meta" id="footerMeta"></p>
+    </footer>
+  </main>
+
+  <script src="assets/app.js"></script>
+</body>
+</html>
+
+============================================================
+FILE: backend\app.py
+============================================================
+import os
+import time
+from collections import defaultdict
+from typing import Any
+
+import requests
+from flask import Flask, jsonify, request
+from flask_cors import CORS
+
+app = Flask(__name__)
+
+CORS(
+    app,
+    resources={
+        r"/api/*": {
+            "origins": [
+                "https://michaelwhitney-analytics.github.io",
+                "http://localhost:8000",
+                "http://127.0.0.1:8000",
+            ]
+        }
+    },
+)
+
+SLEEPER_API_BASE = "https://api.sleeper.app/v1"
+CACHE_TTL_SECONDS = 300
+cache: dict[str, tuple[float, dict[str, Any]]] = {}
+
+
+class UpstreamError(RuntimeError):
+    pass
+
+
+def sleeper_get(path: str) -> Any:
+    response = requests.get(
+        f"{SLEEPER_API_BASE}{path}",
+        timeout=15,
+        headers={"Accept": "application/json"},
+    )
+
+    if response.status_code == 404:
+        return None
+
+    if response.status_code == 429:
+        raise UpstreamError(
+            "Sleeper is temporarily rate-limiting requests. Please wait and try again."
+        )
+
+    if not response.ok:
+        raise UpstreamError(
+            f"Sleeper data is temporarily unavailable (HTTP {response.status_code})."
+        )
+
+    return response.json()
+
+
+def numeric(value: Any, default: float = 0.0) -> float:
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return default
+
+
+def record_for_roster(roster: dict[str, Any]) -> dict[str, Any]:
+    settings = roster.get("settings") or {}
+
+    wins = int(numeric(settings.get("wins")))
+    losses = int(numeric(settings.get("losses")))
+    ties = int(numeric(settings.get("ties")))
+
+    points_for = (
+        numeric(settings.get("fpts"))
+        + numeric(settings.get("fpts_decimal")) / 100
+    )
+
+    points_against = (
+        numeric(settings.get("fpts_against"))
+        + numeric(settings.get("fpts_against_decimal")) / 100
+    )
+
+    return {
+        "wins": wins,
+        "losses": losses,
+        "ties": ties,
+        "points_for": points_for,
+        "points_against": points_against,
+    }
+
+
+def record_label(record: dict[str, Any]) -> str:
+    label = f"{record['wins']}-{record['losses']}"
+
+    if record["ties"] > 0:
+        label += f"-{record['ties']}"
+
+    return label
+
+
+def manager_name(user: dict[str, Any] | None) -> str:
+    if not user:
+        return "Unknown manager"
+
+    metadata = user.get("metadata") or {}
+
+    return (
+        metadata.get("team_name")
+        or user.get("display_name")
+        or user.get("username")
+        or "Unknown manager"
+    )
+
+
+def current_week(league: dict[str, Any]) -> int:
+    settings = league.get("settings") or {}
+
+    try:
+        week = int(settings.get("leg") or 1)
+    except (TypeError, ValueError):
+        week = 1
+
+    return max(week, 1)
+
+
+def build_standings(
+    rosters: list[dict[str, Any]],
+    users_by_id: dict[str, dict[str, Any]],
+    scores_by_roster: dict[int, float],
+) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+
+    for roster in rosters:
+        record = record_for_roster(roster)
+        roster_id = int(roster["roster_id"])
+        games = record["wins"] + record["losses"] + record["ties"]
+
+        win_pct = (
+            (record["wins"] + 0.5 * record["ties"]) / games
+            if games
+            else 0
+        )
+
+        rows.append(
+            {
+                "roster_id": roster_id,
+                "manager": manager_name(
+                    users_by_id.get(str(roster.get("owner_id")))
+                ),
+                "record": record_label(record),
+                "win_pct": round(win_pct, 4),
+                "points_for": round(record["points_for"], 2),
+                "points_against": round(record["points_against"], 2),
+                "current_week_score": round(
+                    scores_by_roster.get(roster_id, 0.0),
+                    2,
+                ),
+            }
+        )
+
+    return sorted(
+        rows,
+        key=lambda row: (
+            row["win_pct"],
+            row["points_for"],
+        ),
+        reverse=True,
+    )
+
+
+def dashboard_payload(
+    league: dict[str, Any],
+    users: list[dict[str, Any]],
+    rosters: list[dict[str, Any]],
+    matchups: list[dict[str, Any]],
+    my_roster_id: int,
+) -> dict[str, Any]:
+    users_by_id = {
+        str(user["user_id"]): user
+        for user in users
+        if user.get("user_id") is not None
+    }
+
+    rosters_by_id = {
+        int(roster["roster_id"]): roster
+        for roster in rosters
+        if roster.get("roster_id") is not None
+    }
+
+    if my_roster_id not in rosters_by_id:
+        raise ValueError("That roster does not belong to this league.")
+
+    scores_by_roster = {
+        int(matchup["roster_id"]): numeric(matchup.get("points"))
+        for matchup in matchups
+        if matchup.get("roster_id") is not None
+    }
+
+    my_roster = rosters_by_id[my_roster_id]
+    my_record = record_for_roster(my_roster)
+
+    my_matchup = next(
+        (
+            matchup
+            for matchup in matchups
+            if int(matchup.get("roster_id", -1)) == my_roster_id
+        ),
+        None,
+    )
+
+    opponent_roster_id = None
+    opponent_score = 0.0
+
+    if my_matchup and my_matchup.get("matchup_id") is not None:
+        opponent_matchup = next(
+            (
+                matchup
+                for matchup in matchups
+                if matchup.get("matchup_id") == my_matchup.get("matchup_id")
+                and int(matchup.get("roster_id", -1)) != my_roster_id
+            ),
+            None,
+        )
+
+        if opponent_matchup:
+            opponent_roster_id = int(opponent_matchup["roster_id"])
+            opponent_score = numeric(opponent_matchup.get("points"))
+
+    opponent_roster = rosters_by_id.get(opponent_roster_id)
+    opponent_record = (
+        record_for_roster(opponent_roster)
+        if opponent_roster
+        else None
+    )
+
+    my_score = scores_by_roster.get(my_roster_id, 0.0)
+    total_live_score = my_score + opponent_score
+    score_share = (
+        round((my_score / total_live_score) * 100)
+        if total_live_score > 0
+        else 50
+    )
+
+    starters = (
+        my_matchup.get("starters", [])
+        if my_matchup
+        else []
+    )
+
+    roster_players = [
+        player_id
+        for player_id in my_roster.get("players", [])
+        if player_id
+    ]
+
+    bench = [
+        player_id
+        for player_id in roster_players
+        if player_id not in starters
+    ]
+
+    standings = build_standings(
+        rosters,
+        users_by_id,
+        scores_by_roster,
+    )
+
+    my_rank = next(
+        (
+            index + 1
+            for index, row in enumerate(standings)
+            if row["roster_id"] == my_roster_id
+        ),
+        None,
+    )
+
+    return {
+        "meta": {
+            "source": "live_sleeper",
+            "season": str(league.get("season") or ""),
+            "week": current_week(league),
+            "generated_at": int(time.time()),
+        },
+        "league": {
+            "league_id": str(league.get("league_id")),
+            "name": league.get("name") or "Sleeper League",
+            "total_rosters": league.get("total_rosters") or len(rosters),
+            "roster_positions": league.get("roster_positions") or [],
+        },
+        "my_team": {
+            "roster_id": my_roster_id,
+            "manager": manager_name(
+                users_by_id.get(str(my_roster.get("owner_id")))
+            ),
+            "record": my_record,
+            "current_week_score": round(my_score, 2),
+            "starter_ids": starters,
+            "bench_player_ids": bench,
+        },
+        "matchup": {
+            "available": opponent_roster is not None,
+            "my_score": round(my_score, 2),
+            "opponent_score": round(opponent_score, 2),
+            "score_share_percent": score_share,
+            "score_difference": round(my_score - opponent_score, 2),
+            "opponent": (
+                {
+                    "roster_id": opponent_roster_id,
+                    "manager": manager_name(
+                        users_by_id.get(
+                            str(opponent_roster.get("owner_id"))
+                        )
+                    ),
+                    "record": opponent_record,
+                }
+                if opponent_roster and opponent_record
+                else None
+            ),
+        },
+        "standings": standings,
+        "summary": {
+            "league_rank": my_rank,
+            "team_count": len(rosters),
+            "analytics_status": (
+                "League, roster, standings, and matchup data are live. "
+                "Projection-driven analysis will be added next."
+            ),
+        },
+    }
+
+
+@app.get("/health")
+def health() -> tuple[dict[str, str], int]:
+    return {"status": "ok"}, 200
+
+
+@app.get("/api/dashboard")
+def get_dashboard():
+    league_id = (request.args.get("league_id") or "").strip()
+    roster_id_text = (request.args.get("roster_id") or "").strip()
+
+    if not league_id.isdigit():
+        return jsonify(
+            {"error": "league_id must be a numeric Sleeper league ID."}
+        ), 400
+
+    if not roster_id_text.isdigit():
+        return jsonify(
+            {"error": "roster_id must be a numeric roster ID."}
+        ), 400
+
+    roster_id = int(roster_id_text)
+    cache_key = f"{league_id}:{roster_id}"
+
+    cached = cache.get(cache_key)
+
+    if cached and time.time() - cached[0] < CACHE_TTL_SECONDS:
+        return jsonify(cached[1]), 200
+
+    try:
+        league = sleeper_get(f"/league/{league_id}")
+        users = sleeper_get(f"/league/{league_id}/users")
+        rosters = sleeper_get(f"/league/{league_id}/rosters")
+
+        if not league:
+            return jsonify({"error": "Sleeper league was not found."}), 404
+
+        if not isinstance(users, list) or not isinstance(rosters, list):
+            raise UpstreamError("Sleeper returned incomplete league data.")
+
+        week = current_week(league)
+
+        try:
+            matchups = sleeper_get(
+                f"/league/{league_id}/matchups/{week}"
+            )
+        except UpstreamError:
+            matchups = []
+
+        if not isinstance(matchups, list):
+            matchups = []
+
+        payload = dashboard_payload(
+            league=league,
+            users=users,
+            rosters=rosters,
+            matchups=matchups,
+            my_roster_id=roster_id,
+        )
+
+        cache[cache_key] = (time.time(), payload)
+
+        return jsonify(payload), 200
+
+    except ValueError as error:
+        return jsonify({"error": str(error)}), 400
+
+    except UpstreamError as error:
+        return jsonify({"error": str(error)}), 503
+
+    except requests.RequestException:
+        return jsonify(
+            {"error": "Unable to contact Sleeper right now. Please try again."}
+        ), 503
+
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", "5000"))
+    app.run(host="0.0.0.0", port=port)
+
+============================================================
+FILE: backend\requirements.txt
+============================================================
+Flask==3.1.0
+Flask-Cors==5.0.0
+gunicorn==23.0.0
+requests==2.32.3
+
+============================================================
+FILE: src\main.py
+============================================================
+"""
+Main Pipeline Orchestrator
+
+Runs the full pipeline:
+1. Fetch data (from Sleeper API or demo data)
+2. Transform raw data into clean structure
+3. Run analysis (waiver edge, matchup, optimal lineup, trends)
+4. Generate dashboard data JSON
+5. Save snapshot
+
+Usage:
+    python -m src.main                    # Uses demo mode by default
+    python -m src.main --live             # Live API mode (requires league ID)
+    python -m src.main --demo             # Explicitly use demo data
+"""
+
+import argparse
+import json
+import sys
+from pathlib import Path
+
+from src.config import config
+from src.pipeline.fetch import fetch_all, fetch_demo, save_raw_snapshot
+from src.pipeline.transform import transform
+from src.pipeline.analyze import analyze
+
+
+def run_pipeline(use_demo: bool = None) -> dict:
+    """
+    Run the complete data pipeline.
+
+    Args:
+        use_demo: If True, uses demo data. If None, uses config.demo_mode.
+
+    Returns:
+        The final dashboard data dictionary.
+    """
+    use_demo = use_demo if use_demo is not None else config.demo_mode
+
+    print("=" * 60)
+    print("  Fantasy Football Analytics Pipeline")
+    print("=" * 60)
+
+    # Ensure directories exist
+    config.ensure_dirs()
+    print("\n[1/4] Fetching data...")
+
+    if use_demo:
+        print("  Mode: DEMO (using local fixture data)")
+        raw_data = fetch_demo()
+    else:
+        if not config.league_id:
+            print("  ERROR: No league ID configured. Set SLEEPER_LEAGUE_ID env var.")
+            print("  Falling back to demo mode.")
+            raw_data = fetch_demo()
+        else:
+            print(f"  Mode: LIVE (League ID: {config.league_id})")
+            raw_data = fetch_all()
+
+    print("\n[2/4] Transforming data...")
+    clean_data = transform(raw_data)
+    print(f"  My team: {clean_data['my_team']['manager']['display_name']}")
+    print(f"  Standings: {len(clean_data['standings'])} teams")
+    print(f"  Available players: {len(clean_data['available_players'])}")
+
+    print("\n[3/4] Running analysis...")
+    analysis_results = analyze(clean_data)
+    print(f"  Waiver recommendations: {len(analysis_results['waiver_edge'])}")
+    print(f"  Matchup available: {analysis_results['matchup_analysis']['available']}")
+    print(f"  Optimal lineup improvement: +{analysis_results['optimal_lineup'].get('improvement', 0)}")
+    print(f"  Insights generated: {len(analysis_results['insights'])}")
+
+    print("\n[4/4] Generating dashboard data...")
+    dashboard_data = _build_dashboard_output(clean_data, analysis_results)
+
+    # Write to docs/data.json for the dashboard
+    output_path = config.get_output_path()
+    with open(output_path, "w") as f:
+        json.dump(dashboard_data, f, indent=2)
+    print(f"  Dashboard data written to: {output_path}")
+
+    # Save snapshot of raw data
+    if not use_demo:
+        try:
+            save_raw_snapshot(raw_data)
+        except Exception as e:
+            print(f"  Snapshot failed: {e}")
+
+    print("\n" + "=" * 60)
+    print("  Pipeline complete!")
+    print("=" * 60)
+
+    return dashboard_data
+
+
+def _build_dashboard_output(clean_data: dict, analysis: dict) -> dict:
+    """Build the final JSON structure consumed by the dashboard."""
+    return {
+        "meta": {
+            **clean_data["meta"],
+            "generated_at": clean_data["meta"]["fetched_at"],
+            "pipeline_version": "1.0.0",
+        },
+        "league": clean_data["league"],
+        "my_team": clean_data["my_team"],
+        "opponent": clean_data["opponent"],
+        "standings": clean_data["standings"],
+        "analysis": analysis,
+        "scoring_settings": clean_data.get("scoring_settings", {}),
+    }
+
+
+def main():
+    """CLI entry point."""
+    parser = argparse.ArgumentParser(description="Fantasy Football Analytics Pipeline")
+    parser.add_argument("--demo", action="store_true", help="Use demo data")
+    parser.add_argument("--live", action="store_true", help="Use live Sleeper API data")
+    args = parser.parse_args()
+
+    use_demo = None
+    if args.demo:
+        use_demo = True
+    elif args.live:
+        use_demo = False
+
+    run_pipeline(use_demo=use_demo)
+
+
+if __name__ == "__main__":
+    main()
+
+
+============================================================
+FILE: src\config.py
+============================================================
+"""
+Configuration module for the Fantasy Football Pipeline.
+
+All settings can be overridden via environment variables, making it
+easy to run locally (with a .env file) or in CI (GitHub Actions secrets).
+"""
+
+import os
+from dataclasses import dataclass, field
+from pathlib import Path
+
+# Load .env file if present (for local development)
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass  # python-dotenv not installed; env vars must be set manually
+
+
+@dataclass
+class Config:
+    """Pipeline configuration loaded from environment variables."""
+
+    # â”€â”€ Sleeper API Settings â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    sleeper_username: str = os.getenv("SLEEPER_USERNAME", "")
+    league_id: str = os.getenv("SLEEPER_LEAGUE_ID", "")
+    season: str = os.getenv("NFL_SEASON", "2026")
+
+    # â”€â”€ Scoring & Roster â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    scoring_type: str = os.getenv("SCORING_TYPE", "ppr")  # ppr, half, standard
+    # Default roster positions for a standard Sleeper league
+    roster_positions: list = field(default_factory=lambda: [
+        "QB", "RB", "RB", "WR", "WR", "TE", "FLEX", "K", "DEF",
+        "BN", "BN", "BN", "BN", "BN", "BN",
+    ])
+
+    # â”€â”€ Paths â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    project_root: Path = Path(__file__).resolve().parent.parent
+    data_dir: Path = project_root / "data"
+    docs_dir: Path = project_root / "docs"
+    snapshots_dir: Path = data_dir / "snapshots"
+    demo_data_path: Path = data_dir / "demo" / "league_data.json"
+
+    # â”€â”€ API Settings â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    base_url: str = "https://api.sleeper.app/v1"
+    rate_limit_calls: int = 900  # Stay under 1000/min per Sleeper docs
+    request_timeout: int = 30    # Seconds
+
+    # â”€â”€ Dashboard Settings â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    # When True, uses demo data instead of live API calls
+    demo_mode: bool = os.getenv("DEMO_MODE", "true").lower() == "true"
+    # When True, sanitizes player/team names for public display
+    sanitize_output: bool = os.getenv("SANITIZE_OUTPUT", "true").lower() == "true"
+
+    # â”€â”€ Analysis Settings â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    # Weight for recent form (last 3 weeks) vs season average in projections
+    recent_form_weight: float = 0.35
+    season_avg_weight: float = 0.65
+    # Minimum projected point improvement to recommend a waiver add
+    waiver_edge_threshold: float = 1.5
+
+    def get_output_path(self) -> Path:
+        """Return the path for the dashboard data output."""
+        return self.docs_dir / "data.json"
+
+    def ensure_dirs(self):
+        """Create all required directories if they don't exist."""
+        for path in [self.data_dir, self.docs_dir, self.snapshots_dir,
+                     self.docs_dir / "assets"]:
+            Path(path).mkdir(parents=True, exist_ok=True)
+
+
+# Singleton instance
+config = Config()
+
+
+============================================================
+FILE: src\api\sleeper_client.py
+============================================================
+"""
+Sleeper API Client
+
+A lightweight wrapper around the Sleeper public API (https://docs.sleeper.app).
+The API is read-only, free, and requires no authentication â€” just a league ID.
+
+Rate limit: Stay under 1000 calls/minute to avoid IP blocks.
+All endpoints return JSON.
+"""
+
+import json
+import time
+import urllib.request
+import urllib.error
+from pathlib import Path
+
+from src.config import config
+
+
+class SleeperAPIError(Exception):
+    """Raised when the Sleeper API returns an error or invalid response."""
+    pass
+
+
+class SleeperClient:
+    """Client for the Sleeper Fantasy Football public API."""
+
+    def __init__(self, base_url: str = None, timeout: int = None):
+        self.base_url = base_url or config.base_url
+        self.timeout = timeout or config.request_timeout
+        self._call_count = 0
+        self._last_call_time = 0
+        self._players_cache: dict = None
+        self._players_cache_path = config.data_dir / "player_cache.json"
+
+    # â”€â”€ Low-level HTTP â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+    def _get(self, endpoint: str) -> dict | list:
+        """
+        Make a GET request to the Sleeper API.
+
+        Args:
+            endpoint: API path relative to base_url (e.g., '/user/username')
+
+        Returns:
+            Parsed JSON response (dict or list)
+
+        Raises:
+            SleeperAPIError: On HTTP errors or invalid JSON
+        """
+        url = f"{self.base_url}{endpoint}"
+
+        # Simple rate limiting: ensure at least 67ms between calls (900/min)
+        elapsed = time.time() - self._last_call_time
+        if elapsed < 0.067:
+            time.sleep(0.067 - elapsed)
+
+        try:
+            req = urllib.request.Request(url, headers={
+                "User-Agent": "FantasyFootballPipeline/1.0",
+                "Accept": "application/json",
+            })
+            with urllib.request.urlopen(req, timeout=self.timeout) as response:
+                data = json.loads(response.read().decode("utf-8"))
+                self._call_count += 1
+                self._last_call_time = time.time()
+                return data
+        except urllib.error.HTTPError as e:
+            raise SleeperAPIError(f"HTTP {e.code}: {e.reason} for {endpoint}")
+        except urllib.error.URLError as e:
+            raise SleeperAPIError(f"URL Error: {e.reason} for {endpoint}")
+        except json.JSONDecodeError:
+            raise SleeperAPIError(f"Invalid JSON response from {endpoint}")
+
+    # â”€â”€ User & League Endpoints â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+    def get_user(self, username: str) -> dict:
+        """
+        Get user info by username.
+
+        GET /v1/user/<username>
+        Returns: { user_id, username, display_name, avatar, ... }
+        """
+        return self._get(f"/user/{username}")
+
+    def get_user_leagues(self, user_id: str, season: str = None) -> list:
+        """
+        Get all leagues for a user in a given season.
+
+        GET /v1/user/<user_id>/leagues/nfl/<season>
+        Returns: List of league objects
+        """
+        season = season or config.season
+        return self._get(f"/user/{user_id}/leagues/nfl/{season}")
+
+    def get_league(self, league_id: str = None) -> dict:
+        """
+        Get league settings and metadata.
+
+        GET /v1/league/<league_id>
+        Returns: League settings including scoring, roster positions, etc.
+        """
+        league_id = league_id or config.league_id
+        return self._get(f"/league/{league_id}")
+
+    def get_rosters(self, league_id: str = None) -> list:
+        """
+        Get all rosters in a league.
+
+        GET /v1/league/<league_id>/rosters
+        Returns: List of roster objects with players, starters, wins/losses
+        """
+        league_id = league_id or config.league_id
+        return self._get(f"/league/{league_id}/rosters")
+
+    def get_league_users(self, league_id: str = None) -> list:
+        """
+        Get all users/managers in a league.
+
+        GET /v1/league/<league_id>/users
+        Returns: List of user objects with display_name, avatar, etc.
+        """
+        league_id = league_id or config.league_id
+        return self._get(f"/league/{league_id}/users")
+
+    def get_matchups(self, week: int, league_id: str = None) -> list:
+        """
+        Get matchups for a specific week.
+
+        GET /v1/league/<league_id>/matchups/<week>
+        Returns: List of matchup objects with roster_id, starters, points
+        """
+        league_id = league_id or config.league_id
+        return self._get(f"/league/{league_id}/matchups/{week}")
+
+    def get_transactions(self, round: int, league_id: str = None) -> list:
+        """
+        Get transactions (waivers, trades, free agent adds) for a given round.
+
+        GET /v1/league/<league_id>/transactions/<round>
+        Returns: List of transaction objects
+        """
+        league_id = league_id or config.league_id
+        return self._get(f"/league/{league_id}/transactions/{round}")
+
+    def get_traded_picks(self, league_id: str = None) -> list:
+        """
+        Get all traded picks in a league.
+
+        GET /v1/league/<league_id>/traded_picks
+        """
+        league_id = league_id or config.league_id
+        return self._get(f"/league/{league_id}/traded_picks")
+
+    def get_winners_bracket(self, league_id: str = None) -> list:
+        """Get the playoff winners bracket."""
+        league_id = league_id or config.league_id
+        return self._get(f"/league/{league_id}/winners_bracket")
+
+    # â”€â”€ NFL State & Players â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+    def get_nfl_state(self) -> dict:
+        """
+        Get current NFL season state.
+
+        GET /v1/state/nfl
+        Returns: { season, week, season_type, ... }
+        """
+        return self._get("/state/nfl")
+
+    def get_all_players(self, use_cache: bool = True) -> dict:
+        """
+        Get the full NFL player database (~5MB).
+
+        GET /v1/players/nfl
+        Returns: Dict of player_id -> player info
+
+        This response is large (~5MB) and changes infrequently.
+        When use_cache=True, caches to disk and reuses on subsequent calls.
+        """
+        if use_cache and self._players_cache is not None:
+            return self._players_cache
+
+        if use_cache and self._players_cache_path.exists():
+            with open(self._players_cache_path, "r") as f:
+                self._players_cache = json.load(f)
+                return self._players_cache
+
+        players = self._get("/players/nfl")
+
+        if use_cache:
+            self._players_cache_path.parent.mkdir(parents=True, exist_ok=True)
+            with open(self._players_cache_path, "w") as f:
+                json.dump(players, f)
+            self._players_cache = players
+
+        return players
+
+    def get_trending_players(self, trend_type: str = "add",
+                              lookback_hours: int = 24, limit: int = 25) -> list:
+        """
+        Get trending players by add or drop activity.
+
+        GET /v1/players/nfl/trending/<add|drop>?lookback_hours=<hours>&limit=<limit>
+        Returns: List of { player_id, count } sorted by popularity
+        """
+        if trend_type not in ("add", "drop"):
+            raise ValueError("trend_type must be 'add' or 'drop'")
+        return self._get(
+            f"/players/nfl/trending/{trend_type}"
+            f"?lookback_hours={lookback_hours}&limit={limit}"
+        )
+
+    # â”€â”€ Utility â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+    def get_call_count(self) -> int:
+        """Return the total number of API calls made this session."""
+        return self._call_count
+
+    def clear_cache(self):
+        """Clear the in-memory player cache (disk cache is preserved)."""
+        self._players_cache = None
+
+
+============================================================
+FILE: src\pipeline\fetch.py
+============================================================
+"""
+Fetch Module â€” Pulls all data from the Sleeper API.
+
+Orchestrates the full data collection process:
+1. Resolve NFL state (current week, season)
+2. Get league settings, rosters, users, matchups
+3. Get all NFL players (cached)
+4. Get trending adds/drops
+5. Get recent transactions
+
+All raw data is returned as a dictionary for the transform module.
+"""
+
+import json
+from datetime import datetime, timezone
+from pathlib import Path
+
+from src.config import config
+from src.api.sleeper_client import SleeperClient
+
+
+def fetch_all(client: SleeperClient = None) -> dict:
+    """
+    Fetch all required data from the Sleeper API.
+
+    Args:
+        client: SleeperClient instance (created if not provided)
+
+    Returns:
+        dict with keys:
+            - meta: { fetched_at, season, week, season_type, league_id }
+            - league: League settings object
+            - rosters: List of roster objects
+            - users: List of user/manager objects
+            - matchups: List of matchup objects for current week
+            - players: Dict of player_id -> player info
+            - trending_adds: List of trending add objects
+            - trending_drops: List of trending drop objects
+            - transactions: List of recent transactions
+    """
+    client = client or SleeperClient()
+
+    # 1. NFL State â€” determine current week and season
+    nfl_state = client.get_nfl_state()
+    current_week = nfl_state.get("week", 1)
+    season = nfl_state.get("season", config.season)
+    season_type = nfl_state.get("season_type", "regular")
+
+    print(f"  NFL State: Season {season}, Week {current_week} ({season_type})")
+
+    # 1b. Resolve user ID from username (for team selection)
+    user_id = None
+    if config.sleeper_username:
+        try:
+            user = client.get_user(config.sleeper_username)
+            user_id = user.get("user_id")
+            print(f"  User: {user.get('display_name', config.sleeper_username)} ({user_id})")
+        except Exception as e:
+            print(f"  User resolution failed: {e}")
+
+    # 2. League data
+    league = client.get_league()
+    league_id = league.get("league_id", config.league_id)
+
+    print(f"  League: {league.get('name', 'Unknown')} ({league_id})")
+
+    # 3. Rosters â€” all teams' rosters
+    rosters = client.get_rosters()
+    print(f"  Rosters: {len(rosters)} teams")
+
+    # 4. Users â€” manager info (display names, avatars)
+    users = client.get_league_users()
+    print(f"  Managers: {len(users)}")
+
+    # 5. Matchups for current week
+    matchups = client.get_matchups(current_week) if season_type == "regular" else []
+    print(f"  Matchups (Week {current_week}): {len(matchups)}")
+
+    # 6. All NFL players (cached)
+    players = client.get_all_players()
+    print(f"  Players: {len(players)} total")
+
+    # 7. Trending adds and drops
+    trending_adds = client.get_trending_players("add", lookback_hours=24, limit=25)
+    trending_drops = client.get_trending_players("drop", lookback_hours=24, limit=25)
+    print(f"  Trending: {len(trending_adds)} adds, {len(trending_drops)} drops")
+
+    # 8. Recent transactions (current week)
+    transactions = []
+    if season_type == "regular":
+        try:
+            transactions = client.get_transactions(current_week)
+            print(f"  Transactions (Week {current_week}): {len(transactions)}")
+        except Exception as e:
+            print(f"  Transactions: Skipped ({e})")
+
+    print(f"  Total API calls: {client.get_call_count()}")
+
+    return {
+        "meta": {
+            "fetched_at": datetime.now(timezone.utc).isoformat(),
+            "season": season,
+            "week": current_week,
+            "season_type": season_type,
+            "league_id": league_id,
+            "league_name": league.get("name", ""),
+            "api_calls": client.get_call_count(),
+            "user_id": user_id,
+        },
+        "league": league,
+        "rosters": rosters,
+        "users": users,
+        "matchups": matchups,
+        "players": players,
+        "trending_adds": trending_adds,
+        "trending_drops": trending_drops,
+        "transactions": transactions,
+    }
+
+
+def fetch_demo() -> dict:
+    """
+    Load demo data from a local JSON file for development/testing.
+
+    This allows the dashboard to render without making live API calls,
+    which is essential for:
+    - Local development without a league ID
+    - CI/CD pipeline testing
+    - Public demo deployment for recruiters
+    """
+    demo_path = config.demo_data_path
+    if not demo_path.exists():
+        raise FileNotFoundError(
+            f"Demo data not found at {demo_path}. "
+            "Run 'python -m src.dashboard.generate_demo' to create it."
+        )
+
+    with open(demo_path, "r") as f:
+        data = json.load(f)
+
+    print(f"  Loaded demo data from {demo_path}")
+    print(f"  Season {data['meta']['season']}, Week {data['meta']['week']}")
+    print(f"  {len(data['rosters'])} teams, {len(data['players'])} players")
+
+    return data
+
+
+def save_raw_snapshot(data: dict):
+    """Save a timestamped snapshot of the raw API response for historical analysis."""
+    snapshots_dir = config.snapshots_dir
+    snapshots_dir.mkdir(parents=True, exist_ok=True)
+
+    timestamp = data["meta"]["fetched_at"].replace(":", "-").replace(".", "-")
+    snapshot_path = snapshots_dir / f"snapshot_{timestamp}.json"
+
+    with open(snapshot_path, "w") as f:
+        json.dump(data, f, indent=2)
+
+    print(f"  Snapshot saved: {snapshot_path}")
+    return snapshot_path
+
+
+============================================================
+FILE: src\pipeline\transform.py
+============================================================
+"""
+Transform Module â€” Cleans and structures raw API data.
+
+Converts raw Sleeper API responses into a clean, normalized data structure
+that the analysis engine and dashboard can consume.
+
+Key transformations:
+- Map player IDs to names, positions, teams
+- Enrich rosters with player details
+- Structure matchups with both teams' full lineups
+- Identify available free agents (all players minus rostered)
+- Compute season-to-date fantasy points
+- Calculate recent form (last 3 weeks)
+"""
+
+from src.config import config
+
+
+def transform(raw_data: dict) -> dict:
+    """
+    Transform raw API data into a clean, normalized structure.
+
+    Args:
+        raw_data: Output from fetch.fetch_all() or fetch.fetch_demo()
+
+    Returns:
+        Cleaned data dict with:
+            - meta: Pipeline metadata
+            - my_team: Enriched roster for the user's team
+            - opponent: Enriched roster for the current week's opponent
+            - standings: League standings with records and points
+            - available_players: Free agents with projections
+            - trending: Add/drop trending data with player names
+            - all_rosters: All rosters enriched with player details
+    """
+    meta = raw_data["meta"]
+    league = raw_data["league"]
+    rosters = raw_data["rosters"]
+    users = raw_data["users"]
+    matchups = raw_data["matchups"]
+    players_db = raw_data["players"]
+    trending_adds = raw_data.get("trending_adds", [])
+    trending_drops = raw_data.get("trending_drops", [])
+
+    # Build user lookup: roster_id -> manager display name
+    roster_to_user = {}
+    user_lookup = {}
+    for user in users:
+        user_lookup[user["user_id"]] = user
+    for roster in rosters:
+        owner_id = roster.get("owner_id")
+        if owner_id and owner_id in user_lookup:
+            roster_to_user[roster["roster_id"]] = {
+                "display_name": user_lookup[owner_id].get("display_name", "Unknown"),
+                "avatar_id": user_lookup[owner_id].get("avatar"),
+            }
+
+    # Enrich all rosters with player details
+    all_rosters_enriched = []
+    for roster in rosters:
+        enriched = _enrich_roster(roster, players_db, roster_to_user)
+        all_rosters_enriched.append(enriched)
+
+    # Find the user's roster (by user_id from API, or first roster as fallback)
+    my_roster = all_rosters_enriched[0] if all_rosters_enriched else None
+    user_id = meta.get("user_id")
+    if user_id:
+        # Match by owner_id (most reliable â€” resolved from Sleeper username via API)
+        for roster in rosters:
+            if str(roster.get("owner_id")) == str(user_id):
+                for r in all_rosters_enriched:
+                    if r["roster_id"] == roster.get("roster_id"):
+                        my_roster = r
+                        break
+                break
+    elif config.sleeper_username:
+        # Fallback: match by display name (less reliable)
+        for r in all_rosters_enriched:
+            manager = r.get("manager", {}).get("display_name", "")
+            if manager.lower() == config.sleeper_username.lower():
+                my_roster = r
+                break
+
+    # Determine opponent from matchups
+    opponent_roster = None
+    if matchups and my_roster:
+        opponent_roster = _find_opponent(matchups, my_roster["roster_id"],
+                                         all_rosters_enriched, players_db, roster_to_user)
+
+    # Compute standings
+    standings = _compute_standings(all_rosters_enriched)
+
+    # Compute available free agents
+    rostered_player_ids = set()
+    for roster in all_rosters_enriched:
+        rostered_player_ids.update(roster.get("player_ids", []))
+
+    available_players = _compute_available_players(players_db, rostered_player_ids)
+
+    # Enrich trending data with player names
+    trending = _enrich_trending(trending_adds, trending_drops, players_db)
+
+    # League settings
+    scoring_settings = league.get("scoring_settings", {})
+    roster_positions = league.get("roster_positions", config.roster_positions)
+
+    return {
+        "meta": meta,
+        "league": {
+            "name": league.get("name", "Demo League"),
+            "season": meta.get("season"),
+            "week": meta.get("week"),
+            "scoring_type": config.scoring_type,
+            "roster_positions": roster_positions,
+            "total_rosters": league.get("total_rosters", len(rosters)),
+            "scoring_settings": _simplify_scoring(scoring_settings),
+        },
+        "my_team": my_roster,
+        "opponent": opponent_roster,
+        "standings": standings,
+        "available_players": available_players[:200],  # Top 200 by projected points
+        "trending": trending,
+        "all_rosters": all_rosters_enriched,
+        "scoring_settings": _simplify_scoring(scoring_settings),
+    }
+
+
+def _enrich_roster(roster: dict, players_db: dict, roster_to_user: dict) -> dict:
+    """Enrich a roster object with player details and manager info."""
+    player_ids = roster.get("players", [])
+    starter_ids = roster.get("starters", [])
+    bench_ids = [pid for pid in player_ids if pid not in starter_ids]
+
+    starters = []
+    for pid in starter_ids:
+        player = players_db.get(pid, {})
+        starters.append(_build_player_detail(pid, player, is_starter=True))
+
+    bench = []
+    for pid in bench_ids:
+        player = players_db.get(pid, {})
+        bench.append(_build_player_detail(pid, player, is_starter=False))
+
+    manager = roster_to_user.get(roster["roster_id"], {
+        "display_name": f"Team {roster['roster_id']}",
+        "avatar_id": None,
+    })
+
+    wins = roster.get("wins", 0)
+    losses = roster.get("losses", 0)
+    ties = roster.get("ties", 0)
+    points_for = roster.get("fpts", 0)
+    points_against = roster.get("fpts_decimal", 0)  # Approximation
+
+    return {
+        "roster_id": roster.get("roster_id"),
+        "manager": manager,
+        "record": {"wins": wins, "losses": losses, "ties": ties},
+        "points_for": round(points_for, 2) if points_for else 0,
+        "points_against": round(points_against, 2) if points_against else 0,
+        "player_ids": player_ids,
+        "starters": starters,
+        "bench": bench,
+        "full_roster": starters + bench,
+        "projected_total": round(sum(s["projected_points"] for s in starters), 2),
+    }
+
+
+def _build_player_detail(player_id: str, player: dict, is_starter: bool) -> dict:
+    """Build a clean player detail object from raw API data."""
+    # Projected points: use projected_pts if available, otherwise estimate from stats
+    projected = player.get("projected_pts", 0) or _estimate_projection(player)
+    season_points = player.get("stats", {}).get("pts_ppr", 0) or 0
+    recent_points = player.get("recent_points", []) or []
+    recent_avg = sum(recent_points) / len(recent_points) if recent_points else projected
+
+    return {
+        "player_id": player_id,
+        "name": player.get("full_name", player.get("search_full_name", "Unknown")),
+        "first_name": player.get("first_name", ""),
+        "last_name": player.get("last_name", ""),
+        "position": player.get("position", "UNK"),
+        "team": player.get("team", "FA"),
+        "age": player.get("age"),
+        "years_exp": player.get("years_exp"),
+        "injury_status": player.get("injury_status"),
+        "injury_body_part": player.get("injury_body_part"),
+        "injury_notes": player.get("injury_notes", ""),
+        "bye_week": _get_bye_week(player.get("team")),
+        "projected_points": round(projected, 2),
+        "season_points": round(season_points, 2),
+        "recent_avg": round(recent_avg, 2),
+        "recent_points": recent_points,
+        "is_starter": is_starter,
+        "avatar_id": player.get("avatar_id"),
+    }
+
+
+def _estimate_projection(player: dict) -> float:
+    """Estimate projected points when official projections aren't available."""
+    stats = player.get("stats", {})
+    season_pts = stats.get("pts_ppr", 0) or 0
+    # Simple heuristic: use season average as baseline
+    return season_pts
+
+
+def _get_bye_week(team: str) -> int | None:
+    """Get the bye week for an NFL team. Returns None for unknown teams."""
+    bye_weeks = {
+        "ATL": 12, "BUF": 12, "CHI": 12, "CIN": 12, "DAL": 12,
+        "DEN": 11, "DET": 11, "GB": 11, "JAX": 11, "KC": 11,
+        "NO": 11, "NYJ": 11, "ARI": 10, "CAR": 10, "CLE": 10,
+        "HOU": 10, "IND": 10, "MIA": 10, "MIN": 10, "NE": 10,
+        "PHI": 10, "PIT": 10, "SF": 9, "SEA": 9, "TB": 9,
+        "WAS": 9, "BAL": 9, "LV": 9, "LAC": 9, "NYG": 9,
+        "TEN": 9, "RAM": 9,
+    }
+    return bye_weeks.get(team)
+
+
+def _find_opponent(matchups: list, my_roster_id: int,
+                   all_rosters: list, players_db: dict, roster_to_user: dict) -> dict | None:
+    """Find the opponent's roster from the current week's matchups."""
+    my_matchup = None
+    for matchup in matchups:
+        if matchup.get("roster_id") == my_roster_id:
+            my_matchup = matchup
+            break
+
+    if not my_matchup:
+        return None
+
+    # Find the matching matchup (same matchup_id, different roster_id)
+    matchup_id = my_matchup.get("matchup_id")
+    for matchup in matchups:
+        if (matchup.get("matchup_id") == matchup_id and
+                matchup.get("roster_id") != my_roster_id):
+            opponent_roster_id = matchup.get("roster_id")
+            for roster in all_rosters:
+                if roster["roster_id"] == opponent_roster_id:
+                    return roster
+    return None
+
+
+def _compute_standings(rosters: list) -> list:
+    """Compute league standings sorted by record and points."""
+    standings = []
+    for roster in rosters:
+        wins = roster["record"]["wins"]
+        losses = roster["record"]["losses"]
+        ties = roster["record"]["ties"]
+        win_pct = wins / (wins + losses + ties) if (wins + losses + ties) > 0 else 0
+        standings.append({
+            "roster_id": roster["roster_id"],
+            "manager": roster["manager"]["display_name"],
+            "record": f"{wins}-{losses}" + (f"-{ties}" if ties > 0 else ""),
+            "wins": wins,
+            "losses": losses,
+            "ties": ties,
+            "win_pct": round(win_pct, 3),
+            "points_for": roster["points_for"],
+            "points_against": roster["points_against"],
+            "projected_total": roster["projected_total"],
+        })
+
+    # Sort by wins (desc), then points_for (desc)
+    standings.sort(key=lambda x: (-x["wins"], -x["points_for"]))
+    return standings
+
+
+def _compute_available_players(players_db: dict, rostered_ids: set) -> list:
+    """Compute available free agents (all players minus rostered)."""
+    available = []
+    for pid, player in players_db.items():
+        if pid in rostered_ids:
+            continue
+        if not player.get("position") or player["position"] not in ("QB", "RB", "WR", "TE", "K", "DEF"):
+            continue
+
+        projected = player.get("projected_pts", 0) or _estimate_projection(player)
+        if projected <= 0 and player.get("position") not in ("DEF", "K"):
+            continue
+
+        detail = _build_player_detail(pid, player, is_starter=False)
+        available.append(detail)
+
+    # Sort by projected points descending
+    available.sort(key=lambda x: x["projected_points"], reverse=True)
+    return available
+
+
+def _enrich_trending(adds: list, drops: list, players_db: dict) -> dict:
+    """Enrich trending add/drop data with player names."""
+    def enrich(trend_list):
+        result = []
+        for item in trend_list:
+            pid = str(item.get("player_id", ""))
+            player = players_db.get(pid, {})
+            result.append({
+                "player_id": pid,
+                "name": player.get("full_name", "Unknown"),
+                "position": player.get("position", ""),
+                "team": player.get("team", ""),
+                "count": item.get("count", 0),
+            })
+        return result
+
+    return {
+        "adds": enrich(adds),
+        "drops": enrich(drops),
+    }
+
+
+def _simplify_scoring(scoring_settings: dict) -> dict:
+    """Extract the most relevant scoring settings for display."""
+    if not scoring_settings:
+        return {}
+    return {
+        key: value for key, value in scoring_settings.items()
+        if key in ("pass_td", "pass_int", "pass_yd", "rush_td", "rush_yd",
+                     "rec", "rec_td", "rec_yd", "fg_miss", "fgm_0_19", "fgm_20_29",
+                     "fgm_30_39", "fgm_40_49", "fgm_50p", "xpm", "def_td", "def_int",
+                     "def_sack", "def_ff", "def_st_ff", "def_kr_td", "def_pr_td",
+                     "bonus_pass_yd_300", "bonus_pass_yd_400",
+                     "bonus_rush_yd_100", "bonus_rush_yd_200",
+                     "bonus_rec_yd_100", "bonus_rec_yd_200")
+    }
+
+
+============================================================
+FILE: src\pipeline\analyze.py
+============================================================
+"""
+Analyze Module â€” The Intelligence Layer
+
+Computes actionable insights from transformed fantasy football data:
+
+1. Waiver Wire Edge Analysis
+   - Identifies the best available free agents
+   - Compares each candidate against your weakest bench player at the same position
+   - Calculates the projected point improvement (the "edge")
+   - Factors in bye week coverage, injury status, and trending activity
+
+2. Matchup Analysis
+   - Compares your projected starting lineup vs your opponent's
+   - Identifies positional advantages and disadvantages
+   - Calculates win probability based on projected points
+
+3. Optimal Lineup Optimizer
+   - Maximizes projected points within roster slot constraints
+   - Accounts for bye weeks, injuries, and matchup strength
+   - Suggests lineup changes with reasoning
+
+4. Player Trends & Insights
+   - Week-over-week performance deltas
+   - Hot/cold streak detection
+   - Trending add/drop intelligence
+"""
+
+from src.config import config
+
+
+def analyze(clean_data: dict) -> dict:
+    """
+    Run all analysis modules on the cleaned data.
+
+    Args:
+        clean_data: Output from transform.transform()
+
+    Returns:
+        dict with analysis results:
+            - waiver_edge: Ranked free agent recommendations
+            - matchup_analysis: Position-by-position comparison
+            - optimal_lineup: Suggested starting lineup
+            - player_trends: Performance trends for your roster
+            - insights: Human-readable summary insights
+    """
+    my_team = clean_data.get("my_team", {})
+    opponent = clean_data.get("opponent")
+    available_players = clean_data.get("available_players", [])
+    trending = clean_data.get("trending", {})
+    standings = clean_data.get("standings", [])
+    league = clean_data.get("league", {})
+
+    # Run each analysis module
+    waiver_edge = analyze_waiver_edge(my_team, available_players, trending)
+    matchup_analysis = analyze_matchup(my_team, opponent)
+    optimal_lineup = optimize_lineup(my_team)
+    player_trends = analyze_trends(my_team, trending)
+    insights = generate_insights(my_team, opponent, waiver_edge, standings, league)
+
+    return {
+        "waiver_edge": waiver_edge,
+        "matchup_analysis": matchup_analysis,
+        "optimal_lineup": optimal_lineup,
+        "player_trends": player_trends,
+        "insights": insights,
+    }
+
+
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# 1. WAIVER WIRE EDGE ANALYSIS
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+
+def analyze_waiver_edge(my_team: dict, available_players: list, trending: dict) -> list:
+    """
+    Calculate the waiver wire "edge" for each available free agent.
+
+    Edge = Free Agent Projected Points - Weakest Bench Player Points (same position)
+
+    Returns a ranked list of recommendations with drop suggestions.
+    """
+    if not my_team:
+        return []
+
+    bench = my_team.get("bench", [])
+    if not bench:
+        return []
+
+    # Group bench players by position
+    bench_by_position = {}
+    for player in bench:
+        pos = player["position"]
+        if pos not in bench_by_position:
+            bench_by_position[pos] = []
+        bench_by_position[pos].append(player)
+
+    # Find weakest bench player per position
+    weakest_by_position = {}
+    for pos, players in bench_by_position.items():
+        weakest = min(players, key=lambda p: p["projected_points"])
+        weakest_by_position[pos] = weakest
+
+    # Also track weakest bench player overall
+    weakest_bench_overall = min(bench, key=lambda p: p["projected_points"]) if bench else None
+
+    # Trending player IDs for bonus scoring
+    trending_add_ids = {str(t["player_id"]) for t in trending.get("adds", [])}
+
+    recommendations = []
+    for fa in available_players[:100]:  # Analyze top 100 available players
+        fa_pos = fa["position"]
+
+        # Find comparable bench player at the same position
+        # For FLEX-eligible positions (RB, WR, TE), compare across all skill positions
+        comparable_positions = _get_comparable_positions(fa_pos)
+        comparable_bench = []
+        for pos in comparable_positions:
+            if pos in weakest_by_position:
+                comparable_bench.append(weakest_by_position[pos])
+
+        if not comparable_bench:
+            # No comparable bench player â€” edge is just the FA's projected points
+            comparison_player = weakest_bench_overall
+        else:
+            comparison_player = min(comparable_bench, key=lambda p: p["projected_points"])
+
+        if not comparison_player:
+            continue
+
+        # Calculate base edge
+        edge = fa["projected_points"] - comparison_player["projected_points"]
+
+        # Apply modifiers
+        trend_bonus = 0
+        if fa["player_id"] in trending_add_ids:
+            trend_bonus = 0.5  # Small bonus for trending players
+
+        # Bye week coverage bonus
+        bye_bonus = 0
+        my_starters = my_team.get("starters", [])
+        for starter in my_starters:
+            if (starter["position"] == fa_pos and
+                    starter.get("bye_week") == fa.get("bye_week")):
+                bye_bonus = 0  # No bonus if same bye week
+            elif starter["position"] == fa_pos and starter.get("bye_week"):
+                # Bonus if this FA covers a different bye week than current starter
+                if fa.get("bye_week") and fa["bye_week"] != starter["bye_week"]:
+                    bye_bonus = max(bye_bonus, 0.3)
+
+        # Injury penalty for the FA
+        injury_penalty = 0
+        if fa.get("injury_status") and fa["injury_status"] not in ("Active", "Healthy"):
+            injury_penalty = 1.0
+
+        adjusted_edge = edge + trend_bonus + bye_bonus - injury_penalty
+
+        if adjusted_edge < config.waiver_edge_threshold:
+            continue
+
+        recommendation = {
+            "rank": 0,  # Assigned after sorting
+            "player": {
+                "name": fa["name"],
+                "position": fa_pos,
+                "team": fa["team"],
+                "projected_points": fa["projected_points"],
+                "season_points": fa.get("season_points", 0),
+                "recent_avg": fa.get("recent_avg", 0),
+                "injury_status": fa.get("injury_status"),
+                "bye_week": fa.get("bye_week"),
+            },
+            "drop_suggestion": {
+                "name": comparison_player["name"],
+                "position": comparison_player["position"],
+                "projected_points": comparison_player["projected_points"],
+                "reason": _get_drop_reason(comparison_player, fa),
+            },
+            "edge_value": round(adjusted_edge, 2),
+            "raw_edge": round(edge, 2),
+            "trending": fa["player_id"] in trending_add_ids,
+            "analysis": _generate_waiver_analysis(fa, comparison_player, adjusted_edge),
+        }
+        recommendations.append(recommendation)
+
+    # Sort by adjusted edge value (descending)
+    recommendations.sort(key=lambda x: x["edge_value"], reverse=True)
+
+    # Assign ranks
+    for i, rec in enumerate(recommendations, 1):
+        rec["rank"] = i
+
+    return recommendations[:15]  # Top 15 recommendations
+
+
+def _get_comparable_positions(position: str) -> list:
+    """Get positions that are comparable for waiver edge analysis."""
+    if position in ("RB", "WR", "TE"):
+        return ["RB", "WR", "TE"]  # FLEX-eligible positions
+    return [position]
+
+
+def _get_drop_reason(drop_player: dict, add_player: dict) -> str:
+    """Generate a human-readable reason for dropping a player."""
+    reasons = []
+    if drop_player["projected_points"] < add_player["projected_points"]:
+        diff = add_player["projected_points"] - drop_player["projected_points"]
+        reasons.append(f"+{diff:.1f} pts/wk upgrade")
+    if drop_player.get("injury_status") and drop_player["injury_status"] not in ("Active", "Healthy"):
+        reasons.append(f"{drop_player['injury_status']} injury")
+    if not reasons:
+        reasons.append("Lower projected value")
+    return "; ".join(reasons)
+
+
+def _generate_waiver_analysis(fa: dict, drop_player: dict, edge: float) -> str:
+    """Generate a detailed analysis string for a waiver recommendation."""
+    parts = []
+    parts.append(
+        f"Adding {fa['name']} ({fa['position']}, {fa['team']}) over "
+        f"{drop_player['name']} yields a +{edge:.1f} projected point edge per week."
+    )
+    if fa.get("injury_status") and fa["injury_status"] not in ("Active", "Healthy"):
+        parts.append(f"Note: {fa['name']} is currently {fa['injury_status']}.")
+    if fa.get("bye_week"):
+        parts.append(f"Bye week: {fa['bye_week']}.")
+    return " ".join(parts)
+
+
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# 2. MATCHUP ANALYSIS
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+
+def analyze_matchup(my_team: dict, opponent: dict | None) -> dict:
+    """
+    Analyze the current week's matchup position-by-position.
+
+    Returns projected scores, positional edges, and win probability.
+    """
+    if not my_team:
+        return {"available": False, "message": "No team data available"}
+
+    if not opponent:
+        return {
+            "available": False,
+            "message": "No matchup data available. This may be an off week or playoffs.",
+            "my_projected": my_team.get("projected_total", 0),
+        }
+
+    my_starters = my_team.get("starters", [])
+    opp_starters = opponent.get("starters", [])
+
+    # Map starters by position for comparison
+    my_by_pos = _group_by_position(my_starters)
+    opp_by_pos = _group_by_position(opp_starters)
+
+    # Compare position by position
+    position_comparison = []
+    all_positions = sorted(set(list(my_by_pos.keys()) + list(opp_by_pos.keys())))
+
+    for pos in all_positions:
+        my_players = my_by_pos.get(pos, [])
+        opp_players = opp_by_pos.get(pos, [])
+
+        my_proj = sum(p["projected_points"] for p in my_players)
+        opp_proj = sum(p["projected_points"] for p in opp_players)
+
+        diff = my_proj - opp_proj
+        if diff > 2:
+            advantage = "mine"
+            edge_label = "Advantage"
+        elif diff < -2:
+            advantage = "opponent"
+            edge_label = "Disadvantage"
+        else:
+            advantage = "even"
+            edge_label = "Even"
+
+        position_comparison.append({
+            "position": pos,
+            "my_players": [{"name": p["name"], "team": p["team"],
+                            "projected": p["projected_points"]} for p in my_players],
+            "opp_players": [{"name": p["name"], "team": p["team"],
+                             "projected": p["projected_points"]} for p in opp_players],
+            "my_projected": round(my_proj, 2),
+            "opp_projected": round(opp_proj, 2),
+            "difference": round(diff, 2),
+            "advantage": advantage,
+            "edge_label": edge_label,
+        })
+
+    # Calculate overall projections and win probability
+    my_total = sum(s["projected_points"] for s in my_starters)
+    opp_total = sum(s["projected_points"] for s in opp_starters)
+
+    # Simple win probability based on projected point difference
+    # Using a logistic function centered at 0
+    import math
+    diff = my_total - opp_total
+    win_prob = 1 / (1 + math.exp(-diff / 5))  # Sigmoid with 5-point spread
+
+    return {
+        "available": True,
+        "my_projected": round(my_total, 2),
+        "opp_projected": round(opp_total, 2),
+        "point_spread": round(diff, 2),
+        "win_probability": round(win_prob * 100, 1),
+        "opponent_name": opponent.get("manager", {}).get("display_name", "Unknown"),
+        "opponent_record": opponent.get("record", {}),
+        "position_comparison": position_comparison,
+        "my_record": my_team.get("record", {}),
+    }
+
+
+def _group_by_position(players: list) -> dict:
+    """Group players by position, handling FLEX as a separate group."""
+    grouped = {}
+    for player in players:
+        pos = player["position"]
+        # For FLEX slot, use "FLEX" as the key
+        # Since Sleeper doesn't label FLEX separately, we check if there are
+        # already 2 RBs/WRs and this is the third
+        if pos not in grouped:
+            grouped[pos] = []
+        grouped[pos].append(player)
+    return grouped
+
+
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# 3. OPTIMAL LINEUP OPTIMIZER
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+
+def optimize_lineup(my_team: dict) -> dict:
+    """
+    Optimize the starting lineup to maximize projected points.
+
+    Uses a greedy approach:
+    1. For each required position, select the player with the highest projection
+    2. Handle FLEX by picking the best remaining RB/WR/TE
+    3. Account for bye weeks and injuries
+    """
+    if not my_team:
+        return {"available": False, "message": "No team data available"}
+
+    full_roster = my_team.get("full_roster", [])
+    current_starters = my_team.get("starters", [])
+    roster_positions = config.roster_positions
+
+    # Filter out players on bye or injured
+    eligible = []
+    for player in full_roster:
+        if player.get("injury_status") and player["injury_status"] in ("IR", "Out", "Doubtful"):
+            eligible.append({**player, "eligible": False, "reason": f"{player['injury_status']}"})
+        elif player.get("bye_week") == my_team.get("current_week"):
+            eligible.append({**player, "eligible": False, "reason": "Bye week"})
+        else:
+            eligible.append({**player, "eligible": True, "reason": None})
+
+    # Assign positions greedily
+    assigned = []
+    used_ids = set()
+
+    # Standard positions first (QB, K, DEF, TE)
+    for pos in ["QB", "TE", "K", "DEF"]:
+        best = _find_best_for_position(eligible, pos, used_ids)
+        if best:
+            assigned.append({**best, "suggested_slot": pos})
+            used_ids.add(best["player_id"])
+
+    # RBs (need 2)
+    for _ in range(2):
+        best = _find_best_for_position(eligible, "RB", used_ids)
+        if best:
+            assigned.append({**best, "suggested_slot": "RB"})
+            used_ids.add(best["player_id"])
+
+    # WRs (need 2)
+    for _ in range(2):
+        best = _find_best_for_position(eligible, "WR", used_ids)
+        if best:
+            assigned.append({**best, "suggested_slot": "WR"})
+            used_ids.add(best["player_id"])
+
+    # FLEX (best remaining RB/WR/TE)
+    flex_candidates = [p for p in eligible if p["eligible"] and
+                       p["position"] in ("RB", "WR", "TE") and p["player_id"] not in used_ids]
+    if flex_candidates:
+        best_flex = max(flex_candidates, key=lambda p: p["projected_points"])
+        assigned.append({**best_flex, "suggested_slot": "FLEX"})
+        used_ids.add(best_flex["player_id"])
+
+    # Calculate projected total
+    projected_total = round(sum(p["projected_points"] for p in assigned), 2)
+
+    # Compare with current lineup
+    current_total = my_team.get("projected_total", 0)
+    improvement = round(projected_total - current_total, 2)
+
+    # Identify changes
+    current_ids = {s["player_id"] for s in current_starters}
+    suggested_ids = {p["player_id"] for p in assigned}
+    changes = []
+
+    for player in assigned:
+        if player["player_id"] not in current_ids:
+            # This is a new starter â€” find who they're replacing
+            # Look for a current starter at the same slot who is not in the suggested lineup
+            slot = player.get("suggested_slot", player["position"])
+            old_starter = None
+            for s in current_starters:
+                if s["player_id"] not in suggested_ids:
+                    # Match by position or slot
+                    if s["position"] == player["position"]:
+                        old_starter = s
+                        break
+                    elif slot == "FLEX" and s["position"] in ("RB", "WR", "TE"):
+                        old_starter = s
+                        break
+            # If still no match, find any current starter not in suggested lineup
+            if not old_starter:
+                old_starter = next((s for s in current_starters
+                                    if s["player_id"] not in suggested_ids), None)
+            changes.append({
+                "type": "bench_to_start",
+                "player": player["name"],
+                "position": player["position"],
+                "replaces": old_starter["name"] if old_starter else "current starter",
+                "reason": f"Higher projection ({player['projected_points']} vs "
+                          f"{old_starter['projected_points'] if old_starter else 0})",
+            })
+
+    return {
+        "available": True,
+        "suggested_lineup": [{
+            "name": p["name"],
+            "position": p["position"],
+            "team": p["team"],
+            "projected_points": p["projected_points"],
+            "suggested_slot": p["suggested_slot"],
+            "injury_status": p.get("injury_status"),
+        } for p in assigned],
+        "projected_total": projected_total,
+        "current_total": current_total,
+        "improvement": improvement,
+        "changes": changes,
+        "message": (
+            f"Optimal lineup projects {projected_total} points "
+            f"({'+' if improvement >= 0 else ''}{improvement} vs current lineup)"
+        ),
+    }
+
+
+def _find_best_for_position(eligible: list, position: str, used_ids: set) -> dict | None:
+    """Find the best eligible player for a given position."""
+    candidates = [
+        p for p in eligible
+        if p["eligible"] and p["position"] == position and p["player_id"] not in used_ids
+    ]
+    if not candidates:
+        # Fall back to ineligible players if no one is eligible
+        candidates = [
+            p for p in eligible
+            if p["position"] == position and p["player_id"] not in used_ids
+        ]
+    if not candidates:
+        return None
+    return max(candidates, key=lambda p: p["projected_points"])
+
+
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# 4. PLAYER TRENDS & INSIGHTS
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+
+def analyze_trends(my_team: dict, trending: dict) -> dict:
+    """Analyze performance trends for players on the user's roster."""
+    roster = my_team.get("full_roster", [])
+
+    player_trends = []
+    for player in roster:
+        recent = player.get("recent_points", [])
+        season_avg = player.get("season_points", 0) / max(
+            my_team.get("meta", {}).get("week", 1), 1
+        ) if my_team.get("season_points") else 0
+
+        # Determine trend direction
+        if len(recent) >= 2:
+            recent_avg = sum(recent[-3:]) / len(recent[-3:])
+            if recent_avg > season_avg * 1.15:
+                trend = "hot"
+                trend_label = "Trending Up"
+            elif recent_avg < season_avg * 0.85:
+                trend = "cold"
+                trend_label = "Trending Down"
+            else:
+                trend = "stable"
+                trend_label = "Stable"
+        else:
+            trend = "stable"
+            trend_label = "Insufficient Data"
+
+        player_trends.append({
+            "name": player["name"],
+            "position": player["position"],
+            "team": player["team"],
+            "projected_points": player["projected_points"],
+            "season_points": player.get("season_points", 0),
+            "recent_avg": player.get("recent_avg", 0),
+            "trend": trend,
+            "trend_label": trend_label,
+            "is_starter": player.get("is_starter", False),
+            "injury_status": player.get("injury_status"),
+        })
+
+    # Sort starters first, then by projected points
+    player_trends.sort(key=lambda x: (not x["is_starter"], -x["projected_points"]))
+
+    return {
+        "players": player_trends,
+        "trending_adds": trending.get("adds", [])[:10],
+        "trending_drops": trending.get("drops", [])[:10],
+    }
+
+
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# 5. INSIGHTS SUMMARY
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+
+def generate_insights(my_team: dict, opponent: dict | None,
+                       waiver_edge: list, standings: list, league: dict) -> list:
+    """Generate human-readable summary insights for the dashboard."""
+    insights = []
+
+    # Matchup insight
+    if opponent:
+        my_proj = my_team.get("projected_total", 0)
+        opp_proj = opponent.get("projected_total", 0)
+        if my_proj > opp_proj:
+            insights.append({
+                "type": "positive",
+                "icon": "trending-up",
+                "title": "Favorable Matchup",
+                "message": f"You're projected to win by {my_proj - opp_proj:.1f} points "
+                          f"against {opponent['manager']['display_name']}.",
+            })
+        else:
+            insights.append({
+                "type": "warning",
+                "icon": "alert-triangle",
+                "title": "Tough Matchup",
+                "message": f"You're projected to lose by {opp_proj - my_proj:.1f} points. "
+                          f"Consider lineup adjustments or waiver moves.",
+            })
+
+    # Waiver insight
+    if waiver_edge:
+        top_rec = waiver_edge[0]
+        insights.append({
+            "type": "info",
+            "icon": "target",
+            "title": "Top Waiver Target",
+            "message": f"Add {top_rec['player']['name']} ({top_rec['player']['position']}) "
+                      f"for a +{top_rec['edge_value']:.1f} edge. "
+                      f"Drop {top_rec['drop_suggestion']['name']}.",
+        })
+
+    # Standings insight
+    if standings and my_team:
+        my_rank = next((i + 1 for i, s in enumerate(standings)
+                        if s["roster_id"] == my_team["roster_id"]), None)
+        if my_rank:
+            if my_rank <= 4:
+                insights.append({
+                    "type": "positive",
+                    "icon": "award",
+                    "title": "Playoff Position",
+                    "message": f"You're ranked #{my_rank} â€” in playoff position.",
+                })
+            elif my_rank <= 6:
+                insights.append({
+                    "type": "warning",
+                    "icon": "alert-circle",
+                    "title": "Bubble Team",
+                    "message": f"You're ranked #{my_rank} â€” on the playoff bubble.",
+                })
+            else:
+                insights.append({
+                    "type": "negative",
+                    "icon": "trending-down",
+                    "title": "Needs Improvement",
+                    "message": f"You're ranked #{my_rank} â€” waiver moves and lineup "
+                              f"optimization could help climb the standings.",
+                })
+
+    # Lineup optimization insight
+    # (Handled in the optimal_lineup section)
+
+    return insights
+
+
+============================================================
+FILE: tests\test_analyze.py
+============================================================
+"""
+Tests for the analysis engine (waiver edge, matchup analysis, lineup optimizer).
+
+Run: python -m pytest tests/ -v
+"""
+
+import sys
+from pathlib import Path
+
+# Add project root to path for imports
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+from src.pipeline.analyze import (
+    analyze_waiver_edge,
+    analyze_matchup,
+    optimize_lineup,
+    analyze_trends,
+    generate_insights,
+    _get_comparable_positions,
+    _get_drop_reason,
+)
+from tests.fixtures.sample_data import (
+    get_sample_my_team,
+    get_sample_available_players,
+    get_sample_opponent,
+    get_sample_trending,
+)
+
+
+# â”€â”€ Waiver Edge Tests â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+class TestWaiverEdge:
+    """Tests for the waiver wire edge analysis."""
+
+    def test_returns_ranked_recommendations(self):
+        """Waiver edge should return a ranked list of recommendations."""
+        team = get_sample_my_team()
+        available = get_sample_available_players()
+        trending = get_sample_trending()
+
+        results = analyze_waiver_edge(team, available, trending)
+
+        assert len(results) > 0
+        assert results[0]["rank"] == 1
+        # Should be sorted by edge_value descending
+        for i in range(len(results) - 1):
+            assert results[i]["edge_value"] >= results[i + 1]["edge_value"]
+
+    def test_each_recommendation_has_required_fields(self):
+        """Each recommendation should have player, drop_suggestion, edge_value, and analysis."""
+        team = get_sample_my_team()
+        available = get_sample_available_players()
+        trending = get_sample_trending()
+
+        results = analyze_waiver_edge(team, available, trending)
+
+        for rec in results:
+            assert "player" in rec
+            assert "name" in rec["player"]
+            assert "position" in rec["player"]
+            assert "projected_points" in rec["player"]
+            assert "drop_suggestion" in rec
+            assert "name" in rec["drop_suggestion"]
+            assert "reason" in rec["drop_suggestion"]
+            assert "edge_value" in rec
+            assert "analysis" in rec
+            assert "rank" in rec
+
+    def test_edge_threshold_filtering(self):
+        """Recommendations below the edge threshold should not appear."""
+        from src.config import config
+        team = get_sample_my_team()
+        # Create available players with very low projections
+        low_players = [
+            {"player_id": "999", "name": "Scrub Player", "position": "RB", "team": "FA",
+             "projected_points": 0.5, "season_points": 2.0, "recent_avg": 0.5,
+             "recent_points": [0, 1, 0], "is_starter": False, "injury_status": None, "bye_week": None},
+        ]
+        trending = get_sample_trending()
+
+        results = analyze_waiver_edge(team, low_players, trending)
+        # A player with 0.5 projected points should not beat the edge threshold
+        for rec in results:
+            assert rec["edge_value"] >= config.waiver_edge_threshold
+
+    def test_empty_team_returns_empty_list(self):
+        """An empty team should return an empty recommendation list."""
+        results = analyze_waiver_edge({}, get_sample_available_players(), get_sample_trending())
+        assert results == []
+
+    def test_trending_bonus_applied(self):
+        """Players in the trending adds list should get a trend bonus."""
+        team = get_sample_my_team()
+        available = get_sample_available_players()
+        trending = get_sample_trending()
+
+        results = analyze_waiver_edge(team, available, trending)
+
+        # At least one trending player should be flagged
+        trending_found = any(rec["trending"] for rec in results)
+        # If Joe Flacco (player_id 100) is in results and trending, it should be flagged
+        for rec in results:
+            if rec["player"]["name"] == "Joe Flacco":
+                assert rec["trending"] is True
+
+
+# â”€â”€ Matchup Analysis Tests â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+class TestMatchupAnalysis:
+    """Tests for the matchup analysis module."""
+
+    def test_matchup_with_opponent(self):
+        """Matchup analysis should return position comparisons and win probability."""
+        my_team = get_sample_my_team()
+        opponent = get_sample_opponent()
+
+        result = analyze_matchup(my_team, opponent)
+
+        assert result["available"] is True
+        assert "my_projected" in result
+        assert "opp_projected" in result
+        assert "win_probability" in result
+        assert "position_comparison" in result
+        assert 0 <= result["win_probability"] <= 100
+
+    def test_matchup_without_opponent(self):
+        """When no opponent is available, should return unavailable status."""
+        my_team = get_sample_my_team()
+
+        result = analyze_matchup(my_team, None)
+
+        assert result["available"] is False
+        assert "message" in result
+
+    def test_win_probability_range(self):
+        """Win probability should be between 0 and 100."""
+        my_team = get_sample_my_team()
+        opponent = get_sample_opponent()
+
+        result = analyze_matchup(my_team, opponent)
+
+        assert 0 <= result["win_probability"] <= 100
+
+    def test_position_comparison_structure(self):
+        """Each position comparison should have both teams' players and edge info."""
+        my_team = get_sample_my_team()
+        opponent = get_sample_opponent()
+
+        result = analyze_matchup(my_team, opponent)
+
+        for comp in result["position_comparison"]:
+            assert "position" in comp
+            assert "my_players" in comp
+            assert "opp_players" in comp
+            assert "my_projected" in comp
+            assert "opp_projected" in comp
+            assert "difference" in comp
+            assert "advantage" in comp
+            assert comp["advantage"] in ("mine", "opponent", "even")
+
+
+# â”€â”€ Lineup Optimizer Tests â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+class TestLineupOptimizer:
+    """Tests for the optimal lineup optimizer."""
+
+    def test_returns_suggested_lineup(self):
+        """Optimizer should return a suggested lineup with projected total."""
+        my_team = get_sample_my_team()
+
+        # Build full_roster from starters + bench
+        my_team["full_roster"] = my_team["starters"] + my_team["bench"]
+
+        result = optimize_lineup(my_team)
+
+        assert result["available"] is True
+        assert "suggested_lineup" in result
+        assert "projected_total" in result
+        assert len(result["suggested_lineup"]) > 0
+
+    def test_optimal_lineup_is_higher_or_equal(self):
+        """Optimal lineup should project >= current lineup points."""
+        my_team = get_sample_my_team()
+        my_team["full_roster"] = my_team["starters"] + my_team["bench"]
+
+        result = optimize_lineup(my_team)
+
+        assert result["projected_total"] >= result["current_total"] - 0.01
+
+    def test_changes_listed(self):
+        """If lineup changes are suggested, they should include reasoning."""
+        my_team = get_sample_my_team()
+        my_team["full_roster"] = my_team["starters"] + my_team["bench"]
+
+        result = optimize_lineup(my_team)
+
+        for change in result["changes"]:
+            assert "player" in change
+            assert "position" in change
+            assert "replaces" in change
+            assert "reason" in change
+            assert "replaces" not in change or change["replaces"] != "N/A"
+
+
+# â”€â”€ Helper Function Tests â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+class TestHelperFunctions:
+    """Tests for utility functions in the analysis module."""
+
+    def test_get_comparable_positions(self):
+        """RB, WR, TE should return all three as comparable (FLEX-eligible)."""
+        assert _get_comparable_positions("RB") == ["RB", "WR", "TE"]
+        assert _get_comparable_positions("WR") == ["RB", "WR", "TE"]
+        assert _get_comparable_positions("TE") == ["RB", "WR", "TE"]
+        assert _get_comparable_positions("QB") == ["QB"]
+        assert _get_comparable_positions("K") == ["K"]
+
+    def test_get_drop_reason(self):
+        """Drop reason should mention the point difference."""
+        drop_player = {"name": "Bench Player", "position": "RB",
+                      "projected_points": 5.0, "injury_status": None}
+        add_player = {"name": "Free Agent", "position": "RB",
+                     "projected_points": 15.0}
+
+        reason = _get_drop_reason(drop_player, add_player)
+        assert "10.0" in reason  # 15 - 5 = 10
+
+    def test_get_drop_reason_with_injury(self):
+        """Drop reason should mention injury if the drop player is injured."""
+        drop_player = {"name": "Injured Player", "position": "RB",
+                      "projected_points": 5.0, "injury_status": "Questionable"}
+        add_player = {"name": "Free Agent", "position": "RB",
+                     "projected_points": 15.0}
+
+        reason = _get_drop_reason(drop_player, add_player)
+        assert "Questionable" in reason or "injury" in reason.lower()
+
+
+# â”€â”€ Trends Analysis Tests â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+class TestTrendsAnalysis:
+    """Tests for the player trends analysis."""
+
+    def test_trends_returns_players(self):
+        """Trends analysis should return player trend data."""
+        my_team = get_sample_my_team()
+        my_team["full_roster"] = my_team["starters"] + my_team["bench"]
+        trending = get_sample_trending()
+
+        result = analyze_trends(my_team, trending)
+
+        assert "players" in result
+        assert len(result["players"]) > 0
+
+    def test_trend_labels(self):
+        """Each player should have a trend label."""
+        my_team = get_sample_my_team()
+        my_team["full_roster"] = my_team["starters"] + my_team["bench"]
+        trending = get_sample_trending()
+
+        result = analyze_trends(my_team, trending)
+
+        for player in result["players"]:
+            assert player["trend"] in ("hot", "cold", "stable")
+            assert "trend_label" in player
+
+
+# â”€â”€ Insights Tests â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+class TestInsights:
+    """Tests for the insights generation."""
+
+    def test_insights_generated(self):
+        """Insights should be generated from team data."""
+        my_team = get_sample_my_team()
+        opponent = get_sample_opponent()
+        standings = [
+            {"roster_id": 1, "manager": "Test Team", "record": "3-2", "wins": 3,
+             "losses": 2, "ties": 0, "win_pct": 0.6, "points_for": 450.5,
+             "points_against": 380.2, "projected_total": 132.0},
+        ]
+        league = {"name": "Test League", "week": 5, "season": "2026"}
+
+        insights = generate_insights(my_team, opponent, [], standings, league)
+
+        assert len(insights) > 0
+        for insight in insights:
+            assert "type" in insight
+            assert "title" in insight
+            assert "message" in insight
+
+
+============================================================
+FILE: tests\fixtures\sample_data.py
+============================================================
+"""
+Test fixtures for the analysis engine.
+Contains sample league data for unit testing waiver edge, matchup, and lineup analysis.
+"""
+
+import json
+from pathlib import Path
+
+FIXTURES_DIR = Path(__file__).parent / "fixtures"
+
+
+def load_fixture(name: str) -> dict:
+    """Load a JSON fixture file from the fixtures directory."""
+    path = FIXTURES_DIR / f"{name}.json"
+    with open(path, "r") as f:
+        return json.load(f)
+
+
+def get_sample_my_team() -> dict:
+    """Return a sample team for testing."""
+    return {
+        "roster_id": 1,
+        "manager": {"display_name": "Test Team", "avatar_id": None},
+        "record": {"wins": 3, "losses": 2, "ties": 0},
+        "points_for": 450.5,
+        "points_against": 380.2,
+        "player_ids": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"],
+        "starters": [
+            {"player_id": "1", "name": "Josh Allen", "position": "QB", "team": "BUF",
+             "projected_points": 22.5, "season_points": 95.0, "recent_avg": 24.0,
+             "recent_points": [20, 25, 27], "is_starter": True, "injury_status": None, "bye_week": 12},
+            {"player_id": "2", "name": "Christian McCaffrey", "position": "RB", "team": "SF",
+             "projected_points": 18.0, "season_points": 80.0, "recent_avg": 19.0,
+             "recent_points": [17, 20, 20], "is_starter": True, "injury_status": None, "bye_week": 9},
+            {"player_id": "3", "name": "Breece Hall", "position": "RB", "team": "NYJ",
+             "projected_points": 15.0, "season_points": 65.0, "recent_avg": 14.0,
+             "recent_points": [12, 15, 15], "is_starter": True, "injury_status": None, "bye_week": 12},
+            {"player_id": "4", "name": "CeeDee Lamb", "position": "WR", "team": "DAL",
+             "projected_points": 16.5, "season_points": 70.0, "recent_avg": 17.0,
+             "recent_points": [15, 18, 18], "is_starter": True, "injury_status": None, "bye_week": 7},
+            {"player_id": "5", "name": "Justin Jefferson", "position": "WR", "team": "MIN",
+             "projected_points": 17.0, "season_points": 75.0, "recent_avg": 18.0,
+             "recent_points": [16, 19, 19], "is_starter": True, "injury_status": None, "bye_week": 6},
+            {"player_id": "6", "name": "Travis Kelce", "position": "TE", "team": "KC",
+             "projected_points": 12.0, "season_points": 50.0, "recent_avg": 11.0,
+             "recent_points": [10, 12, 11], "is_starter": True, "injury_status": None, "bye_week": 10},
+            {"player_id": "7", "name": "Davante Adams", "position": "WR", "team": "LV",
+             "projected_points": 14.0, "season_points": 60.0, "recent_avg": 13.0,
+             "recent_points": [12, 14, 13], "is_starter": True, "injury_status": None, "bye_week": 10},
+            {"player_id": "8", "name": "Harrison Butker", "position": "K", "team": "KC",
+             "projected_points": 9.0, "season_points": 40.0, "recent_avg": 8.5,
+             "recent_points": [7, 9, 9], "is_starter": True, "injury_status": None, "bye_week": 10},
+            {"player_id": "9", "name": "49ers", "position": "DEF", "team": "SF",
+             "projected_points": 8.0, "season_points": 35.0, "recent_avg": 7.5,
+             "recent_points": [6, 8, 8], "is_starter": True, "injury_status": None, "bye_week": 9},
+        ],
+        "bench": [
+            {"player_id": "10", "name": "Baker Mayfield", "position": "QB", "team": "TB",
+             "projected_points": 15.0, "season_points": 60.0, "recent_avg": 14.0,
+             "recent_points": [12, 15, 15], "is_starter": False, "injury_status": None, "bye_week": 11},
+            {"player_id": "11", "name": "Jaylen Warren", "position": "RB", "team": "PIT",
+             "projected_points": 8.0, "season_points": 30.0, "recent_avg": 7.0,
+             "recent_points": [6, 8, 7], "is_starter": False, "injury_status": None, "bye_week": 9},
+            {"player_id": "12", "name": "Khalil Shakir", "position": "WR", "team": "BUF",
+             "projected_points": 6.0, "season_points": 25.0, "recent_avg": 5.5,
+             "recent_points": [4, 6, 6], "is_starter": False, "injury_status": None, "bye_week": 12},
+            {"player_id": "13", "name": "Cole Kmet", "position": "TE", "team": "CHI",
+             "projected_points": 5.0, "season_points": 20.0, "recent_avg": 4.5,
+             "recent_points": [3, 5, 5], "is_starter": False, "injury_status": None, "bye_week": 7},
+            {"player_id": "14", "name": "Deebo Samuel", "position": "WR", "team": "SF",
+             "projected_points": 7.0, "season_points": 28.0, "recent_avg": 6.5,
+             "recent_points": [5, 7, 7], "is_starter": False, "injury_status": "Questionable", "bye_week": 9},
+        ],
+        "full_roster": [],  # Will be built from starters + bench
+        "projected_total": 132.0,
+    }
+
+
+def get_sample_available_players() -> list:
+    """Return sample available free agents for testing."""
+    return [
+        {"player_id": "100", "name": "Joe Flacco", "position": "QB", "team": "IND",
+         "projected_points": 18.0, "season_points": 45.0, "recent_avg": 17.0,
+         "recent_points": [15, 18, 18], "is_starter": False, "injury_status": None, "bye_week": 14},
+        {"player_id": "101", "name": "Antonio Gibson", "position": "RB", "team": "NE",
+         "projected_points": 12.0, "season_points": 40.0, "recent_avg": 11.0,
+         "recent_points": [9, 12, 12], "is_starter": False, "injury_status": None, "bye_week": 14},
+        {"player_id": "102", "name": "Romeo Doubs", "position": "WR", "team": "GB",
+         "projected_points": 11.0, "season_points": 35.0, "recent_avg": 10.0,
+         "recent_points": [8, 11, 11], "is_starter": False, "injury_status": None, "bye_week": 10},
+        {"player_id": "103", "name": "Chig Okonkwo", "position": "TE", "team": "TEN",
+         "projected_points": 8.0, "season_points": 25.0, "recent_avg": 7.5,
+         "recent_points": [6, 8, 8], "is_starter": False, "injury_status": None, "bye_week": 5},
+        {"player_id": "104", "name": "Tyler Lacy", "position": "K", "team": "JAX",
+         "projected_points": 8.0, "season_points": 30.0, "recent_avg": 7.5,
+         "recent_points": [6, 8, 8], "is_starter": False, "injury_status": None, "bye_week": None},
+    ]
+
+
+def get_sample_opponent() -> dict:
+    """Return a sample opponent team for matchup testing."""
+    return {
+        "roster_id": 2,
+        "manager": {"display_name": "Rival Team", "avatar_id": None},
+        "record": {"wins": 4, "losses": 1, "ties": 0},
+        "points_for": 480.0,
+        "points_against": 350.0,
+        "starters": [
+            {"player_id": "20", "name": "Patrick Mahomes", "position": "QB", "team": "KC",
+             "projected_points": 20.0, "season_points": 90.0, "recent_avg": 21.0,
+             "recent_points": [18, 22, 23], "is_starter": True, "injury_status": None, "bye_week": 10},
+            {"player_id": "21", "name": "Saquon Barkley", "position": "RB", "team": "PHI",
+             "projected_points": 17.0, "season_points": 75.0, "recent_avg": 16.0,
+             "recent_points": [14, 17, 17], "is_starter": True, "injury_status": None, "bye_week": 5},
+            {"player_id": "22", "name": "Bijan Robinson", "position": "RB", "team": "ATL",
+             "projected_points": 14.0, "season_points": 60.0, "recent_avg": 13.0,
+             "recent_points": [11, 14, 14], "is_starter": True, "injury_status": None, "bye_week": 12},
+            {"player_id": "23", "name": "Tyreek Hill", "position": "WR", "team": "MIA",
+             "projected_points": 15.0, "season_points": 68.0, "recent_avg": 16.0,
+             "recent_points": [14, 17, 17], "is_starter": True, "injury_status": None, "bye_week": 6},
+            {"player_id": "24", "name": "Ja'Marr Chase", "position": "WR", "team": "CIN",
+             "projected_points": 16.0, "season_points": 72.0, "recent_avg": 15.0,
+             "recent_points": [13, 16, 16], "is_starter": True, "injury_status": None, "bye_week": 12},
+            {"player_id": "25", "name": "Sam LaPorta", "position": "TE", "team": "DET",
+             "projected_points": 10.0, "season_points": 42.0, "recent_avg": 9.0,
+             "recent_points": [8, 10, 9], "is_starter": True, "injury_status": None, "bye_week": 5},
+            {"player_id": "26", "name": "Puka Nacua", "position": "WR", "team": "LAR",
+             "projected_points": 13.0, "season_points": 55.0, "recent_avg": 12.0,
+             "recent_points": [10, 13, 13], "is_starter": True, "injury_status": None, "bye_week": 6},
+            {"player_id": "27", "name": "Justin Tucker", "position": "K", "team": "BAL",
+             "projected_points": 8.5, "season_points": 38.0, "recent_avg": 8.0,
+             "recent_points": [7, 9, 8], "is_starter": True, "injury_status": None, "bye_week": 14},
+            {"player_id": "28", "name": "Ravens", "position": "DEF", "team": "BAL",
+             "projected_points": 7.0, "season_points": 32.0, "recent_avg": 6.5,
+             "recent_points": [5, 7, 7], "is_starter": True, "injury_status": None, "bye_week": 14},
+        ],
+        "bench": [],
+        "full_roster": [],
+        "projected_total": 121.5,
+    }
+
+
+def get_sample_trending() -> dict:
+    """Return sample trending data for testing."""
+    return {
+        "adds": [
+            {"player_id": "100", "name": "Joe Flacco", "position": "QB", "team": "IND", "count": 450},
+            {"player_id": "101", "name": "Antonio Gibson", "position": "RB", "team": "NE", "count": 320},
+        ],
+        "drops": [
+            {"player_id": "200", "name": "Deshaun Watson", "position": "QB", "team": "CLE", "count": 280},
+        ],
+    }
+
+
+============================================================
+FILE: .github\workflows\refresh.yml
+============================================================
+name: Fantasy Football Data Refresh
+
+on:
+  schedule:
+    # Run at 3 PM UTC (8 AM Mountain Time) on:
+    # Tuesday (after MNF), Thursday (after TNF), Sunday (morning before games)
+    - cron: "0 15 * * 2"
+    - cron: "0 15 * * 4"
+    - cron: "0 15 * * 0"
+
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+# Prevent scheduled/manual refreshes from pushing at the same time.
+# cancel-in-progress: false means an already-running refresh completes,
+# while a second request waits rather than creating a Git push collision.
+concurrency:
+  group: fantasy-football-data-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          # Full history is required so git pull --rebase can safely place
+          # the generated-data commit on top of newer commits on main.
+          fetch-depth: 0
+          ref: main
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Generate demo data (always, as fallback)
+        run: python -m src.dashboard.generate_demo
+
+      - name: Run pipeline (live mode if secrets configured, otherwise demo)
+        run: |
+          if [ -n "${{ secrets.SLEEPER_LEAGUE_ID }}" ]; then
+            echo "Running in LIVE mode"
+            python -m src.main --live
+          else
+            echo "No SLEEPER_LEAGUE_ID secret found â€” running in DEMO mode"
+            python -m src.main --demo
+          fi
+        env:
+          SLEEPER_USERNAME: ${{ secrets.SLEEPER_USERNAME }}
+          SLEEPER_LEAGUE_ID: ${{ secrets.SLEEPER_LEAGUE_ID }}
+          NFL_SEASON: ${{ secrets.NFL_SEASON }}
+          SCORING_TYPE: ${{ secrets.SCORING_TYPE }}
+          DEMO_MODE: ${{ secrets.DEMO_MODE }}
+
+      - name: Run tests
+        run: python -m pytest tests/ -v
+
+      - name: Commit updated data safely
+        id: commit_data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add docs/data.json data/demo/league_data.json
+
+          if git diff --cached --quiet; then
+            echo "No generated data changes to commit."
+            echo "data_changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          git commit -m "Auto-refresh: $(date -u +%Y-%m-%d) Week data update"
+
+          # A user may have pushed website or workflow changes after this
+          # job started. Rebase the generated-data commit on the current
+          # remote main before pushing instead of failing with "fetch first".
+          git pull --rebase origin main
+          git push origin HEAD:main
+
+          echo "data_changed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs
+          publish_branch: gh-pages
+          force_orphan: false
+
+============================================================
+FILE: requirements.txt
+============================================================
+requests>=2.31.0
+python-dotenv>=1.0.0
+pytest>=7.4.0
+
+
