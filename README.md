@@ -1,165 +1,171 @@
-FF Pipeline — Automated Fantasy Football Analytics
-A fantasy football analytics application that combines a scheduled Python data pipeline, a Flask API hosted on Render, and a responsive dashboard hosted on GitHub Pages.
+<div align="center">
 
-Connect a public Sleeper NFL league by username, select your team, and explore player projections, lineup optimization, waiver candidates, trending adds, and league standings. No Sleeper password is requested.
+# FF Pipeline
 
+### Automated Fantasy Football Analytics
 
+A Sleeper-connected analytics dashboard for smarter waiver decisions, optimized lineups, and player-trend discovery.
 
-Current Features
-Public league discovery by Sleeper username and season, followed by league and team selection.
+Python · Flask · JavaScript · Chart.js · GitHub Actions · GitHub Pages · Render
 
-Player-name, NFL-team, position, injury-status, and starter/bench enrichment.
+[Dashboard Preview](#dashboard-preview) · [How It Works](#how-it-works) · [Quick Start](#quick-start) · [Methodology](#analysis-methodology)
 
-Weekly projected-point estimates using returned player statistics and the selected league's scoring weights.
+</div>
 
-Optimal-lineup comparisons using the selected league's actual starter slots, including multiple WR and FLEX slots.
+---
 
-Waiver recommendations ranked by positive estimated upgrades over eligible same-position bench players.
+![FF Pipeline team overview](screenshots/team-overview.jpg)
 
-Zero-point and missing-projection exclusions for waiver comparisons, plus IR/reserve, taxi, and unavailable-player exclusions.
+## Overview
 
-A top-five trending-adds chart and top-ten activity list with a shared position filter.
+FF Pipeline turns public Sleeper league data into an interactive fantasy football dashboard. Enter a username, choose a season and league, and select a team to explore projected player value, lineup opportunities, waiver candidates, and league-wide add activity.
 
-Comma-formatted add counts, such as 608,706, and rostered/unrostered indicators.
+The project combines a scheduled Python pipeline with a Flask API and browser-side analytics. GitHub Actions refreshes the pipeline output and deploys the website, while the interactive dashboard requests data for each visitor's selected league.
 
-A roster-performance table showing weekly projections, season estimates, recent played-week averages, and trend labels.
+No Sleeper password is required. The application reads public data and does not execute transactions or change lineups.
 
-Live matchup scores and standings returned through the Render API.
+## What It Does
 
-Scheduled Python refreshes, fixture-based tests, and GitHub Pages deployment through GitHub Actions.
+| Question | Dashboard Feature |
+|:---------|:------------------|
+| Who could improve my bench? | Waiver candidates ranked by estimated projected-point upgrades over eligible comparable bench players. |
+| What is my highest-projected lineup? | Slot-aware optimization using the selected league's actual starting requirements. |
+| Which players are being added most? | A top-five add-count chart and top-ten list with a shared position filter. |
+| How are my players performing? | Weekly projections, season estimates, recent averages, and player-trend labels. |
+| Where does my team stand? | Current matchup scores, team records, and league standings. |
 
-Dashboard Preview
-Team Overview
+---
 
+## Dashboard Preview
 
-The overview displays current-week live score, current matchup score edge, estimated bench upgrade, league rank, and team record. Player cards show names, NFL teams, natural positions, assigned starter slots or bench status, projected estimates, opponents where available, and injury tags.
+### Team Overview
 
-Live scores and projected estimates are different values: player-card estimates are not the team's current live score.
+Player-level detail and league context in one view.
 
-Matchup Analysis
+- KPI cards for current score, matchup score edge, estimated bench upgrade, league rank, and team record.
+- Player cards with names, NFL teams, positions, opponents, and injury status.
+- Clear starter-slot and bench labels, including multiple WR and FLEX slots.
+- Projected player estimates kept separate from current live scores.
 
+![Team overview with player projections and roster assignments](screenshots/team-overview.jpg)
 
-The current live dashboard displays your selected team's matchup opponent, both records, current scores, and current score share.
+### Waiver Wire Edge
 
-Current score share is not a modeled win probability. Position-by-position projected matchup analysis is not yet connected in this live view; the dashboard currently displays a placeholder for that feature.
+Find projected bench upgrades without letting a zero-point IR player distort the comparison.
 
-Waiver Wire Edge
+- Identifies unrostered candidates eligible for the selected league's supported slots.
+- Compares each candidate with an eligible same-position bench player.
+- Excludes zero or missing projections, reserve/IR and taxi players, and unavailable statuses from drop comparisons.
+- Shows up to 15 positive upgrades with player estimates and suggested drop candidates.
 
+![Waiver wire recommendations and projected bench upgrades](screenshots/waiver-wire-edge.jpg)
 
-Unrostered players are ranked by estimated projected-point improvement over the lowest-projected eligible bench player sharing a fantasy position.
+> Recommendations measure estimated bench-value improvement, not guaranteed starting-lineup gains. Unrostered players may still be subject to waiver processing and roster restrictions.
 
-The live calculation excludes drop candidates who:
+### Optimal Lineup
 
-Have projections at or below zero, or missing projections.
+A lineup comparison built around your league—not a fixed standard template.
 
-Appear in the selected roster's IR/reserve or taxi lists.
+- Uses the selected league's actual starter slots.
+- Supports multiple WR and FLEX slots, along with supported superflex and other flex formats.
+- Assigns each eligible player at most once using dynamic programming.
+- Displays current and suggested lineups, projected totals, and estimated improvement.
 
-Are marked IR, Out, Doubtful, or Suspended.
+![Current lineup compared with the highest-projected eligible lineup](screenshots/optimal-lineup.jpg)
 
-Pickup candidates must have positive projections, avoid those unavailable statuses, and be eligible for at least one supported starter slot in the selected league.
+> Pregame comparison only. The application does not enforce game-time locks or submit lineup changes to Sleeper.
 
-The live calculation is:
+### Player Trends
 
-text
-bench_upgrade = candidate_projected_estimate - comparable_bench_projected_estimate
-Positive results are ranked and the top 15 are displayed. Recommendations can be fewer than 15. Very small positive upgrades may round to +0.0 in the one-decimal display.
+Discover the most-added players, then narrow the view by position.
 
-These are same-position bench-value comparisons, not guaranteed starting-lineup improvements or rest-of-season rankings. Popularity and bye-coverage bonuses are not added to the current live waiver calculation. “Unrostered” does not guarantee immediate pickup eligibility: waiver processing, roster limits, and league rules still apply.
+- Top-five horizontal bar chart ranked by last-24-hour add counts.
+- Top-ten activity list with comma-formatted counts and roster availability labels.
+- One shared position filter updates both panels.
+- All positions selected by default; rankings include both rostered and unrostered players.
 
-Optimal Lineup
+![Trending-add chart and activity list with shared position filters](screenshots/player-trends.jpg)
 
+#### Roster Performance
 
-The live optimizer uses dynamic programming to assign distinct eligible players to the selected league's actual starter slots, maximizing the sum of available projected estimates.
+A separate table tracks your players' weekly projected estimates, season estimates, recent played-week averages, and trends relative to their season averages.
 
-For example, the pictured league uses one QB, two RBs, three WRs, one TE, two FLEX slots, one kicker, and one defense. The comparison shows current players, suggested players, estimates, total projected points, and estimated improvement.
+![Roster performance table](screenshots/player-trends2.jpg)
 
-Supported slot types are QB, RB, WR, TE, K, DEF, FLEX, SUPER_FLEX, REC_FLEX, and WRRB_FLEX. The implementation supports up to 16 starter slots and reports unsupported or unfillable lineups rather than claiming a complete result.
+### Matchup Analysis
 
-Players marked IR, Out, Doubtful, or Suspended are excluded from optimizer eligibility. A missing projection is not replaced with an invented estimate. Missing projections can prevent a complete lineup recommendation.
+View the current matchup, both team records, live scores, and current score share.
 
-This is a pregame comparison. It does not enforce game-time lineup locks, perform transactions, or change your lineup in Sleeper. Explicit IR/reserve exclusions currently apply to waiver drop comparisons; optimizer eligibility uses player status and projection availability.
+![Current matchup scores and score-share display](screenshots/matchup-analysis.jpg)
 
-Player Trends — Trending Adds
-
-
-A horizontal bar chart shows the five most-added players in the returned Sleeper feed over the last 24 hours. The adjacent list shows up to ten players, with comma-formatted counts and selected-league roster availability.
-
-Both panels default to all positions. Shared position buttons filter and rerank both panels together. The chart measures add counts, not historical fantasy points, and includes both rostered and unrostered players.
-
-The dashboard requests up to 1,000 trending records. Position-specific rankings are based on the records actually returned by the source; a position may have fewer than ten entries.
-
-Player Trends — Roster Performance
-
-
-The roster table includes weekly projected estimates, season estimated points, and an average over available player records in the preceding three weeks. Missing weekly records are excluded from the average rather than treated as zero.
-
-Trend labels compare this recent average with estimated season points divided by the returned games-played count:
-
-Above season average: more than 15% higher.
-
-Below season average: more than 15% lower.
-
-Near season average: within that range.
-
-Insufficient history: the comparison cannot be calculated.
-
-The trending-position filter affects the add-count chart and activity list, not this roster table.
-
-League Standings
-
-
-Standings show records, win percentages, points for, points against, and current-week scores. The selected team is highlighted.
-
-The screenshot's team names are fictional replacements for privacy. The numeric values and visual layout are preserved from the supplied screenshot; this is not a wholly synthetic league dataset.
-
-The current frontend marks the top six teams as playoff-position rows, or all teams if there are fewer than six. This display does not yet derive the cutoff from the league's playoff settings. Standings are ordered by win percentage, then points for, and may differ from custom league tiebreakers.
-
-Architecture
-The project currently has two distinct execution paths.
-
-Interactive Live Dashboard
-text
-Visitor selects username, season, league, and team
-                        |
-                        v
-                GitHub Pages frontend
-                  /                \
-                 v                  v
-          Render Flask API     Direct Sleeper requests
-          League/roster data    Player directory
-          Standings            Projections and statistics
-          Matchup scores       Trending adds
-                  \                /
-                   v              v
-                 Browser-side analytics
-                 and Chart.js rendering
-The Flask backend serves /api/dashboard?league_id=...&roster_id=.... The browser enriches roster information and calculates the current live lineup, waiver, and performance views.
-
-The frontend also preloads docs/data.json as demo data, but the current connection-first interface does not automatically render that file as the interactive live dashboard. Running the Python pipeline alone is therefore not equivalent to refreshing a visitor's selected league.
-
-Scheduled Python Pipeline and Deployment
-text
-GitHub Actions
-    -> generate demo fixtures
-    -> src.main: fetch -> transform -> analyze
-    -> write docs/data.json
-    -> run Python tests
-    -> commit generated data
-    -> publish docs to gh-pages
-The Python analysis implementation and the newer browser-side live implementation are separate. The Python tests do not establish coverage of the browser-side analytics.
-
-Project Structure
-text
+> Current score share is not a modeled win probability. Projected position-by-position matchup analysis remains a planned enhancement in the live dashboard.
+
+### League Standings
+
+League-wide records, win percentages, points for and against, and current-week scores—with the selected team highlighted.
+
+![League standings with anonymized team names](screenshots/dashboard-standings.png)
+
+<sub>Team names in this standings image are fictional replacements. Numeric values and the layout are preserved from the original screenshot.</sub>
+
+---
+
+## How It Works
+
+```text
+                          INTERACTIVE DASHBOARD
+
+     Sleeper username → Season → League → Team selection
+                                │
+                                ▼
+                    GitHub Pages · HTML / CSS / JS
+                                │
+                 ┌──────────────┴──────────────┐
+                 ▼                             ▼
+          Render · Flask API            Sleeper data feeds
+          League and roster data        Player metadata
+          Standings and matchups        Projections and statistics
+                                        Trending adds
+                 │                             │
+                 └──────────────┬──────────────┘
+                                ▼
+                      Browser-side analytics
+                  Waiver comparisons · Lineup optimizer
+                   Roster metrics · Chart.js visualizations
+
+                         SCHEDULED PIPELINE
+
+       GitHub Actions → Fetch → Transform → Analyze → JSON
+                                │
+                                ▼
+                      Tests → GitHub Pages deploy
+```
+
+### Engineering Highlights
+
+| Area | Implementation |
+|:-----|:---------------|
+| Data integration | Combines league, roster, player, projection, statistics, and trending feeds. |
+| Data normalization | Resolves player IDs and selects one source record per player using provider priority and timestamps. |
+| Decision logic | Filters invalid waiver comparisons and optimizes distinct player assignments under slot constraints. |
+| Interactive reporting | Shared position controls keep chart and list rankings synchronized. |
+| Automation | Scheduled and manually triggered Python runs with tests and Pages deployment. |
+| Transparency | Labels estimates, explains scoring assumptions, and reports unavailable results. |
+
+<details>
+<summary>View the project structure</summary>
+
+```text
 Fantasy-Football-Analyzer/
-├── .github/workflows/refresh.yml  # Scheduled/manual refresh and Pages deployment
+├── .github/workflows/refresh.yml  # Refresh, tests, and Pages deployment
 ├── backend/
-│   ├── app.py                    # Flask league, standings, and matchup API
-│   ├── requirements.txt          # Backend dependencies
+│   ├── app.py                    # Flask league and matchup API
+│   ├── requirements.txt
 │   └── Procfile
 ├── src/
-│   ├── config.py                 # Python pipeline configuration
-│   ├── main.py                   # Python pipeline orchestrator
-│   ├── api/sleeper_client.py      # Python Sleeper client
+│   ├── config.py                 # Python configuration
+│   ├── main.py                   # Pipeline orchestrator
+│   ├── api/sleeper_client.py      # Sleeper client
 │   ├── pipeline/
 │   │   ├── fetch.py
 │   │   ├── transform.py
@@ -167,142 +173,172 @@ Fantasy-Football-Analyzer/
 │   └── dashboard/generate_demo.py
 ├── data/
 │   ├── demo/league_data.json
-│   └── snapshots/                # Generated when applicable
+│   └── snapshots/
 ├── docs/
 │   ├── index.html
-│   ├── data.json                 # Scheduled pipeline output
+│   ├── data.json                 # Python pipeline output
 │   └── assets/
 │       ├── styles.css
-│       └── app.js                # Interactive dashboard and live analytics
+│       └── app.js                # Dashboard and live analytics
 ├── tests/
 │   ├── test_analyze.py
 │   └── fixtures/sample_data.py
 ├── screenshots/
-│   ├── team-overview.jpg
-│   ├── matchup-analysis.jpg
-│   ├── waiver-wire-edge.jpg
-│   ├── optimal-lineup.jpg
-│   ├── player-trends.jpg
-│   ├── player-trends2.jpg
-│   └── dashboard-standings.png
 ├── requirements.txt
 ├── .env.example
 └── README.md
-Quick Start
-Preview the Interactive Dashboard
-Clone or download the repository:
+```
 
-bash
+</details>
+
+---
+
+## Quick Start
+
+### Preview the Live Dashboard
+
+Clone the repository, or download and extract it from GitHub:
+
+```bash
 git clone https://github.com/MichaelWhitney-Analytics/Fantasy-Football-Analyzer.git
 cd Fantasy-Football-Analyzer
-Serve the frontend from the project root:
+```
 
-bash
+Start the local website from the project root:
+
+```bash
 python -m http.server 8000 --directory docs
-Open http://localhost:8000. Leave the server running, enter your Sleeper username, select the season and league, and choose your team. Internet access is required for the current live experience.
+```
 
-The frontend is configured to use the hosted Render API. Previewing locally does not start a local Flask server. A local Python server does not automatically open your browser.
+Open `http://localhost:8000`, enter your Sleeper username, and select your league and team. Leave the server running while testing.
 
-Run the Separate Python Pipeline
-bash
+The current frontend uses the hosted Render API and direct Sleeper requests, so internet access is required. A local Flask server is not required for this preview.
+
+<details>
+<summary>Run the separate Python pipeline and test suite</summary>
+
+Install dependencies and generate demo output:
+
+```bash
 pip install -r requirements.txt
 python -m src.dashboard.generate_demo
 python -m src.main --demo
-These commands generate fixture data and write pipeline analysis to docs/data.json.
+```
 
-For live Python pipeline execution, copy .env.example to .env, configure SLEEPER_USERNAME, SLEEPER_LEAGUE_ID, and the appropriate season, then run:
+These commands write pipeline output to `docs/data.json`. The connection-first dashboard does not automatically render this file as a demo view; its live analytics use the visitor's selected league.
 
-bash
+For live Python execution, copy `.env.example` to `.env`, configure the username, league ID, and season, then run:
+
+```bash
 python -m src.main --live
-Do not commit .env or credentials. The Python pipeline's projection heuristics and analysis logic should not be confused with the browser-side live calculations documented above.
+```
 
-Render Configuration
-The current backend service uses:
+Run fixture-based Python tests:
 
-text
+```bash
+python -m pytest tests/ -v
+```
+
+These tests cover the Python analysis engine, not the newer browser-side analytics. Do not commit `.env` or credentials.
+
+</details>
+
+<details>
+<summary>Deployment and automation settings</summary>
+
+The current Render service uses:
+
+```text
 Root Directory: backend
 Build Command: pip install -r requirements.txt
 Start Command: gunicorn app:app
-The current frontend API URL is configured in docs/assets/app.js. Backend CORS configuration includes the project's GitHub Pages origin and local previews on port 8000.
+```
 
-GitHub Actions and Pages
-The current workflow supports manual dispatch and these UTC schedules:
+GitHub Actions runs on Tuesday, Thursday, and Sunday at `15:00 UTC`, and supports manual dispatch. These are fixed UTC schedules. Thursday's run is not an after-Thursday-Night-Football refresh.
 
-text
-Tuesday:  15:00 UTC
-Thursday: 15:00 UTC
-Sunday:   15:00 UTC
-These are fixed UTC schedules, not fixed local-time schedules. Thursday's run is not an after-Thursday-Night-Football refresh.
+The workflow:
 
-The workflow generates demo fixtures, runs live Python mode if SLEEPER_LEAGUE_ID is configured as an Actions secret, otherwise runs demo mode, executes tests, commits generated JSON, and publishes docs to gh-pages.
+1. Generates demo fixtures.
+2. Runs live Python mode when the `SLEEPER_LEAGUE_ID` Actions secret is configured; otherwise uses demo mode.
+3. Runs the Python test suite.
+4. Commits generated JSON.
+5. Publishes `docs` to the `gh-pages` branch.
 
-Configure GitHub Pages to publish from the gh-pages branch. After updating website files on main, run “Fantasy Football Data Refresh” manually from Actions if you want immediate deployment; the supplied workflow has no push trigger.
+Configure GitHub Pages to publish from `gh-pages`. For immediate deployment after a website update, manually run “Fantasy Football Data Refresh” from Actions; the supplied workflow has no push trigger.
 
-Do not change the workflow to --live merely to activate its secret-based switch: that conditional is already implemented.
+Interactive league analytics are requested when a visitor connects. They are separate from the scheduled Python output.
 
-Interactive league analytics are requested when a visitor connects a league. The schedule refreshes the separate Python output and deploys website assets; it is not the sole refresh mechanism for the live dashboard.
+</details>
 
-Data Sources and Scoring Methodology
-The live interface uses public Sleeper league, roster, matchup, player-directory, and trending-add requests. It also retrieves separate selected-season projection and statistical feeds:
+---
 
-text
-/v1/user/<username>
-/v1/user/<user_id>/leagues/nfl/<season>
-/v1/league/<league_id>
-/v1/league/<league_id>/users
-/v1/league/<league_id>/rosters
-/v1/league/<league_id>/matchups/<week>
-/v1/players/nfl
-/v1/players/nfl/trending/add?lookback_hours=24&limit=1000
+## Analysis Methodology
 
-/projections/nfl/<season>/<week>?season_type=regular
-/stats/nfl/<season>?season_type=regular
-/stats/nfl/<season>/<week>?season_type=regular
-Player projection and statistical feeds can contain multiple records per player. The browser selects one per player, preferring Rotowire for projections and Sportradar for statistics; within equal provider priority, the newer timestamp wins.
+### Projected Estimates
 
-Projected and historical estimated points use an additive calculation:
+The live dashboard retrieves selected-week projection records and calculates an additive estimate using the selected league's scoring weights:
 
-text
-estimated_points = sum(returned_stat_value * matching_league_scoring_weight)
-Missing statistic keys contribute zero. Missing player records remain unavailable. The dashboard reports configured nonzero scoring keys absent from the loaded data.
+```text
+estimated_points = Σ (returned_stat × matching_league_scoring_weight)
+```
 
-These estimates are not guaranteed to match official Sleeper fantasy totals. Nonlinear bonuses, scoring tiers, unsupported key mappings, and aggregate projection behavior can produce differences. The displayed methodology notice preserves that distinction.
+Records are deduplicated by player. Rotowire is preferred for projections and Sportradar for statistics; within equal provider priority, the newer timestamp wins.
 
-Projection/statistics feed availability and schema are external dependencies. The implementation displays request failures and unavailable results, but does not guarantee those feeds' long-term stability.
+### Waiver Ranking
 
-Testing
-Run the existing fixture-based Python tests:
+```text
+bench_upgrade = candidate_projected_estimate
+              − comparable_bench_projected_estimate
+```
 
-bash
-pip install -r requirements.txt
-python -m pytest tests/ -v
-These cover the Python analysis engine. Browser-side changes also require manual verification of league selection, projection availability, waiver exclusions, lineup slot coverage, chart/list filtering, and source failures.
+Only positive upgrades are ranked. Drop candidates must have positive projections and pass reserve/status exclusions. The live calculation does not add popularity or bye-coverage bonuses.
 
-Tech Stack
-Component	Technology
-Component	Technology
-Scheduled pipeline	Python
-Backend	Flask, Flask-CORS, Gunicorn, requests
-Hosting	Render API and GitHub Pages frontend
-Automation	GitHub Actions
-Frontend	HTML, CSS, JavaScript, Tailwind CSS
-Charting	Chart.js
-Icons and fonts	Lucide; Cabinet Grotesk and Satoshi via Fontshare
-Tests	pytest with fixtures
-Data exchange	JSON
-Current Limitations and Next Steps
-Connect projected position-by-position matchup analysis; current score share is not win probability.
+### Lineup Optimization
 
-Validate scoring parity against official league totals, including bonuses and tiers.
+Dynamic programming evaluates distinct player-to-slot assignments to find the highest projected total for supported league slots. Missing projections and unavailable statuses can prevent a complete recommendation.
 
-Derive playoff cutoffs and tiebreakers from actual league settings.
+<details>
+<summary>Scoring assumptions and current limitations</summary>
 
-Add browser-side automated tests.
+- Estimates are not guaranteed to equal official Sleeper fantasy scores. Nonlinear bonuses, scoring tiers, unsupported stat mappings, and aggregate projections can produce differences.
+- Missing statistic keys contribute zero; missing player records remain unavailable. Unmatched configured scoring keys are reported in the dashboard.
+- Recent averages use available records from the preceding three weeks, excluding missing weekly records. Trend labels use a ±15% comparison against estimated season points per returned game played.
+- The optimizer supports up to 16 starter slots: `QB`, `RB`, `WR`, `TE`, `K`, `DEF`, `FLEX`, `SUPER_FLEX`, `REC_FLEX`, and `WRRB_FLEX`. It does not enforce game-time locks. Explicit reserve/taxi exclusions currently apply to waiver comparisons; optimizer eligibility uses player status and projection availability.
+- Trending rankings use returned source records. The application requests up to 1,000 entries; filtered positions may have fewer than ten players.
+- Standings currently use win percentage followed by points for. The top-six playoff display is a frontend convention, not yet derived from league playoff settings.
+- Browser-side live logic and Python pipeline logic are separate implementations. Existing Python tests do not validate the browser calculations.
+- Very small positive waiver upgrades can display as `+0.0` when rounded to one decimal place.
+- Projection/statistics feeds are external dependencies; their availability and schema are not guaranteed.
 
-Consolidate appended frontend patches and duplicate data requests.
+</details>
 
-Move shared feed caching and analytics into a coordinated backend/pipeline architecture.
+---
 
-Add game-time lineup-lock awareness and explicit optimizer handling of reserve/taxi eligibility.
+## Tech Stack
 
-The application reads public data and provides comparisons. It does not submit waiver claims, execute trades, or change Sleeper lineups.
+| Layer | Technology | Role |
+|:------|:-----------|:-----|
+| Pipeline | Python | Fetching, transformation, analysis, and JSON output |
+| API | Flask · Flask-CORS · Gunicorn | League, standings, and matchup responses |
+| Frontend | HTML · CSS · JavaScript · Tailwind CSS | Interactive dashboard and live calculations |
+| Visualization | Chart.js | Trending-add bar chart |
+| Automation | GitHub Actions | Scheduled refreshes, tests, and deployment |
+| Hosting | GitHub Pages · Render | Static website and backend service |
+| Testing | pytest | Fixture-based Python analysis tests |
+| Design | Lucide · Fontshare | Icons and typography |
+
+## Next Improvements
+
+- Projected position-by-position matchup comparisons.
+- Official-score parity validation for bonuses and scoring tiers.
+- League-specific playoff cutoffs and tiebreakers.
+- Browser-side automated tests and lineup-lock awareness.
+- Consolidated frontend logic and shared backend feed caching.
+
+---
+
+<div align="center">
+
+Built to demonstrate API integration, data transformation, analytical modeling, automation, and interactive reporting through a practical fantasy football application.
+
+</div>
